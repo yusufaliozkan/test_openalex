@@ -141,7 +141,10 @@ else:
 
                     oa_status_summary = merged_df['open_access.oa_status'].value_counts(dropna=False).reset_index()
                     oa_status_summary.columns = ['OA_status', '# Outputs']
+                    oa_summary = merged_df['open_access.is_oa'].value_counts(dropna=False).reset_index()
+                    oa_summary.columns = ['Is OA?', '# Outputs']
                     st.subheader("Open Access Status Summary", anchor=False)
+                    st.dataframe(oa_summary)
                     st.dataframe(oa_status_summary)
 
                     top_journals = merged_df['primary_location.source.display_name'].value_counts(dropna=False).reset_index()
@@ -163,7 +166,7 @@ else:
                     st.subheader("Authors", anchor=False)
                     st.dataframe(authors_table)
 
-                    
+
                     status.update(label=f"Search complete! Results found for {num_results} DOIs", state="complete", expanded=True)
 
                 else:
