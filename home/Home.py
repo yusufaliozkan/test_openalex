@@ -13,8 +13,8 @@ import time
 from sidebar_content import sidebar_content
 
 st.set_page_config(layout = "wide", 
-                    page_title='Geographic Bias Tool',
-                    page_icon="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTtoX76TyVQs-o1vEvNuAnYX0zahtSui173gg&s",
+                    page_title='OpenAlex DOI Search Tool',
+                    page_icon="https://openalex.org/img/openalex-logo-icon-black-and-white.ea51cede.png",
                     initial_sidebar_state="auto") 
 pd.set_option('display.max_colwidth', None)
 
