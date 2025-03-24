@@ -139,10 +139,13 @@ else:
                         num_results = merged_df['id'].notnull().sum()
                         st.success(f"{num_results} result(s) found.")
                     st.dataframe(merged_df)
+                    df_oa = merged_df[['open_access.is_oa',
+                    'open_access.oa_status',
+                    'open_access.oa_url',
+                    'open_access.any_repository_has_fulltext']]
+                    df_oa
                 else:
                     st.error("No DOIs found in the OpenAlex database. Check the submitted DOIs and resubmit.")
                     df_dois
-                    
-
     else:
         st.warning("Enter DOIs in the text area or upload a file to calculate the Citation Source Index.")
