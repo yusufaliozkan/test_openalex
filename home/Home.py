@@ -144,6 +144,10 @@ else:
                     st.subheader("Open Access Status Summary", anchor=False)
                     st.dataframe(oa_summary)
                     status.update(label=f"Search complete! Results found for {num_results} DOIs", state="complete", expanded=True)
+
+                    top_journals = merged_df['primary_location.source.display_name'].value_counts(dropna=False).reset_index()
+                    top_journals.columns = ['Journal name', '# Outputs']
+                    st.dataframe(top_journals)
                 else:
                     st.error("No DOIs found in the OpenAlex database. Check the submitted DOIs and resubmit.")
                     df_dois
