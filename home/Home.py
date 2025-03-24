@@ -138,7 +138,6 @@ else:
                     else:
                         num_results = merged_df['id'].notnull().sum()
                         st.success(f"{num_results} result(s) found.")
-                    st.dataframe(merged_df)
                     df_oa = merged_df[['open_access.is_oa',
                     'open_access.oa_status',
                     'open_access.oa_url',
