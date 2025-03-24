@@ -5,7 +5,7 @@ from copyright import display_custom_license, cc_by_licence_image
 def sidebar_content():
     st.logo(
         image='https://upload.wikimedia.org/wikipedia/commons/e/e3/OpenAlex_logo_2021.svg',
-        icon_image='https://upload.wikimedia.org/wikipedia/commons/e/e3/OpenAlex_logo_2021.svg'
+        # icon_image='https://upload.wikimedia.org/wikipedia/commons/e/e3/OpenAlex_logo_2021.svg'
         )
 
     with st.sidebar:
