@@ -27,15 +27,8 @@ def sidebar_content():
             )
         with st.expander('Disclaimer'):
             st.warning('''
-            There are some limitations of this tool (check the Limitations section under 'About this tool'). 
-            Therefore, this tool should not be used to compare articles or a set of publications and never be used for any research performance assessment purposes.
-
-            Although every effort is made to ensure accuracy and the tool is operational, the support may not be guaranteed. 
-            Bear in mind that there might be some technical issues caused by OpenAlex or Streamlit.
-
-            The country information is sourced from OpenAlex and may be adjusted to align with the country names used by the World Bank to generate the CSI. 
-            As a result, certain country names and disputed territories might be displayed differently or not be displayed in this tool. 
-            The creator of this tool assumes no responsibility for any omissions or inaccuracies.
+            This tool uses OpenAlex API to retrieve metadata of multiple DOIs. API queries and metadata fields may change over time. 
+            It is always good to crosscheck results with the OpenAlex database.
             ''')
         with st.expander('Contact'):
             st.write('For your questions, you can contact [Yusuf Ozkan, Research Outputs Analyst](https://profiles.imperial.ac.uk/y.ozkan) at Imperial College London.')
