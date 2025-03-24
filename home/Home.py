@@ -50,9 +50,9 @@ else:
 
     if dois is not None:
         try:
-            df = pd.read_csv(dois)
+            df = pd.read_csv(dois, engine='python')  # more tolerant to inconsistent rows
         except pd.errors.ParserError as e:
-            st.error("There was a problem reading your CSV file. Please ensure it is a valid comma-separated file.")
+            st.error("There was a problem parsing your CSV file. Check for stray commas or improperly quoted values.")
             st.exception(e)
             st.stop()
         
