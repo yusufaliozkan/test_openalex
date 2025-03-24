@@ -23,7 +23,7 @@ def sidebar_content():
         with st.expander('Source code'):
             st.write('Source code and datasets used for this tool are available here:')
             st.caption(
-                "[![GitHub repo](https://img.shields.io/badge/GitHub-Geographic_Bias_Tool_repo-0a507a?logo=github)](https://github.com/yusufaliozkan/geographic-bias-tool) "
+                "[![GitHub repo](https://img.shields.io/badge/GitHub-OpenAlex-0a507a?logo=github)](https://github.com/yusufaliozkan/openalex) "
             )
         with st.expander('Disclaimer'):
             st.warning('''

@@ -20,4 +20,5 @@ pd.set_option('display.max_colwidth', None)
 
 sidebar_content() 
 
-st.title('OpenAlex Multiple DOI Search Tool')
+st.title('OpenAlex DOI Search Tool')
+
