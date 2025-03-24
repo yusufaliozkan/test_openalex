@@ -18,4 +18,6 @@ st.set_page_config(layout = "wide",
                     initial_sidebar_state="auto") 
 pd.set_option('display.max_colwidth', None)
 
+sidebar_content() 
+
 st.title('OpenAlex Multiple DOI Search Tool')
