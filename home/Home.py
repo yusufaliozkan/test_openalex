@@ -42,7 +42,8 @@ if radio == 'Insert DOIs':
     doi_list = [doi.strip() for doi in doi_list if doi.strip()]
     
     # Create a DataFrame
-    df_dois = pd.DataFrame(doi_list, columns=["doi"])
+    df_dois = pd.DataFrame(doi_list, columns=["doi_submitted"])
+    df_dois
 else:
     st.write('Please upload and submit a .csv file of [DOIs](https://www.doi.org/) (commencing “10.") in separate rows.')
     st.warning('The title of the column containing DOIs should be one of the followings: doi, DOI, dois, DOIs, Hyperlinked DOI. Otherwise the tool will not identify DOIs.')
