@@ -200,7 +200,7 @@ else:
                     institution_freq = institutions_table['institution'].value_counts(dropna=True).reset_index()
                     institution_freq.columns = ['Institution', '# Count']
                     st.subheader("Institutional Affiliations")
-                    st.dataframe(institution_freq, hide_index=True)
+                    st.dataframe(institution_freq, hide_index=True,  use_container_width=False)
 
                     # Country frequency table
                     country_freq = institutions_table['country_code'].value_counts(dropna=True).reset_index()
