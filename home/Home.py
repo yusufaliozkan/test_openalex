@@ -98,10 +98,10 @@ else:
             if submit:
                 st.session_state['status_expanded'] = True
             with st.status("Searching DOIs in OpenAlex", expanded=st.session_state.get('status_expanded', True)) as status:
-                df_dois['doi_clean'] = df_dois['doi_submitted'].str.replace('https://doi.org/', '', regex=False)
+                df_dois['doi_submitted'] = df_dois['doi_submitted'].str.replace('https://doi.org/', '', regex=False)
 
                 # df = pd.read_csv('your_doi_file.csv') or use your existing df
-                df_dois['doi_clean'] = df_dois['doi_submitted'].str.strip().str.replace('https://doi.org/', '', regex=False)
+                df_dois['doi_submitted'] = df_dois['doi_submitted'].str.strip().str.replace('https://doi.org/', '', regex=False)
 
                 # Function to batch DOIs
                 def batch_dois(dois, batch_size=20):
@@ -112,7 +112,7 @@ else:
                 all_results = []
 
                 # Process in batches
-                for batch in batch_dois(df_dois['doi_clean'].tolist(), batch_size=20):
+                for batch in batch_dois(df_dois['v'].tolist(), batch_size=20):
                     filter_string = '|'.join(batch)
                     url = f"https://api.openalex.org/works?filter=doi:{filter_string}&mailto=support@openalex.org"
                     response = requests.get(url)
@@ -127,20 +127,21 @@ else:
                 results_df = pd.json_normalize(all_results, sep='.')
 
                 # Add cleaned DOI for merging
-                results_df['doi_clean'] = results_df['doi'].str.replace('https://doi.org/', '', regex=False)
+                results_df['doi_submitted'] = results_df['doi'].str.replace('https://doi.org/', '', regex=False)
 
                 # Merge with original
-                merged_df = df_dois.merge(results_df, left_on='doi_clean', right_on='doi_clean', how='left')
+                merged_df = df_dois.merge(results_df, left_on='doi_submitted', right_on='doi_submitted', how='left')
 
                 # Drop helper columns
-                merged_df = merged_df.drop(columns=['doi_clean', 'doi_clean'])
-                merged_df
+                merged_df = merged_df.drop(columns=['doi_submitted', 'doi_submitted'])
+                
                 if merged_df['id'].isnull().all():
                     st.warning("No results found.")
                 else:
                     num_results = merged_df['id'].notnull().sum()
                     st.success(f"{num_results} result(s) found.")
 
+                merged_df
 
     else:
         st.warning("Enter DOIs in the text area or upload a file to calculate the Citation Source Index.")
