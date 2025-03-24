@@ -142,8 +142,8 @@ else:
                     st.dataframe(merged_df)
                 else:
                     st.warning("No DOIs found in the OpenAlex database.")
-
-                merged_df
+                    merged_df
+                    
 
     else:
         st.warning("Enter DOIs in the text area or upload a file to calculate the Citation Source Index.")
