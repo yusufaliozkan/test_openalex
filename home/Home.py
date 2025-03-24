@@ -145,16 +145,16 @@ else:
                     oa_summary = merged_df['open_access.is_oa'].value_counts(dropna=False).reset_index()
                     oa_summary.columns = ['Is OA?', '# Outputs']
                     st.subheader("Open Access Status Summary", anchor=False)
-                    st.dataframe(oa_summary, hide_index =True)
-                    st.dataframe(oa_status_summary, hide_index =True)
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        st.dataframe(oa_summary, hide_index =True)
+                    with col2:
+                        st.dataframe(oa_status_summary, hide_index =True)
 
                     top_journals = merged_df['primary_location.source.display_name'].value_counts(dropna=False).reset_index()
                     top_journals.columns = ['Journal name', '# Outputs']
-                    col1, col2 = st.columns(2)
-                    with col1:
-                        st.subheader("Journals", anchor=False)
-                    with col2:
-                        st.dataframe(top_journals)
+                    st.subheader("Journals", anchor=False)
+                    st.dataframe(top_journals)
 
                     authors_df = merged_df.explode('authorships').reset_index(drop=True)
                     authors_df = pd.json_normalize(authors_df['authorships']).reset_index(drop=True)
