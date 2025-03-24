@@ -26,7 +26,7 @@ df_dois = None
 
 radio = st.radio('Select an option', ['Insert DOIs', 'Upload a file with DOIs'])
 if radio == 'Insert DOIs':
-    st.write('Please insert [DOIs](https://www.doi.org/) (commencing "10.") in separarate rows. Maximum **500 DOIs permitted**!')
+    st.write('Please insert [DOIs](https://www.doi.org/) (commencing "10.") in separarate rows.')
     dois = st.text_area(
         'Type or paste in one DOI per line in this box, then press Ctrl+Enter.', 
         help='DOIs will be without a hyperlink such as 10.1136/bmjgh-2023-013696',
@@ -43,3 +43,37 @@ if radio == 'Insert DOIs':
     
     # Create a DataFrame
     df_dois = pd.DataFrame(doi_list, columns=["doi"])
+else:
+    st.write('Please upload and submit a .csv file of [DOIs](https://www.doi.org/) (commencing “10.") in separate rows.')
+    st.warning('The title of the column containing DOIs should be one of the followings: doi, DOI, dois, DOIs, Hyperlinked DOI. Otherwise the tool will not identify DOIs.')
+    dois = st.file_uploader("Choose a CSV file", type="csv")
+
+    if dois is not None:
+        # Read the uploaded CSV file into a DataFrame
+        df = pd.read_csv(dois)
+        
+        # List of possible DOI column names
+        doi_columns = ['doi', 'DOI', 'dois', 'DOIs', 'Hyperlinked DOI']
+        
+        # Find the first matching DOI column
+        doi_column = None
+        for col in doi_columns:
+            if col in df.columns:
+                doi_column = col
+                break
+        
+        if doi_column:
+            # Create a DataFrame with DOIs only
+            df_dois = df[[doi_column]]
+            df_dois.columns = ['doi']  # Standardize column name to 'DOI'
+        
+        else:
+            st.error('''
+            No DOI column in the file.
+            
+            Make sure that the column listing DOIs have one of the following alternative names:
+            'doi', 'DOI', 'dois', 'DOIs', 'Hyperlinked DOI'
+            ''')
+            st.stop()
+    else:
+        st.write("Please upload a CSV file to calculate CSI.")
