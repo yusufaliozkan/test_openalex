@@ -98,7 +98,7 @@ else:
             if submit:
                 st.session_state['status_expanded'] = True
             with st.status("Searching DOIs in OpenAlex", expanded=st.session_state.get('status_expanded', True)) as status:
-                df_dois['DOI_clean'] = df_dois['DOI'].str.replace('https://doi.org/', '', regex=False)
+                df_dois['doi_clean'] = df_dois['doi'].str.replace('https://doi.org/', '', regex=False)
                 df_dois
 
     else:
