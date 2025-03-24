@@ -153,6 +153,7 @@ else:
 
                     top_journals = merged_df['primary_location.source.display_name'].value_counts(dropna=False).reset_index()
                     top_journals.columns = ['Journal name', '# Outputs']
+                    top_journals = top_journals.dropna()
                     st.subheader("Journals", anchor=False)
                     st.dataframe(top_journals, hide_index=True)
 
