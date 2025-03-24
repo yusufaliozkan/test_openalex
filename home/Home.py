@@ -152,7 +152,7 @@ else:
                         ''')
                     elif len(oa_summary) == 1:
                         st.write(f'''
-                            Only **{oa_summary.iloc[0]['# Outputs']}** *{oa_summary.iloc[0]['Is OA?']}* papers found.
+                            **{oa_summary.iloc[0]['# Outputs']}** *{oa_summary.iloc[0]['Is OA?']}* papers found.
                         ''')
                     st.dataframe(oa_status_summary, hide_index =True)
 
