@@ -151,7 +151,16 @@ else:
 
                     authors_df = merged_df.explode('authorships')
                     authors_df = pd.json_normalize(authors_df['authorships'])
-                    authors_df
+                    authors_table = authors_df[[
+                        'author.display_name',
+                        'author_position',
+                        'author.orcid',
+                        'is_corresponding',
+                        'raw_author_name'
+                    ]].drop_duplicates().reset_index(drop=True)
+
+                    st.subheader("Authors")
+                    st.dataframe(authors_table)
 
                 else:
                     st.error("No DOIs found in the OpenAlex database. Check the submitted DOIs and resubmit.")
