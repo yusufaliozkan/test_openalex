@@ -174,8 +174,8 @@ else:
                         'raw_author_name'
                     ]].drop_duplicates().reset_index(drop=True)
 
-                    st.subheader("Authors", anchor=False)
-                    st.dataframe(authors_table)
+                    # st.subheader("Authors", anchor=False)
+                    # st.dataframe(authors_table)
 
                     institutions_df = authors_df.explode('institutions').reset_index(drop=True)
                     institution_details = pd.json_normalize(institutions_df['institutions']).reset_index(drop=True)
@@ -193,20 +193,20 @@ else:
 
                     institutions_table.columns = ['author', 'institution', 'country_code', 'type']
 
-                    st.subheader("Author Institutions")
-                    st.dataframe(institutions_table)
+                    # st.subheader("Author Institutions")
+                    # st.dataframe(institutions_table)
 
                     # Institution frequency table
                     institution_freq = institutions_table['institution'].value_counts(dropna=True).reset_index()
                     institution_freq.columns = ['Institution', '# Occurrences']
                     st.subheader("Institution Frequency (across all publications)")
-                    st.dataframe(institution_freq)
+                    st.dataframe(institution_freq, hide_index=True)
 
                     # Country frequency table
                     country_freq = institutions_table['country_code'].value_counts(dropna=True).reset_index()
                     country_freq.columns = ['Country Code', '# Occurrences']
                     st.subheader("Country Frequency (based on affiliations)")
-                    st.dataframe(country_freq)
+                    st.dataframe(country_freq, hide_index=True)
 
                     status.update(label=f"Search complete! Results found for {num_results} DOIs", state="complete", expanded=True)
 
