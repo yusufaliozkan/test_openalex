@@ -90,5 +90,7 @@ if dois:
     with st.expander(f'See the DOIs you entered'):
         df_dois
 
+    submit = st.button('Search DOIs', icon=":material/search:")
+
 else:
     st.warning("Enter DOIs in the text area or upload a file to calculate the Citation Source Index.")
