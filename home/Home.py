@@ -140,7 +140,7 @@ else:
                         st.success(f"{num_results} result(s) found.")
                     st.dataframe(merged_df)
                 else:
-                    st.warning("No DOIs found in the OpenAlex database. Check the submitted DOIs and resubmit.")
+                    st.error("No DOIs found in the OpenAlex database. Check the submitted DOIs and resubmit.")
                     df_dois
                     
 
