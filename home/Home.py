@@ -150,8 +150,11 @@ else:
 
                     top_journals = merged_df['primary_location.source.display_name'].value_counts(dropna=False).reset_index()
                     top_journals.columns = ['Journal name', '# Outputs']
-                    st.subheader("Journals", anchor=False)
-                    st.dataframe(top_journals)
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        st.subheader("Journals", anchor=False)
+                    with col2:
+                        st.dataframe(top_journals)
 
                     authors_df = merged_df.explode('authorships').reset_index(drop=True)
                     authors_df = pd.json_normalize(authors_df['authorships']).reset_index(drop=True)
