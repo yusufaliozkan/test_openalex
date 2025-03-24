@@ -148,7 +148,7 @@ else:
                     if len(oa_summary) == 2:
                         st.write(f'''
                             **{oa_summary.iloc[0]['# Outputs']}** *{oa_summary.iloc[0]['Is OA?']}* and
-                            **{oa_summary.iloc[1]['# Outputs']}** *{oa_summary.iloc[1]['Is OA?']}* papers
+                            **{oa_summary.iloc[1]['# Outputs']}** *{oa_summary.iloc[1]['Is OA?']}* papers found
                         ''')
                     elif len(oa_summary) == 1:
                         st.write(f'''
