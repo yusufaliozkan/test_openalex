@@ -77,26 +77,27 @@ else:
             st.stop()
     else:
         st.write("Please upload a CSV file containing DOIs.")
+if df_dois is not None and len(df_dois) > 500:
+    st.error('Please enter 500 or fewer DOIs')
+else:
+    if dois:
+        df_dois['doi'] = df_dois['doi'].str.replace('https://doi.org/', '')
+        df_dois = df_dois.drop_duplicates().reset_index(drop=True)
+        no_dois = len(df_dois)
+        if len(df_dois) > 100:
+            st.toast('You entered over 100 DOIs. It may take some time to retrieve results. Please wait.')
+        if len(df_dois) >100:
+            st.warning('You entered over 100 DOIs. It may take some time to retrieve results.')
+        st.info(f'You entered {no_dois} unique DOIs')
+        with st.expander(f'See the DOIs you entered'):
+            df_dois
 
-if dois:
-    df_dois['doi'] = df_dois['doi'].str.replace('https://doi.org/', '')
-    df_dois = df_dois.drop_duplicates().reset_index(drop=True)
-    no_dois = len(df_dois)
-    if len(df_dois) > 100:
-        st.toast('You entered over 100 DOIs. It may take some time to retrieve results. Please wait.')
-    if len(df_dois) >100:
-        st.warning('You entered over 100 DOIs. It may take some time to retrieve results.')
-    st.info(f'You entered {no_dois} unique DOIs')
-    with st.expander(f'See the DOIs you entered'):
-        df_dois
+        submit = st.button('Search DOIs', icon=":material/search:")
+        
+        if submit or st.session_state.get('status_expanded', False):
+            if submit:
+                st.session_state['status_expanded'] = True
+            with st.status("Searching DOIs in OpenAlex", expanded=st.session_state.get('status_expanded', True)) as status:
 
-    submit = st.button('Search DOIs', icon=":material/search:")
-    
-    if submit or st.session_state.get('status_expanded', False):
-        if submit:
-            st.session_state['status_expanded'] = True
-        with st.status("Searching DOIs in OpenAlex", expanded=st.session_state.get('status_expanded', True)) as status:
-
-
-# else:
-#     st.warning("Enter DOIs in the text area or upload a file to calculate the Citation Source Index.")
+    else:
+        st.warning("Enter DOIs in the text area or upload a file to calculate the Citation Source Index.")
