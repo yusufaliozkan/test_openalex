@@ -92,9 +92,11 @@ if dois:
 
     submit = st.button('Search DOIs', icon=":material/search:")
     
-    if submit:
-        st.session_state['status_expanded'] = True
-    with st.status("Searching DOIs in OpenAlex", expanded=st.session_state.get('status_expanded', True)) as status:
+    if submit or st.session_state.get('status_expanded', False):
+        if submit:
+            st.session_state['status_expanded'] = True
+        with st.status("Searching DOIs in OpenAlex", expanded=st.session_state.get('status_expanded', True)) as status:
 
-else:
-    st.warning("Enter DOIs in the text area or upload a file to calculate the Citation Source Index.")
+
+# else:
+#     st.warning("Enter DOIs in the text area or upload a file to calculate the Citation Source Index.")
