@@ -12,7 +12,7 @@ def sidebar_content():
         st.markdown(
             """
             <a href="https://www.imperial.ac.uk">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/0/06/Imperial_College_London_new_logo.png" width="150">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/e/e3/OpenAlex_logo_2021.svg" width="150">
             </a>
             """,
             unsafe_allow_html=True
