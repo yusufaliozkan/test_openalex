@@ -127,19 +127,21 @@ else:
                 results_df = pd.json_normalize(all_results, sep='.')
 
                 # Add cleaned DOI for merging
-                results_df['doi_submitted'] = results_df['doi'].str.replace('https://doi.org/', '', regex=False)
+                if not results_df.empty and 'doi' in results_df.columns:
+                    results_df['doi_submitted'] = results_df['doi'].str.replace('https://doi.org/', '', regex=False)
 
-                # Merge with original
-                merged_df = df_dois.merge(results_df, left_on='doi_submitted', right_on='doi_submitted', how='left')
+                    # Merge with original DOIs
+                    merged_df = df_dois.merge(results_df, on='doi_submitted', how='left')
+                    
+                    if merged_df['id'].isnull().all():
+                        st.warning("No DOIs found in the OpenAlex database.")
+                    else:
+                        num_results = merged_df['id'].notnull().sum()
+                        st.success(f"{num_results} result(s) found.")
 
-                # Drop helper columns
-                # merged_df = merged_df.drop(columns=['doi_submitted', 'doi_submitted'])
-                
-                if merged_df['id'].isnull().all():
-                    st.warning("No results found.")
+                    st.dataframe(merged_df)
                 else:
-                    num_results = merged_df['id'].notnull().sum()
-                    st.success(f"{num_results} result(s) found.")
+                    st.warning("No DOIs found in the OpenAlex database.")
 
                 merged_df
 
