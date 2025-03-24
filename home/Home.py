@@ -199,13 +199,13 @@ else:
                     # Institution frequency table
                     institution_freq = institutions_table['institution'].value_counts(dropna=True).reset_index()
                     institution_freq.columns = ['Institution', '# Count']
-                    st.subheader("Institution Frequency (across all publications)")
+                    st.subheader("Institutional Affiliations)")
                     st.dataframe(institution_freq, hide_index=True)
 
                     # Country frequency table
                     country_freq = institutions_table['country_code'].value_counts(dropna=True).reset_index()
                     country_freq.columns = ['Country Code', '# Count']
-                    st.subheader("Country Frequency (based on affiliations)")
+                    st.subheader("Country Affiliations")
                     st.dataframe(country_freq, hide_index=True)
 
                     status.update(label=f"Search complete! Results found for {num_results} DOIs", state="complete", expanded=True)
