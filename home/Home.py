@@ -156,7 +156,8 @@ else:
                         'author.orcid',
                         'author_position',
                         'is_corresponding',
-                        'raw_author_name'
+                        'raw_author_name',
+                        'institutions'
                     ]].drop_duplicates().reset_index(drop=True)
 
                     st.subheader("Authors", anchor=False)
