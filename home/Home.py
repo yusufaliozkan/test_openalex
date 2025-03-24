@@ -98,7 +98,8 @@ else:
             if submit:
                 st.session_state['status_expanded'] = True
             with st.status("Searching DOIs in OpenAlex", expanded=st.session_state.get('status_expanded', True)) as status:
-                df_dois
+                df_dois['DOI_clean'] = df_dois['DOI'].str.replace('https://doi.org/', '', regex=False)
+
 
     else:
         st.warning("Enter DOIs in the text area or upload a file to calculate the Citation Source Index.")
