@@ -178,7 +178,14 @@ else:
 
                     st.subheader("Author Institutions")
                     st.dataframe(institutions_table)
+                    distinct_institutions = institutions_table['institution'].dropna().nunique()
+                    institutions_count_df = pd.DataFrame({
+                        'Metric': ['Distinct Institutions'],
+                        'Count': [distinct_institutions]
+                    })
 
+                    st.subheader("Summary: Institutions")
+                    st.table(institutions_count_df)
                 else:
                     st.error("No DOIs found in the OpenAlex database. Check the submitted DOIs and resubmit.")
                     df_dois
