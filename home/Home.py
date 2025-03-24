@@ -143,7 +143,10 @@ else:
                     'open_access.oa_status',
                     'open_access.oa_url',
                     'open_access.any_repository_has_fulltext']]
-                    df_oa["open_access.is_oa"].value_counts()
+                    oa_summary = merged_df['open_access.oa_status'].value_counts(dropna=False).reset_index()
+                    oa_summary.columns = ['oa_status', 'count']
+                    st.subheader("Open Access Status Summary")
+                    st.table(oa_summary)
                 else:
                     st.error("No DOIs found in the OpenAlex database. Check the submitted DOIs and resubmit.")
                     df_dois
