@@ -73,7 +73,7 @@ else:
     else:
         st.write("Please upload a CSV file containing DOIs.")
 
-if df_dois is not None and len(df_dois) > 500:
+if df_dois is not None:
     st.error('Please enter 500 or fewer DOIs')
 else:
     if dois:
