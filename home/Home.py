@@ -77,6 +77,7 @@ if df_dois is not None and len(df_dois) > 500:
     st.error('Please enter 500 or fewer DOIs')
 else:
     if dois:
+        df_dois = df_dois.dropna()
         df_dois['doi_submitted'] = df_dois['doi_submitted'].str.replace('https://doi.org/', '')
         df_dois = df_dois.drop_duplicates().reset_index(drop=True)
         no_dois = len(df_dois)
