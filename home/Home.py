@@ -159,21 +159,22 @@ else:
                         'raw_author_name'
                     ]].drop_duplicates().reset_index(drop=True)
 
-                    st.subheader("Authors")
+                    st.subheader("Authors", anchor=False)
                     st.dataframe(authors_table)
-                    institutions_df = authors_df.explode('institutions')
+                    institutions_df = authors_df.explode('institutions').reset_index(drop=True)
+                    institution_details = pd.json_normalize(institutions_df['institutions']).reset_index(drop=True)
                     institutions_df = pd.concat([
-                        institutions_df.drop(columns=['institutions']),
-                        pd.json_normalize(institutions_df['institutions'])
+                        institutions_df.drop(columns=['institutions']).reset_index(drop=True),
+                        institution_details
                     ], axis=1)
 
                     institutions_table = institutions_df[[
                         'author.display_name',
-                        'display_name',        # Institution name
+                        'display_name',      # institution name
                         'country_code',
                         'type'
                     ]].drop_duplicates().reset_index(drop=True)
-                    institutions_table
+
                     institutions_table.columns = ['author', 'institution', 'country_code', 'type']
 
                     st.subheader("Author Institutions")
