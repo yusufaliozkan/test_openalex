@@ -146,6 +146,7 @@ else:
                     oa_summary.columns = ['OA_status', '# Outputs']
                     st.subheader("Open Access Status Summary", anchor=False)
                     st.dataframe(oa_summary)
+                    status.update(label=f"Calculation complete without any results!", state="complete", expanded=True)
                 else:
                     st.error("No DOIs found in the OpenAlex database. Check the submitted DOIs and resubmit.")
                     df_dois
