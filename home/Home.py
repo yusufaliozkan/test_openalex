@@ -110,7 +110,6 @@ else:
 
                 # Store results
                 all_results = []
-                df_dois
 
                 # Process in batches
                 for batch in batch_dois(df_dois['doi_submitted'].tolist(), batch_size=20):
