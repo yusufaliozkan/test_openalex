@@ -150,7 +150,7 @@ else:
                     st.dataframe(top_journals)
 
                     authors_df = merged_df.explode('authorships').reset_index(drop=True)
-                    authors_df = pd.json_normalize(authors_df['authorships'])
+                    authors_df = pd.json_normalize(authors_df['authorships']).reset_index(drop=True)
                     institutions_df = authors_df.explode('institutions')
                     institutions_df = pd.concat([
                         institutions_df.drop(columns=['institutions']),
