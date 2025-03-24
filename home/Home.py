@@ -138,17 +138,15 @@ else:
                     else:
                         num_results = merged_df['id'].notnull().sum()
                         st.success(f"{num_results} result(s) found.")
-                    df_oa = merged_df[['open_access.is_oa',
-                    'open_access.oa_status',
-                    'open_access.oa_url',
-                    'open_access.any_repository_has_fulltext']]
+
                     oa_summary = merged_df['open_access.oa_status'].value_counts(dropna=False).reset_index()
                     oa_summary.columns = ['OA_status', '# Outputs']
                     st.subheader("Open Access Status Summary", anchor=False)
                     st.dataframe(oa_summary)
-                    status.update(label=f"Calculation complete without any results!", state="complete", expanded=True)
+                    status.update(label=f"Search complete! Results found for {num_results} DOIs", state="complete", expanded=True)
                 else:
                     st.error("No DOIs found in the OpenAlex database. Check the submitted DOIs and resubmit.")
                     df_dois
+                    status.update(label=f"Search complete without any results!", state="complete", expanded=True)
     else:
         st.warning("Enter DOIs in the text area or upload a file to calculate the Citation Source Index.")
