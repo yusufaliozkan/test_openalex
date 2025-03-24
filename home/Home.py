@@ -127,7 +127,7 @@ else:
                 results_df = pd.json_normalize(all_results, sep='.')
 
                 # Add cleaned DOI for merging
-                results_df['doi_submitted'] = results_df['doi'].str.replace('https://doi.org/', '', regex=False)
+                results_df['doi_submitted'] = results_df['doi_submitted'].str.replace('https://doi.org/', '', regex=False)
 
                 # Merge with original
                 merged_df = df_dois.merge(results_df, left_on='doi_submitted', right_on='doi_submitted', how='left')
