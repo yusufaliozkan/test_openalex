@@ -102,7 +102,7 @@ else:
                 df_dois
 
                 # df = pd.read_csv('your_doi_file.csv') or use your existing df
-                df_dois['doi_clean'] = df_dois['doi'].str.strip().str.replace('https://doi.org/', '', regex=False)
+                df_dois['doi_clean'] = df_dois['doi_submitted'].str.strip().str.replace('https://doi.org/', '', regex=False)
 
                 # Function to batch DOIs
                 def batch_dois(dois, batch_size=20):
