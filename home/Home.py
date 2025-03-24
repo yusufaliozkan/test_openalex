@@ -144,6 +144,7 @@ else:
                     merged_df['open_access.is_oa'] = merged_df['open_access.is_oa'].map({True: 'Open Access', False: 'Closed Access'})
                     oa_summary = merged_df['open_access.is_oa'].value_counts(dropna=False).reset_index()
                     oa_summary.columns = ['Is OA?', '# Outputs']
+                    oa_summary
                     st.subheader("Open Access Status Summary", anchor=False)
                     st.dataframe(oa_summary, hide_index =True)
                     st.write(f'{oa_summary.iloc[1]}')
