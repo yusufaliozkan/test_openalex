@@ -142,7 +142,6 @@ else:
                     st.dataframe(merged_df)
                 else:
                     st.warning("No DOIs found in the OpenAlex database.")
-                    merged_df
                     
 
     else:
