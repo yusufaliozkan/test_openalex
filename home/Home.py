@@ -148,6 +148,10 @@ else:
                     top_journals = merged_df['authorships'].value_counts(dropna=False).reset_index()
                     top_journals.columns = ['Journal name', '# Outputs']
                     st.dataframe(top_journals)
+
+                    authors_df = merged_df.explode('authorships')
+                    authors_df = pd.json_normalize(authors_df['authorships'])
+
                 else:
                     st.error("No DOIs found in the OpenAlex database. Check the submitted DOIs and resubmit.")
                     df_dois
