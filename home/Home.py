@@ -142,11 +142,12 @@ if dois:
                 oa_summary = merged_df['open_access.is_oa'].value_counts(dropna=False).reset_index()
                 oa_summary.columns = ['Is OA?', '# Outputs']
                 st.subheader("Open Access Status Summary", anchor=False)
-                if len(oa_summary) == 2:
-                    st.write(f'''
-                        **{oa_summary.iloc[0]['# Outputs']}** *{oa_summary.iloc[0]['Is OA?']}* and
-                        **{oa_summary.iloc[1]['# Outputs']}** *{oa_summary.iloc[1]['Is OA?']}* papers found
-                    ''')
+                if len(oa_summary) >= 2:
+                    items = [
+                        f"**{row['# Outputs']}** *{row['Is OA?']}*"
+                        for _, row in oa_summary.iterrows()
+                    ]
+                    st.write(f"{' and '.join(items)} papers found")
                 elif len(oa_summary) == 1:
                     st.write(f'''
                         **{oa_summary.iloc[0]['# Outputs']}** *{oa_summary.iloc[0]['Is OA?']}* papers found.
