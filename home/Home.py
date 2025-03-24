@@ -43,7 +43,6 @@ if radio == 'Insert DOIs':
     
     # Create a DataFrame
     df_dois = pd.DataFrame(doi_list, columns=["doi_submitted"])
-    df_dois
 else:
     st.write('Please upload and submit a .csv file of [DOIs](https://www.doi.org/) (commencing “10.") in separate rows.')
     st.warning('The title of the column containing DOIs should be one of the followings: doi, DOI, dois, DOIs, Hyperlinked DOI. Otherwise the tool will not identify DOIs.')
@@ -66,7 +65,7 @@ else:
         if doi_column:
             # Create a DataFrame with DOIs only
             df_dois = df[[doi_column]]
-            df_dois.columns = ['doi']  # Standardize column name to 'DOI'
+            df_dois.columns = ['doi_submitted']  # Standardize column name to 'DOI'
         
         else:
             st.error('''
@@ -82,7 +81,7 @@ if df_dois is not None and len(df_dois) > 500:
     st.error('Please enter 500 or fewer DOIs')
 else:
     if dois:
-        df_dois['doi'] = df_dois['doi'].str.replace('https://doi.org/', '')
+        df_dois['doi_submitted'] = df_dois['doi_submitted'].str.replace('https://doi.org/', '')
         df_dois = df_dois.drop_duplicates().reset_index(drop=True)
         no_dois = len(df_dois)
         if len(df_dois) > 100:
