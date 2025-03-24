@@ -146,7 +146,7 @@ else:
                     oa_summary.columns = ['Is OA?', '# Outputs']
                     st.subheader("Open Access Status Summary", anchor=False)
                     st.dataframe(oa_summary, hide_index =True)
-                    st.write(f'{oa_summary.iloc[:1]}')
+                    st.write(f'{oa_summary.iloc[:0]}')
                     st.dataframe(oa_status_summary, hide_index =True)
 
                     top_journals = merged_df['primary_location.source.display_name'].value_counts(dropna=False).reset_index()
