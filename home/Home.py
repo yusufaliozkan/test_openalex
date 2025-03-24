@@ -133,7 +133,7 @@ else:
                 merged_df = df_dois.merge(results_df, left_on='doi_submitted', right_on='doi_submitted', how='left')
 
                 # Drop helper columns
-                merged_df = merged_df.drop(columns=['doi_submitted', 'doi_submitted'])
+                # merged_df = merged_df.drop(columns=['doi_submitted', 'doi_submitted'])
                 
                 if merged_df['id'].isnull().all():
                     st.warning("No results found.")
