@@ -49,34 +49,30 @@ else:
     dois = st.file_uploader("Choose a CSV file", type="csv")
 
     if dois is not None:
-        # Read the uploaded CSV file into a DataFrame
-        df = pd.read_csv(dois)
+        try:
+            df = pd.read_csv(dois)
+        except pd.errors.ParserError as e:
+            st.error("There was a problem reading your CSV file. Please ensure it is a valid comma-separated file.")
+            st.exception(e)
+            st.stop()
         
-        # List of possible DOI column names
         doi_columns = ['doi', 'DOI', 'dois', 'DOIs', 'Hyperlinked DOI']
-        
-        # Find the first matching DOI column
-        doi_column = None
-        for col in doi_columns:
-            if col in df.columns:
-                doi_column = col
-                break
+        doi_column = next((col for col in doi_columns if col in df.columns), None)
         
         if doi_column:
-            # Create a DataFrame with DOIs only
             df_dois = df[[doi_column]]
-            df_dois.columns = ['doi_submitted']  # Standardize column name to 'DOI'
-        
+            df_dois.columns = ['doi_submitted']
         else:
             st.error('''
             No DOI column in the file.
             
-            Make sure that the column listing DOIs have one of the following alternative names:
+            Make sure that the column listing DOIs have one of the following names:
             'doi', 'DOI', 'dois', 'DOIs', 'Hyperlinked DOI'
             ''')
             st.stop()
     else:
         st.write("Please upload a CSV file containing DOIs.")
+
 if df_dois is not None and len(df_dois) > 500:
     st.error('Please enter 500 or fewer DOIs')
 else:
