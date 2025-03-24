@@ -101,5 +101,41 @@ else:
                 df_dois['doi_clean'] = df_dois['doi'].str.replace('https://doi.org/', '', regex=False)
                 df_dois
 
+                # df = pd.read_csv('your_doi_file.csv') or use your existing df
+                df_dois['doi_clean'] = df_dois['doi'].str.strip().str.replace('https://doi.org/', '', regex=False)
+
+                # Function to batch DOIs
+                def batch_dois(dois, batch_size=20):
+                    for i in range(0, len(dois), batch_size):
+                        yield dois[i:i + batch_size]
+
+                # Store results
+                all_results = []
+
+                # Process in batches
+                for batch in batch_dois(df_dois['doi_clean'].tolist(), batch_size=20):
+                    filter_string = '|'.join(batch)
+                    url = f"https://api.openalex.org/works?filter=doi:{filter_string}&mailto=support@openalex.org"
+                    response = requests.get(url)
+                    if response.status_code == 200:
+                        results = response.json().get('results', [])
+                        all_results.extend(results)
+                    else:
+                        print(f"Request failed for batch starting with {batch[0]}")
+                    time.sleep(1)  # Be polite to the API
+
+                # Normalize and flatten nested fields
+                results_df = pd.json_normalize(all_results, sep='.')
+
+                # Add cleaned DOI for merging
+                results_df['doi_clean'] = results_df['doi'].str.replace('https://doi.org/', '', regex=False)
+
+                # Merge with original
+                merged_df = df.merge(results_df, left_on='DOI_clean', right_on='doi_clean', how='left')
+
+                # Drop helper columns
+                merged_df = merged_df.drop(columns=['DOI_clean', 'doi_clean'])
+                merged_df
+
     else:
         st.warning("Enter DOIs in the text area or upload a file to calculate the Citation Source Index.")
