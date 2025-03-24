@@ -145,7 +145,7 @@ else:
                     st.dataframe(oa_summary)
                     status.update(label=f"Search complete! Results found for {num_results} DOIs", state="complete", expanded=True)
 
-                    top_journals = merged_df['institution_assertions'].value_counts(dropna=False).reset_index()
+                    top_journals = merged_df['authorships'].value_counts(dropna=False).reset_index()
                     top_journals.columns = ['Journal name', '# Outputs']
                     st.dataframe(top_journals)
                 else:
