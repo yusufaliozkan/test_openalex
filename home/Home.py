@@ -139,14 +139,14 @@ else:
                         num_results = merged_df['id'].notnull().sum()
                         st.success(f"{num_results} result(s) found.")
 
-                    oa_summary = merged_df['open_access.oa_status'].value_counts(dropna=False).reset_index()
-                    oa_summary.columns = ['OA_status', '# Outputs']
+                    oa_status_summary = merged_df['open_access.oa_status'].value_counts(dropna=False).reset_index()
+                    oa_status_summary.columns = ['OA_status', '# Outputs']
                     st.subheader("Open Access Status Summary", anchor=False)
-                    st.dataframe(oa_summary)
-                    status.update(label=f"Search complete! Results found for {num_results} DOIs", state="complete", expanded=True)
+                    st.dataframe(oa_status_summary)
 
                     top_journals = merged_df['primary_location.source.display_name'].value_counts(dropna=False).reset_index()
                     top_journals.columns = ['Journal name', '# Outputs']
+                    st.subheader("Journals", anchor=False)
                     st.dataframe(top_journals)
 
                     authors_df = merged_df.explode('authorships').reset_index(drop=True)
@@ -162,6 +162,9 @@ else:
 
                     st.subheader("Authors", anchor=False)
                     st.dataframe(authors_table)
+
+                    
+                    status.update(label=f"Search complete! Results found for {num_results} DOIs", state="complete", expanded=True)
 
                 else:
                     st.error("No DOIs found in the OpenAlex database. Check the submitted DOIs and resubmit.")
