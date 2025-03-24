@@ -169,7 +169,6 @@ else:
                     ], axis=1)
 
                     institutions_table = institutions_df[[
-                        'author.display_name',
                         'display_name',      # institution name
                         'country_code',
                         'type'
