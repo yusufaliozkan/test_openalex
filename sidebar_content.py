@@ -9,14 +9,14 @@ def sidebar_content():
         )
 
     with st.sidebar:
-        st.markdown(
-            """
-            <a href="https://www.imperial.ac.uk">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/e/e3/OpenAlex_logo_2021.svg" width="150">
-            </a>
-            """,
-            unsafe_allow_html=True
-        )
+        # st.markdown(
+        #     """
+        #     <a href="https://www.imperial.ac.uk">
+        #         <img src="https://upload.wikimedia.org/wikipedia/commons/e/e3/OpenAlex_logo_2021.svg" width="150">
+        #     </a>
+        #     """,
+        #     unsafe_allow_html=True
+        # )
         st.header("Geographic Bias Tool",anchor=False)  
         with st.expander('Licence'):  
             display_custom_license()
