@@ -131,7 +131,7 @@ else:
                 results_df['doi_clean'] = results_df['doi'].str.replace('https://doi.org/', '', regex=False)
 
                 # Merge with original
-                merged_df = df.merge(results_df, left_on='DOI_clean', right_on='doi_clean', how='left')
+                merged_df = df_dois.merge(results_df, left_on='DOI_clean', right_on='doi_clean', how='left')
 
                 # Drop helper columns
                 merged_df = merged_df.drop(columns=['DOI_clean', 'doi_clean'])
