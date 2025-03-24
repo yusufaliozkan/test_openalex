@@ -145,10 +145,15 @@ else:
                     oa_summary = merged_df['open_access.is_oa'].value_counts(dropna=False).reset_index()
                     oa_summary.columns = ['Is OA?', '# Outputs']
                     st.subheader("Open Access Status Summary", anchor=False)
-                    st.write(f'''
-                        **{oa_summary.iloc[0]['# Outputs']}** *{oa_summary.iloc[0]['Is OA?']}* and
-                        **{oa_summary.iloc[1]['# Outputs']}** *{oa_summary.iloc[1]['Is OA?']}* papers
-                    ''')
+                    if len(oa_summary) == 2:
+                        st.write(f'''
+                            **{oa_summary.iloc[0]['# Outputs']}** *{oa_summary.iloc[0]['Is OA?']}* and
+                            **{oa_summary.iloc[1]['# Outputs']}** *{oa_summary.iloc[1]['Is OA?']}* papers
+                        ''')
+                    elif len(oa_summary) == 1:
+                        st.write(f'''
+                            Only **{oa_summary.iloc[0]['# Outputs']}** *{oa_summary.iloc[0]['Is OA?']}* papers found.
+                        ''')
                     st.dataframe(oa_status_summary, hide_index =True)
 
                     top_journals = merged_df['primary_location.source.display_name'].value_counts(dropna=False).reset_index()
