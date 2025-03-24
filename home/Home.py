@@ -112,7 +112,7 @@ else:
                 all_results = []
 
                 # Process in batches
-                for batch in batch_dois(df_dois['v'].tolist(), batch_size=20):
+                for batch in batch_dois(df_dois['doi_submitted'].tolist(), batch_size=20):
                     filter_string = '|'.join(batch)
                     url = f"https://api.openalex.org/works?filter=doi:{filter_string}&mailto=support@openalex.org"
                     response = requests.get(url)
