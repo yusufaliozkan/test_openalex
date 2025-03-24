@@ -17,7 +17,7 @@ def sidebar_content():
         #     """,
         #     unsafe_allow_html=True
         # )
-        st.header("Geographic Bias Tool",anchor=False)  
+        st.header("OpenAlex DOI Search Tool",anchor=False)  
         with st.expander('Licence'):  
             display_custom_license()
         with st.expander('Source code'):
