@@ -174,7 +174,7 @@ else:
                         'type'
                     ]].drop_duplicates().reset_index(drop=True)
 
-                    institutions_table.columns = ['author', 'institution', 'country_code', 'type']
+                    institutions_table.columns = ['institution', 'country_code', 'type']
 
                     st.subheader("Author Institutions")
                     st.dataframe(institutions_table)
