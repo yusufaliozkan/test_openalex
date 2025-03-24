@@ -163,7 +163,7 @@ else:
                         'country_code',
                         'type'
                     ]].drop_duplicates().reset_index(drop=True)
-
+                    institutions_table
                     institutions_table.columns = ['author', 'institution', 'country_code', 'type']
 
                     st.subheader("Author Institutions")
