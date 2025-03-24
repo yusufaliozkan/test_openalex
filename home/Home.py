@@ -161,7 +161,7 @@ else:
                     top_journals.columns = ['Journal name', '# Outputs']
                     top_journals = top_journals.dropna()
                     st.subheader("Journals", anchor=False)
-                    st.dataframe(top_journals, hide_index=True,  use_container_width='key')
+                    st.dataframe(top_journals, hide_index=True,  use_container_width=False)
 
                     # AUTHORS
                     authors_df = merged_df.explode('authorships').reset_index(drop=True)
