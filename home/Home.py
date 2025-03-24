@@ -155,7 +155,6 @@ else:
                             **{oa_summary.iloc[0]['# Outputs']}** *{oa_summary.iloc[0]['Is OA?']}* papers found.
                         ''')
                     st.dataframe(oa_status_summary, hide_index =True)
-                    oa_status_summary
 
                     # JOURNALS
                     top_journals = merged_df['primary_location.source.display_name'].value_counts(dropna=False).reset_index()
