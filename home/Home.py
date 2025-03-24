@@ -151,13 +151,13 @@ else:
 
                     authors_df = merged_df.explode('authorships').reset_index(drop=True)
                     authors_df = pd.json_normalize(authors_df['authorships']).reset_index(drop=True)
+                    authors_df
                     authors_table = authors_df[[
                         'author.display_name',
                         'author.orcid',
                         'author_position',
                         'is_corresponding',
-                        'raw_author_name',
-                        'institutions'
+                        'raw_author_name'
                     ]].drop_duplicates().reset_index(drop=True)
 
                     st.subheader("Authors", anchor=False)
