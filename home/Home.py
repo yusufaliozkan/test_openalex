@@ -17,3 +17,5 @@ st.set_page_config(layout = "wide",
                     page_icon="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTtoX76TyVQs-o1vEvNuAnYX0zahtSui173gg&s",
                     initial_sidebar_state="auto") 
 pd.set_option('display.max_colwidth', None)
+
+st.title('OpenAlex Multiple DOI Search Tool')
