@@ -154,7 +154,7 @@ else:
                         st.write(f'''
                             **{oa_summary.iloc[0]['# Outputs']}** *{oa_summary.iloc[0]['Is OA?']}* papers found.
                         ''')
-                    st.dataframe(oa_status_summary, hide_index =True)
+                    st.dataframe(oa_status_summary, hide_index =True,  use_container_width=False)
 
                     # JOURNALS
                     top_journals = merged_df['primary_location.source.display_name'].value_counts(dropna=False).reset_index()
@@ -175,7 +175,7 @@ else:
                     ]].drop_duplicates().reset_index(drop=True)
 
                     # st.subheader("Authors", anchor=False)
-                    # st.dataframe(authors_table)
+                    # st.dataframe(authors_table,  use_container_width=False)
 
                     institutions_df = authors_df.explode('institutions').reset_index(drop=True)
                     institution_details = pd.json_normalize(institutions_df['institutions']).reset_index(drop=True)
@@ -194,7 +194,7 @@ else:
                     institutions_table.columns = ['author', 'institution', 'country_code', 'type']
 
                     # st.subheader("Author Institutions")
-                    # st.dataframe(institutions_table)
+                    # st.dataframe(institutions_table,  use_container_width=False)
 
                     # Institution frequency table
                     institution_freq = institutions_table['institution'].value_counts(dropna=True).reset_index()
@@ -206,7 +206,7 @@ else:
                     country_freq = institutions_table['country_code'].value_counts(dropna=True).reset_index()
                     country_freq.columns = ['Country Code', '# Count']
                     st.subheader("Country Affiliations")
-                    st.dataframe(country_freq, hide_index=True)
+                    st.dataframe(country_freq, hide_index=True,  use_container_width=False)
 
                     status.update(label=f"Search complete! Results found for {num_results} DOIs", state="complete", expanded=True)
 
