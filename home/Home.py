@@ -144,7 +144,7 @@ else:
                     'open_access.oa_url',
                     'open_access.any_repository_has_fulltext']]
                     oa_summary = merged_df['open_access.oa_status'].value_counts(dropna=False).reset_index()
-                    oa_summary.columns = ['oa_status', 'count']
+                    oa_summary.columns = ['OA_status', '# Outputs']
                     st.subheader("Open Access Status Summary", anchor=False)
                     st.dataframe(oa_summary)
                 else:
