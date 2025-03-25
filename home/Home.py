@@ -162,7 +162,6 @@ else:
                             st.write(f'''
                                 **{oa_summary.iloc[0]['# Outputs']}** *{oa_summary.iloc[0]['Is OA?']}* papers found.
                             ''')
-                        col1, col2 = st.columns([1,4])
                         available_oa_statuses = oa_status_summary['OA status'].dropna().unique().tolist()
                         selected_statuses = st.multiselect(
                             'Filter by OA Status',
@@ -170,6 +169,7 @@ else:
                             default=[] 
                             # default=available_oa_statuses  # All selected by default
                         )
+                        col1, col2 = st.columns([1,4])
                         with col1:
                             st.dataframe(oa_status_summary, hide_index =True,  use_container_width=False)
                         with col2:
