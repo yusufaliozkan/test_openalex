@@ -193,19 +193,19 @@ else:
                             filtered_df = filtered_df[['doi', 'type_crossref','primary_location.source.display_name', 'primary_location.source.host_organization_name', 'publication_year', 'open_access.is_oa','open_access.oa_status', 'open_access.oa_url', 'primary_location.license_id']]
                             filtered_df.columns = ['DOI', 'Type','Journal', 'Publisher','Publication year', 'Is OA?', 'OA Status', 'OA URL', 'Licence']
                             filtered_df
-                    
-                        # JOURNALS
-                        if selected_statuses:
-                            top_journals = filtered_raw_df['primary_location.source.display_name'].value_counts(dropna=False).reset_index()
-                        else:
-                            top_journals = merged_df['primary_location.source.display_name'].value_counts(dropna=False).reset_index()
-                        top_journals.columns = ['Journal name', '# Outputs']
-                        top_journals = top_journals.dropna()
-                        st.subheader("Journals", anchor=False)
-                        st.dataframe(top_journals, hide_index=True,  use_container_width=False)
-
-                        col1, col2 = st.columns(2)
+                
+                        col1, col2, col3 = st.columns(3)
                         with col1:
+                            # JOURNALS
+                            if selected_statuses:
+                                top_journals = filtered_raw_df['primary_location.source.display_name'].value_counts(dropna=False).reset_index()
+                            else:
+                                top_journals = merged_df['primary_location.source.display_name'].value_counts(dropna=False).reset_index()
+                            top_journals.columns = ['Journal name', '# Outputs']
+                            top_journals = top_journals.dropna()
+                            st.subheader("Journals", anchor=False)
+                            st.dataframe(top_journals, hide_index=True,  use_container_width=False)
+                        with col2:
                             # AUTHORS
                             if selected_statuses:
                                 authors_df = filtered_raw_df.explode('authorships').reset_index(drop=True)
@@ -249,7 +249,7 @@ else:
                             institution_freq.columns = ['Institution', '# Count']
                             st.subheader("Institutional Affiliations")
                             st.dataframe(institution_freq, hide_index=True,  use_container_width=False)
-                        with col2:
+                        with col3:
                             # Country frequency table
                             country_freq = institutions_table['country_code'].value_counts(dropna=True).reset_index()
                             country_freq.columns = ['Country Code', '# Count']
