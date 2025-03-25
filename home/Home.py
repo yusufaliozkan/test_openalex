@@ -175,9 +175,9 @@ else:
                         with col2:
                             if selected_statuses:
                                 filtered_df = merged_df[merged_df['open_access.oa_status'].isin(selected_statuses)]
-                            else:
-                                filtered_df = merged_df
                                 filtered_raw_df = filtered_df.copy()
+                            else:
+                                filtered_df = merged_df                                
                             filtered_df= filtered_df.reset_index(drop=True)
                             filtered_df.index +=1
                             filtered_df = filtered_df[['doi', 'type_crossref','primary_location.source.display_name', 'primary_location.source.host_organization_name', 'publication_year', 'open_access.is_oa','open_access.oa_status', 'open_access.oa_url', 'primary_location.license_id']]
