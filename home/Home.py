@@ -144,7 +144,7 @@ else:
 
                     # OA Summary
                     @st.fragment
-                    def oa_summary_function(merged_df):                        
+                    def results(merged_df):                        
                         st.subheader("Open Access Status Summary", anchor=False)
 
                         oa_status_summary = merged_df['open_access.oa_status'].value_counts(dropna=False).reset_index()
@@ -182,61 +182,61 @@ else:
                             filtered_df = filtered_df[['doi', 'type_crossref','primary_location.source.display_name', 'primary_location.source.host_organization_name', 'publication_year', 'open_access.is_oa','open_access.oa_status', 'open_access.oa_url', 'primary_location.license_id']]
                             filtered_df.columns = ['DOI', 'Type','Journal', 'Publisher','Publication year', 'Is OA?', 'OA Status', 'OA URL', 'Licence']
                             filtered_df
-                    oa_summary_function(merged_df)
-                    # JOURNALS
-                    top_journals = merged_df['primary_location.source.display_name'].value_counts(dropna=False).reset_index()
-                    top_journals.columns = ['Journal name', '# Outputs']
-                    top_journals = top_journals.dropna()
-                    st.subheader("Journals", anchor=False)
-                    st.dataframe(top_journals, hide_index=True,  use_container_width=False)
+                    
+                        # JOURNALS
+                        top_journals = merged_df['primary_location.source.display_name'].value_counts(dropna=False).reset_index()
+                        top_journals.columns = ['Journal name', '# Outputs']
+                        top_journals = top_journals.dropna()
+                        st.subheader("Journals", anchor=False)
+                        st.dataframe(top_journals, hide_index=True,  use_container_width=False)
 
-                    col1, col2 = st.columns(2)
-                    with col1:
-                        # AUTHORS
-                        authors_df = merged_df.explode('authorships').reset_index(drop=True)
-                        authors_df = pd.json_normalize(authors_df['authorships']).reset_index(drop=True)
-                        authors_table = authors_df[[
-                            'author.display_name',
-                            'author.orcid',
-                            'author_position',
-                            'is_corresponding',
-                            'raw_author_name'
-                        ]].drop_duplicates().reset_index(drop=True)
-                        
-                        # st.subheader("Authors", anchor=False)
-                        # st.dataframe(authors_table,  use_container_width=False)
+                        col1, col2 = st.columns(2)
+                        with col1:
+                            # AUTHORS
+                            authors_df = merged_df.explode('authorships').reset_index(drop=True)
+                            authors_df = pd.json_normalize(authors_df['authorships']).reset_index(drop=True)
+                            authors_table = authors_df[[
+                                'author.display_name',
+                                'author.orcid',
+                                'author_position',
+                                'is_corresponding',
+                                'raw_author_name'
+                            ]].drop_duplicates().reset_index(drop=True)
+                            
+                            # st.subheader("Authors", anchor=False)
+                            # st.dataframe(authors_table,  use_container_width=False)
 
-                        institutions_df = authors_df.explode('institutions').reset_index(drop=True)
-                        institution_details = pd.json_normalize(institutions_df['institutions']).reset_index(drop=True)
-                        institutions_df = pd.concat([
-                            institutions_df.drop(columns=['institutions']).reset_index(drop=True),
-                            institution_details
-                        ], axis=1)
+                            institutions_df = authors_df.explode('institutions').reset_index(drop=True)
+                            institution_details = pd.json_normalize(institutions_df['institutions']).reset_index(drop=True)
+                            institutions_df = pd.concat([
+                                institutions_df.drop(columns=['institutions']).reset_index(drop=True),
+                                institution_details
+                            ], axis=1)
 
-                        institutions_table = institutions_df[[
-                            'author.display_name',
-                            'display_name',      # Institution name
-                            'country_code',
-                            'type'
-                        ]].drop_duplicates().reset_index(drop=True)
+                            institutions_table = institutions_df[[
+                                'author.display_name',
+                                'display_name',      # Institution name
+                                'country_code',
+                                'type'
+                            ]].drop_duplicates().reset_index(drop=True)
 
-                        institutions_table.columns = ['author', 'institution', 'country_code', 'type']
+                            institutions_table.columns = ['author', 'institution', 'country_code', 'type']
 
-                        # st.subheader("Author Institutions")
-                        # st.dataframe(institutions_table,  use_container_width=False)
+                            # st.subheader("Author Institutions")
+                            # st.dataframe(institutions_table,  use_container_width=False)
 
-                        # Institution frequency table
-                        institution_freq = institutions_table['institution'].value_counts(dropna=True).reset_index()
-                        institution_freq.columns = ['Institution', '# Count']
-                        st.subheader("Institutional Affiliations")
-                        st.dataframe(institution_freq, hide_index=True,  use_container_width=False)
-                    with col2:
-                        # Country frequency table
-                        country_freq = institutions_table['country_code'].value_counts(dropna=True).reset_index()
-                        country_freq.columns = ['Country Code', '# Count']
-                        st.subheader("Country Affiliations")
-                        st.dataframe(country_freq, hide_index=True,  use_container_width=False)
-
+                            # Institution frequency table
+                            institution_freq = institutions_table['institution'].value_counts(dropna=True).reset_index()
+                            institution_freq.columns = ['Institution', '# Count']
+                            st.subheader("Institutional Affiliations")
+                            st.dataframe(institution_freq, hide_index=True,  use_container_width=False)
+                        with col2:
+                            # Country frequency table
+                            country_freq = institutions_table['country_code'].value_counts(dropna=True).reset_index()
+                            country_freq.columns = ['Country Code', '# Count']
+                            st.subheader("Country Affiliations")
+                            st.dataframe(country_freq, hide_index=True,  use_container_width=False)
+                    results(merged_df)
                     @st.fragment
                     def all_results(all_results_df):
                         display = st.toggle('Show all results')                        
