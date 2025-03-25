@@ -247,13 +247,13 @@ else:
                             # Institution frequency table
                             institution_freq = institutions_table['institution'].value_counts(dropna=True).reset_index()
                             institution_freq.columns = ['Institution', '# Count']
-                            st.subheader("Institutional Affiliations")
+                            st.subheader("Institutional Affiliations", anchor=False)
                             st.dataframe(institution_freq, hide_index=True,  use_container_width=False)
                         with col3:
                             # Country frequency table
                             country_freq = institutions_table['country_code'].value_counts(dropna=True).reset_index()
                             country_freq.columns = ['Country Code', '# Count']
-                            st.subheader("Country Affiliations")
+                            st.subheader("Country Affiliations", anchor=False)
                             st.dataframe(country_freq, hide_index=True,  use_container_width=False)
                     results(merged_df, oa_summary, oa_status_summary)
                     @st.fragment
