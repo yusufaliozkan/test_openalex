@@ -207,7 +207,6 @@ else:
                     st.subheader("Country Affiliations")
                     st.dataframe(country_freq, hide_index=True,  use_container_width=False)
 
-                    merged_df = merged_df.fillna('No results found')
                     merged_df
 
                     end_time = time.time()
