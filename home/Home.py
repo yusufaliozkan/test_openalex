@@ -207,8 +207,9 @@ else:
                     st.subheader("Country Affiliations")
                     st.dataframe(country_freq, hide_index=True,  use_container_width=False)
 
-                    merged_df = merged_df.loc[:, ~merged_df.columns.str.startswith('abstract_inverted_index.')]
-                    merged_df
+                    with st.expander('See full results'):
+                        merged_df = merged_df.loc[:, ~merged_df.columns.str.startswith('abstract_inverted_index.')]
+                        merged_df
 
                     end_time = time.time()
                     processing_time = end_time - start_time
