@@ -104,7 +104,8 @@ if dois:
             def batch_dois(dois, batch_size=20):
                 for i in range(0, len(dois), batch_size):
                     yield dois[i:i + batch_size]
-
+            
+            start_time = time.time()
             # Store results
             all_results = []
 
@@ -206,7 +207,14 @@ if dois:
                 st.subheader("Country Affiliations")
                 st.dataframe(country_freq, hide_index=True,  use_container_width=False)
 
-                status.update(label=f"Search complete! Results found for {num_results} DOIs", state="complete", expanded=True)
+                end_time = time.time()
+                processing_time = end_time - start_time
+                formatted_time = time.strftime("%M:%S", time.gmtime(processing_time))
+                status.update(
+                    label=f"Search complete! Results found for {num_results} DOIs in {formatted_time} minutes.",
+                    state="complete",
+                    expanded=True
+                )
 
             else:
                 st.error("No DOIs found in the OpenAlex database. Check the submitted DOIs and resubmit.")
