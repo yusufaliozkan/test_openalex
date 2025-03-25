@@ -213,7 +213,7 @@ else:
                         if display:
                             merged_df = merged_df.loc[:, ~merged_df.columns.str.startswith('abstract_inverted_index.')]
                             merged_df
-                    all_results()
+                    all_results(merged_df)
                     end_time = time.time()
                     processing_time = end_time - start_time
                     formatted_time = time.strftime("%M:%S", time.gmtime(processing_time))
