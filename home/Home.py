@@ -132,6 +132,7 @@ else:
 
                     # Merge with original DOIs
                     merged_df = df_dois.merge(results_df, on='doi_submitted', how='left')
+                    merged_df = merged_df.loc[:, ~merged_df.columns.str.startswith('abstract_inverted_index.')]
                     all_results_df = merged_df.copy()
                     merged_df = merged_df.dropna(subset='id')
                     
@@ -174,7 +175,7 @@ else:
                             filtered_df = merged_df[merged_df['open_access.oa_status'].isin(selected_statuses)]
                             filtered_df= filtered_df.reset_index(drop=True)
                             filtered_df.index +=1
-                            filtered_df = filtered_df[['doi', 'journ']]
+                            filtered_df = filtered_df[['doi',]]
                             filtered_df
                     oa_summary_function(merged_df, oa_status_summary,oa_summary)
                     # JOURNALS
