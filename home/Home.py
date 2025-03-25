@@ -176,7 +176,7 @@ else:
                             if selected_statuses:
                                 filtered_df = merged_df[merged_df['open_access.oa_status'].isin(selected_statuses)]
                                 filtered_raw_df = filtered_df.copy()
-                                filtered_raw_df
+                                
                             else:
                                 filtered_df = merged_df                                
                             filtered_df= filtered_df.reset_index(drop=True)
