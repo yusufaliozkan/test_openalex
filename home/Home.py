@@ -151,7 +151,7 @@ else:
 
                     # OA Summary
                     @st.fragment
-                    def results(merged_df, oa_summary):                        
+                    def results(merged_df, oa_summary, oa_status_summary):                        
                         st.subheader("Open Access Status Summary", anchor=False)
                         if len(oa_summary) >= 1:
                             items = [
@@ -170,16 +170,20 @@ else:
                             default=[] 
                             # default=available_oa_statuses  # All selected by default
                         )
+                        if selected_statuses:
+                            filtered_df = merged_df[merged_df['open_access.oa_status'].isin(selected_statuses)]
+                            filtered_raw_df = filtered_df.copy()
+                            
+                        else:
+                            filtered_df = merged_df    
                         col1, col2 = st.columns([1,4])
                         with col1:
-                            st.dataframe(oa_status_summary, hide_index =True,  use_container_width=False)
-                        with col2:
                             if selected_statuses:
-                                filtered_df = merged_df[merged_df['open_access.oa_status'].isin(selected_statuses)]
-                                filtered_raw_df = filtered_df.copy()
-                                
+                                oa_status_summary = filtered_df['open_access.oa_status'].value_counts(dropna=False).reset_index()
+                                st.dataframe(oa_status_summary, hide_index =True,  use_container_width=False)
                             else:
-                                filtered_df = merged_df                                
+                                st.dataframe(oa_status_summary, hide_index =True,  use_container_width=False)
+                        with col2:                            
                             filtered_df= filtered_df.reset_index(drop=True)
                             filtered_df.index +=1
                             filtered_df = filtered_df[['doi', 'type_crossref','primary_location.source.display_name', 'primary_location.source.host_organization_name', 'publication_year', 'open_access.is_oa','open_access.oa_status', 'open_access.oa_url', 'primary_location.license_id']]
@@ -247,7 +251,7 @@ else:
                             country_freq.columns = ['Country Code', '# Count']
                             st.subheader("Country Affiliations")
                             st.dataframe(country_freq, hide_index=True,  use_container_width=False)
-                    results(merged_df, oa_summary)
+                    results(merged_df, oa_summary, oa_status_summary)
                     @st.fragment
                     def all_results(all_results_df):
                         display = st.toggle('Show all results')                        
