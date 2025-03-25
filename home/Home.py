@@ -188,7 +188,6 @@ else:
                         # JOURNALS
                         if selected_statuses:
                             top_journals = filtered_raw_df['primary_location.source.display_name'].value_counts(dropna=False).reset_index()
-                            
                         else:
                             top_journals = merged_df['primary_location.source.display_name'].value_counts(dropna=False).reset_index()
                         top_journals.columns = ['Journal name', '# Outputs']
@@ -199,7 +198,11 @@ else:
                         col1, col2 = st.columns(2)
                         with col1:
                             # AUTHORS
-                            authors_df = merged_df.explode('authorships').reset_index(drop=True)
+                            if selected_statuses:
+                                authors_df = filtered_raw_df.explode('authorships').reset_index(drop=True)
+                            else:
+                                authors_df = merged_df.explode('authorships').reset_index(drop=True)
+                            
                             authors_df = pd.json_normalize(authors_df['authorships']).reset_index(drop=True)
                             authors_table = authors_df[[
                                 'author.display_name',
