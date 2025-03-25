@@ -207,7 +207,7 @@ else:
                     st.subheader("Country Affiliations")
                     st.dataframe(country_freq, hide_index=True,  use_container_width=False)
 
-                    df_dois
+                    merged_df
 
                     end_time = time.time()
                     processing_time = end_time - start_time
