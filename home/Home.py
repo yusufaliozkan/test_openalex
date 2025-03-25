@@ -207,6 +207,8 @@ else:
                     st.subheader("Country Affiliations")
                     st.dataframe(country_freq, hide_index=True,  use_container_width=False)
 
+                    df_dois
+
                     end_time = time.time()
                     processing_time = end_time - start_time
                     formatted_time = time.strftime("%M:%S", time.gmtime(processing_time))
