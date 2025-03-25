@@ -208,7 +208,7 @@ else:
                     st.dataframe(country_freq, hide_index=True,  use_container_width=False)
 
                     @st.fragment
-                    def all_results():
+                    def all_results(merged_df):
                         display = st.toggle('Show all results')
                         if display:
                             merged_df = merged_df.loc[:, ~merged_df.columns.str.startswith('abstract_inverted_index.')]
