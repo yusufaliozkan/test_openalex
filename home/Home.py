@@ -227,12 +227,10 @@ else:
                                 institution_details
                             ], axis=1)
 
-                            institutions_table = institutions_df[[
-                                'author.display_name',
-                                'display_name',      # Institution name
-                                'country_code',
-                                'type'
-                            ]].drop_duplicates().reset_index(drop=True)
+                            expected_cols = ['author.display_name', 'display_name', 'country_code', 'type']
+                            existing_cols = [col for col in expected_cols if col in institutions_df.columns]
+                            institutions_table = institutions_df[existing_cols].drop_duplicates().reset_index(drop=True)
+
 
                             institutions_table.columns = ['author', 'institution', 'country_code', 'type']
 
