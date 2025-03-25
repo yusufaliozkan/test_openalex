@@ -175,7 +175,8 @@ else:
                             filtered_df = merged_df[merged_df['open_access.oa_status'].isin(selected_statuses)]
                             filtered_df= filtered_df.reset_index(drop=True)
                             filtered_df.index +=1
-                            filtered_df = filtered_df[['doi',]]
+                            merged_df
+                            filtered_df = filtered_df[['doi','primary_location.source.display_name']]
                             filtered_df
                     oa_summary_function(merged_df, oa_status_summary,oa_summary)
                     # JOURNALS
