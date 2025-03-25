@@ -176,7 +176,7 @@ else:
                             filtered_df= filtered_df.reset_index(drop=True)
                             filtered_df.index +=1
                             merged_df
-                            filtered_df = filtered_df[['doi','primary_location.source.display_name']]
+                            filtered_df = filtered_df[['doi','primary_location.source.display_name', 'publication_year', 'open_access.is_oa','open_access.oa_status', 'open_access.oa_url', 'primary_location.license_id']]
                             filtered_df
                     oa_summary_function(merged_df, oa_status_summary,oa_summary)
                     # JOURNALS
