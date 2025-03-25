@@ -26,7 +26,7 @@ df_dois = None
 
 radio = st.radio('Select an option', ['Insert DOIs', 'Upload a file with DOIs'])
 if radio == 'Insert DOIs':
-    st.write('Please insert [DOIs](https://www.doi.org/) (commencing "10.") in separarate rows.')
+    st.write('Please insert [DOIs](https://www.doi.org/) (commencing "10.") in separarate rows. Maximum **700 DOIs permitted**!')
     dois = st.text_area(
         'Type or paste in one DOI per line in this box, then press Ctrl+Enter.', 
         help='DOIs will be without a hyperlink such as 10.1136/bmjgh-2023-013696',
@@ -44,7 +44,7 @@ if radio == 'Insert DOIs':
     # Create a DataFrame
     df_dois = pd.DataFrame(doi_list, columns=["doi_submitted"])
 else:
-    st.write('Please upload and submit a .csv file of [DOIs](https://www.doi.org/) (commencing “10.") in separate rows.')
+    st.write('Please upload and submit a .csv file of [DOIs](https://www.doi.org/) (commencing “10.") in separate rows. Maximum **700 DOIs permitted**!')
     st.warning('The title of the column containing DOIs should be one of the followings: doi, DOI, dois, DOIs, Hyperlinked DOI. Otherwise the tool will not identify DOIs.')
     dois = st.file_uploader("Choose a CSV file", type="csv")
 
@@ -73,152 +73,152 @@ else:
     else:
         st.write("Please upload a CSV file containing DOIs.")
 
-# if df_dois is not None:
-#     st.error('Please enter 500 or fewer DOIs')
-# else:
-if dois:
-    df_dois = df_dois.dropna()
-    df_dois['doi_submitted'] = df_dois['doi_submitted'].str.replace('https://doi.org/', '')
-    df_dois = df_dois.drop_duplicates().reset_index(drop=True)
-    no_dois = len(df_dois)
-    if len(df_dois) > 100:
-        st.toast('You entered over 100 DOIs. It may take some time to retrieve results. Please wait.')
-    if len(df_dois) >100:
-        st.warning('You entered over 100 DOIs. It may take some time to retrieve results.')
-    st.info(f'You entered {no_dois} unique DOIs')
-    with st.expander(f'See the DOIs you entered'):
-        df_dois
-
-    submit = st.button('Search DOIs', icon=":material/search:")
-    
-    if submit or st.session_state.get('status_expanded', False):
-        if submit:
-            st.session_state['status_expanded'] = True
-        with st.status("Searching DOIs in OpenAlex", expanded=st.session_state.get('status_expanded', True)) as status:
-            df_dois['doi_submitted'] = df_dois['doi_submitted'].str.replace('https://doi.org/', '', regex=False)
-
-            # df = pd.read_csv('your_doi_file.csv') or use your existing df
-            df_dois['doi_submitted'] = df_dois['doi_submitted'].str.strip().str.replace('https://doi.org/', '', regex=False)
-
-            # Function to batch DOIs
-            def batch_dois(dois, batch_size=20):
-                for i in range(0, len(dois), batch_size):
-                    yield dois[i:i + batch_size]
-            
-            start_time = time.time()
-            # Store results
-            all_results = []
-
-            # Process in batches
-            for batch in batch_dois(df_dois['doi_submitted'].tolist(), batch_size=20):
-                filter_string = '|'.join(batch)
-                url = f"https://api.openalex.org/works?filter=doi:{filter_string}&mailto=y.ozkan@imperial.ac.uk"
-                response = requests.get(url)
-                if response.status_code == 200:
-                    results = response.json().get('results', [])
-                    all_results.extend(results)
-                else:
-                    print(f"Request failed for batch starting with {batch[0]}")
-                time.sleep(1)  # Be polite to the API
-
-            # Normalize and flatten nested fields
-            results_df = pd.json_normalize(all_results, sep='.')
-
-            # Add cleaned DOI for merging
-            if not results_df.empty and 'doi' in results_df.columns:
-                results_df['doi_submitted'] = results_df['doi'].str.replace('https://doi.org/', '', regex=False)
-
-                # Merge with original DOIs
-                merged_df = df_dois.merge(results_df, on='doi_submitted', how='left')
-                
-                if merged_df['id'].isnull().all():
-                    st.warning("No DOIs found in the OpenAlex database.")
-                else:
-                    num_results = merged_df['id'].notnull().sum()
-                    st.success(f"{num_results} result(s) found.")
-
-                oa_status_summary = merged_df['open_access.oa_status'].value_counts(dropna=False).reset_index()
-                oa_status_summary.columns = ['OA status', '# Outputs']
-                merged_df['open_access.is_oa'] = merged_df['open_access.is_oa'].map({True: 'Open Access', False: 'Closed Access'})
-                oa_summary = merged_df['open_access.is_oa'].value_counts(dropna=False).reset_index()
-                oa_summary.columns = ['Is OA?', '# Outputs']
-                st.subheader("Open Access Status Summary", anchor=False)
-                if len(oa_summary) >= 2:
-                    items = [
-                        f"**{row['# Outputs']}** *{row['Is OA?']}*"
-                        for _, row in oa_summary.iterrows()
-                    ]
-                    st.write(f"{' and '.join(items)} papers found")
-                elif len(oa_summary) == 1:
-                    st.write(f'''
-                        **{oa_summary.iloc[0]['# Outputs']}** *{oa_summary.iloc[0]['Is OA?']}* papers found.
-                    ''')
-                st.dataframe(oa_status_summary, hide_index =True,  use_container_width=False)
-
-                # JOURNALS
-                top_journals = merged_df['primary_location.source.display_name'].value_counts(dropna=False).reset_index()
-                top_journals.columns = ['Journal name', '# Outputs']
-                top_journals = top_journals.dropna()
-                st.subheader("Journals", anchor=False)
-                st.dataframe(top_journals, hide_index=True,  use_container_width=False)
-
-                # AUTHORS
-                authors_df = merged_df.explode('authorships').reset_index(drop=True)
-                authors_df = pd.json_normalize(authors_df['authorships']).reset_index(drop=True)
-                authors_table = authors_df[[
-                    'author.display_name',
-                    'author.orcid',
-                    'author_position',
-                    'is_corresponding',
-                    'raw_author_name'
-                ]].drop_duplicates().reset_index(drop=True)
-
-                # st.subheader("Authors", anchor=False)
-                # st.dataframe(authors_table,  use_container_width=False)
-
-                institutions_df = authors_df.explode('institutions').reset_index(drop=True)
-                institution_details = pd.json_normalize(institutions_df['institutions']).reset_index(drop=True)
-                institutions_df = pd.concat([
-                    institutions_df.drop(columns=['institutions']).reset_index(drop=True),
-                    institution_details
-                ], axis=1)
-
-                institutions_table = institutions_df[[
-                    'author.display_name',
-                    'display_name',      # Institution name
-                    'country_code',
-                    'type'
-                ]].drop_duplicates().reset_index(drop=True)
-
-                institutions_table.columns = ['author', 'institution', 'country_code', 'type']
-
-                # st.subheader("Author Institutions")
-                # st.dataframe(institutions_table,  use_container_width=False)
-
-                # Institution frequency table
-                institution_freq = institutions_table['institution'].value_counts(dropna=True).reset_index()
-                institution_freq.columns = ['Institution', '# Count']
-                st.subheader("Institutional Affiliations")
-                st.dataframe(institution_freq, hide_index=True,  use_container_width=False)
-
-                # Country frequency table
-                country_freq = institutions_table['country_code'].value_counts(dropna=True).reset_index()
-                country_freq.columns = ['Country Code', '# Count']
-                st.subheader("Country Affiliations")
-                st.dataframe(country_freq, hide_index=True,  use_container_width=False)
-
-                end_time = time.time()
-                processing_time = end_time - start_time
-                formatted_time = time.strftime("%M:%S", time.gmtime(processing_time))
-                status.update(
-                    label=f"Search complete! Results found for {num_results} DOIs in {formatted_time} minutes.",
-                    state="complete",
-                    expanded=True
-                )
-
-            else:
-                st.error("No DOIs found in the OpenAlex database. Check the submitted DOIs and resubmit.")
-                df_dois
-                status.update(label=f"Search complete without any results!", state="complete", expanded=True)
+if df_dois is not None and len(df_dois) > 500:
+    st.error('Please enter 500 or fewer DOIs')
 else:
-    st.warning("Enter DOIs in the text area or upload a file to calculate the Citation Source Index.")
+    if dois:
+        df_dois = df_dois.dropna()
+        df_dois['doi_submitted'] = df_dois['doi_submitted'].str.replace('https://doi.org/', '')
+        df_dois = df_dois.drop_duplicates().reset_index(drop=True)
+        no_dois = len(df_dois)
+        if len(df_dois) > 100:
+            st.toast('You entered over 100 DOIs. It may take some time to retrieve results (upto 90 seconds). Please wait.')
+        if len(df_dois) >100:
+            st.warning('You entered over 100 DOIs. It may take some time to retrieve results (upto 90 seconds).')
+        st.info(f'You entered {no_dois} unique DOIs')
+        with st.expander(f'See the DOIs you entered'):
+            df_dois
+
+        submit = st.button('Search DOIs', icon=":material/search:")
+        
+        if submit or st.session_state.get('status_expanded', False):
+            if submit:
+                st.session_state['status_expanded'] = True
+            with st.status("Searching DOIs in OpenAlex", expanded=st.session_state.get('status_expanded', True)) as status:
+                df_dois['doi_submitted'] = df_dois['doi_submitted'].str.replace('https://doi.org/', '', regex=False)
+
+                # df = pd.read_csv('your_doi_file.csv') or use your existing df
+                df_dois['doi_submitted'] = df_dois['doi_submitted'].str.strip().str.replace('https://doi.org/', '', regex=False)
+
+                # Function to batch DOIs
+                def batch_dois(dois, batch_size=20):
+                    for i in range(0, len(dois), batch_size):
+                        yield dois[i:i + batch_size]
+                
+                start_time = time.time()
+                # Store results
+                all_results = []
+
+                # Process in batches
+                for batch in batch_dois(df_dois['doi_submitted'].tolist(), batch_size=20):
+                    filter_string = '|'.join(batch)
+                    url = f"https://api.openalex.org/works?filter=doi:{filter_string}&mailto=y.ozkan@imperial.ac.uk"
+                    response = requests.get(url)
+                    if response.status_code == 200:
+                        results = response.json().get('results', [])
+                        all_results.extend(results)
+                    else:
+                        print(f"Request failed for batch starting with {batch[0]}")
+                    time.sleep(1)  # Be polite to the API
+
+                # Normalize and flatten nested fields
+                results_df = pd.json_normalize(all_results, sep='.')
+
+                # Add cleaned DOI for merging
+                if not results_df.empty and 'doi' in results_df.columns:
+                    results_df['doi_submitted'] = results_df['doi'].str.replace('https://doi.org/', '', regex=False)
+
+                    # Merge with original DOIs
+                    merged_df = df_dois.merge(results_df, on='doi_submitted', how='left')
+                    
+                    if merged_df['id'].isnull().all():
+                        st.warning("No DOIs found in the OpenAlex database.")
+                    else:
+                        num_results = merged_df['id'].notnull().sum()
+                        st.success(f"{num_results} result(s) found.")
+
+                    oa_status_summary = merged_df['open_access.oa_status'].value_counts(dropna=False).reset_index()
+                    oa_status_summary.columns = ['OA status', '# Outputs']
+                    merged_df['open_access.is_oa'] = merged_df['open_access.is_oa'].map({True: 'Open Access', False: 'Closed Access'})
+                    oa_summary = merged_df['open_access.is_oa'].value_counts(dropna=False).reset_index()
+                    oa_summary.columns = ['Is OA?', '# Outputs']
+                    st.subheader("Open Access Status Summary", anchor=False)
+                    if len(oa_summary) >= 2:
+                        items = [
+                            f"**{row['# Outputs']}** *{row['Is OA?']}*"
+                            for _, row in oa_summary.iterrows()
+                        ]
+                        st.write(f"{' and '.join(items)} papers found")
+                    elif len(oa_summary) == 1:
+                        st.write(f'''
+                            **{oa_summary.iloc[0]['# Outputs']}** *{oa_summary.iloc[0]['Is OA?']}* papers found.
+                        ''')
+                    st.dataframe(oa_status_summary, hide_index =True,  use_container_width=False)
+
+                    # JOURNALS
+                    top_journals = merged_df['primary_location.source.display_name'].value_counts(dropna=False).reset_index()
+                    top_journals.columns = ['Journal name', '# Outputs']
+                    top_journals = top_journals.dropna()
+                    st.subheader("Journals", anchor=False)
+                    st.dataframe(top_journals, hide_index=True,  use_container_width=False)
+
+                    # AUTHORS
+                    authors_df = merged_df.explode('authorships').reset_index(drop=True)
+                    authors_df = pd.json_normalize(authors_df['authorships']).reset_index(drop=True)
+                    authors_table = authors_df[[
+                        'author.display_name',
+                        'author.orcid',
+                        'author_position',
+                        'is_corresponding',
+                        'raw_author_name'
+                    ]].drop_duplicates().reset_index(drop=True)
+
+                    # st.subheader("Authors", anchor=False)
+                    # st.dataframe(authors_table,  use_container_width=False)
+
+                    institutions_df = authors_df.explode('institutions').reset_index(drop=True)
+                    institution_details = pd.json_normalize(institutions_df['institutions']).reset_index(drop=True)
+                    institutions_df = pd.concat([
+                        institutions_df.drop(columns=['institutions']).reset_index(drop=True),
+                        institution_details
+                    ], axis=1)
+
+                    institutions_table = institutions_df[[
+                        'author.display_name',
+                        'display_name',      # Institution name
+                        'country_code',
+                        'type'
+                    ]].drop_duplicates().reset_index(drop=True)
+
+                    institutions_table.columns = ['author', 'institution', 'country_code', 'type']
+
+                    # st.subheader("Author Institutions")
+                    # st.dataframe(institutions_table,  use_container_width=False)
+
+                    # Institution frequency table
+                    institution_freq = institutions_table['institution'].value_counts(dropna=True).reset_index()
+                    institution_freq.columns = ['Institution', '# Count']
+                    st.subheader("Institutional Affiliations")
+                    st.dataframe(institution_freq, hide_index=True,  use_container_width=False)
+
+                    # Country frequency table
+                    country_freq = institutions_table['country_code'].value_counts(dropna=True).reset_index()
+                    country_freq.columns = ['Country Code', '# Count']
+                    st.subheader("Country Affiliations")
+                    st.dataframe(country_freq, hide_index=True,  use_container_width=False)
+
+                    end_time = time.time()
+                    processing_time = end_time - start_time
+                    formatted_time = time.strftime("%M:%S", time.gmtime(processing_time))
+                    status.update(
+                        label=f"Search complete! Results found for {num_results} DOIs in {formatted_time} minutes.",
+                        state="complete",
+                        expanded=True
+                    )
+
+                else:
+                    st.error("No DOIs found in the OpenAlex database. Check the submitted DOIs and resubmit.")
+                    df_dois
+                    status.update(label=f"Search complete without any results!", state="complete", expanded=True)
+    else:
+        st.warning("Enter DOIs in the text area or upload a file to calculate the Citation Source Index.")
