@@ -169,7 +169,8 @@ else:
                             available_oa_statuses = oa_status_summary['OA status'].dropna().unique().tolist()
                             selected_statuses = st.multiselect(
                                 'Filter by OA Status',
-                                options=available_oa_statuses
+                                options=available_oa_statuses,
+                                default=[] 
                                 # default=available_oa_statuses  # All selected by default
                             )
                             filtered_df = merged_df[merged_df['open_access.oa_status'].isin(selected_statuses)]
