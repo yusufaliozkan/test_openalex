@@ -130,6 +130,8 @@ else:
 
                     # Merge with original DOIs
                     merged_df = df_dois.merge(results_df, on='doi_submitted', how='left')
+                    all_results_df = merged_df.copy()
+                    merged_df = merged_df.dropna(subset='id')
                     
                     if merged_df['id'].isnull().all():
                         st.warning("No DOIs found in the OpenAlex database.")
@@ -208,12 +210,12 @@ else:
                     st.dataframe(country_freq, hide_index=True,  use_container_width=False)
 
                     @st.fragment
-                    def all_results(merged_df):
+                    def all_results(all_results_df):
                         display = st.toggle('Show all results')
                         if display:
-                            merged_df = merged_df.loc[:, ~merged_df.columns.str.startswith('abstract_inverted_index.')]
-                            merged_df
-                    all_results(merged_df)
+                            all_results_df = all_results_df.loc[:, ~all_results_df.columns.str.startswith('abstract_inverted_index.')]
+                            all_results_df
+                    all_results(all_results_df)
                     end_time = time.time()
                     processing_time = end_time - start_time
                     formatted_time = time.strftime("%M:%S", time.gmtime(processing_time))
