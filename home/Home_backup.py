@@ -11,6 +11,7 @@ import numpy as np
 import plotly.express as px
 import time
 from sidebar_content import sidebar_content
+import concurrent.futures
 
 st.set_page_config(layout = "wide", 
                     page_title='OpenAlex DOI Search Tool',
@@ -109,16 +110,20 @@ if dois:
             all_results = []
 
             # Process in batches
-            for batch in batch_dois(df_dois['doi_submitted'].tolist(), batch_size=20):
+            def fetch_batch(batch):
                 filter_string = '|'.join(batch)
-                url = f"https://api.openalex.org/works?filter=doi:{filter_string}&mailto=y.ozkan@imperial.ac.uk"
+                url = f"https://api.openalex.org/works?filter=doi:{filter_string}&mailto="
                 response = requests.get(url)
                 if response.status_code == 200:
-                    results = response.json().get('results', [])
-                    all_results.extend(results)
+                    return response.json().get('results', [])
                 else:
-                    print(f"Request failed for batch starting with {batch[0]}")
-                time.sleep(1)  # Be polite to the API
+                    return []
+
+            # Run batches in parallel
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                futures = [executor.submit(fetch_batch, batch) for batch in batch_dois(df_dois['doi_submitted'].tolist(), 20)]
+                for future in concurrent.futures.as_completed(futures):
+                    all_results.extend(future.result())
 
             # Normalize and flatten nested fields
             results_df = pd.json_normalize(all_results, sep='.')
