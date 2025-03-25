@@ -211,9 +211,10 @@ else:
 
                     @st.fragment
                     def all_results(all_results_df):
-                        display = st.toggle('Show all results')
+                        
                         st.subheader('All results', anchor=False)
                         if display:
+                            display = st.toggle('Show all results')
                             all_results_df = all_results_df.loc[:, ~all_results_df.columns.str.startswith('abstract_inverted_index.')]
                             all_results_df
                     all_results(all_results_df)
