@@ -152,9 +152,11 @@ else:
                         merged_df['open_access.is_oa'] = merged_df['open_access.is_oa'].map({True: 'Open Access', False: 'Closed Access'})
                         oa_summary = merged_df['open_access.is_oa'].value_counts(dropna=False).reset_index()
                         oa_summary.columns = ['Is OA?', '# Outputs']
-                        st.write(f'''
-                            **{oa_summary.iloc[0]['# Outputs']}** *{oa_summary.iloc[0]['Is OA?']}* papers found.
-                        ''')
+                        items = [
+                            f"**{row['# Outputs']}** *{row['Is OA?']}*"
+                            for _, row in oa_summary.iterrows()
+                        ]
+                        st.write(f"{' and '.join(items)} papers found")
                         # if len(oa_summary) >= 1:
                         #     items = [
                         #         f"**{row['# Outputs']}** *{row['Is OA?']}*"
