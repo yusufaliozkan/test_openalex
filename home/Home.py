@@ -221,4 +221,4 @@ else:
                     df_dois
                     status.update(label=f"Search complete without any results!", state="complete", expanded=True)
     else:
-        st.warning("Enter DOIs in the text area or upload a file to calculate the Citation Source Index.")
+        st.warning("Enter DOIs in the text area or upload a file to start search.")
