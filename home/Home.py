@@ -159,7 +159,7 @@ else:
                         ''')
                     @st.fragment
                     def oa_summary(merged_df, oa_status_summary):
-                        col1, col2 = st.columns(2)
+                        col1, col2 = st.columns([1,4])
                         st.subheader("Open Access Status Summary", anchor=False)
                         with col1:
                             st.dataframe(oa_status_summary, hide_index =True,  use_container_width=False)
