@@ -87,7 +87,9 @@ else:
             st.warning('You entered over 100 DOIs. It may take some time to retrieve results (upto 90 seconds).')
         st.info(f'You entered {no_dois} unique DOIs')
         with st.expander(f'See the DOIs you entered'):
-            st.dataframe(df_dois, hide_index =True,  use_container_width=False)
+            df_dois = df_dois.reset_index(drop=True)
+            df_dois.index +=1
+            st.dataframe(df_dois,  use_container_width=False)
 
         submit = st.button('Search DOIs', icon=":material/search:")
         
