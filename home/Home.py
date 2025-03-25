@@ -150,19 +150,19 @@ else:
 
                     @st.fragment
                     def oa_summary_function(merged_df, oa_status_summary,oa_summary):
-                        col1, col2 = st.columns([1,4])
                         st.subheader("Open Access Status Summary", anchor=False)
+                        if len(oa_summary) >= 2:
+                            items = [
+                                f"**{row['# Outputs']}** *{row['Is OA?']}*"
+                                for _, row in oa_summary.iterrows()
+                            ]
+                            st.write(f"{' and '.join(items)} papers found")
+                        elif len(oa_summary) == 1:
+                            st.write(f'''
+                                **{oa_summary.iloc[0]['# Outputs']}** *{oa_summary.iloc[0]['Is OA?']}* papers found.
+                            ''')
+                        col1, col2 = st.columns([1,4])
                         with col1:
-                            if len(oa_summary) >= 2:
-                                items = [
-                                    f"**{row['# Outputs']}** *{row['Is OA?']}*"
-                                    for _, row in oa_summary.iterrows()
-                                ]
-                                st.write(f"{' and '.join(items)} papers found")
-                            elif len(oa_summary) == 1:
-                                st.write(f'''
-                                    **{oa_summary.iloc[0]['# Outputs']}** *{oa_summary.iloc[0]['Is OA?']}* papers found.
-                                ''')
                             st.dataframe(oa_status_summary, hide_index =True,  use_container_width=False)
                         with col2:
                             available_oa_statuses = oa_status_summary['OA status'].dropna().unique().tolist()
