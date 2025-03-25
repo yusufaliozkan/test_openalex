@@ -182,7 +182,8 @@ else:
                             filtered_df = filtered_df[['doi', 'type_crossref','primary_location.source.display_name', 'primary_location.source.host_organization_name', 'publication_year', 'open_access.is_oa','open_access.oa_status', 'open_access.oa_url', 'primary_location.license_id']]
                             filtered_df.columns = ['DOI', 'Type','Journal', 'Publisher','Publication year', 'Is OA?', 'OA Status', 'OA URL', 'Licence']
                             filtered_df
-                    oa_summary_function(merged_df)
+                    filtered_df = oa_summary_function(merged_df)
+
                     # JOURNALS
                     filtered_df
                     top_journals = merged_df['primary_location.source.display_name'].value_counts(dropna=False).reset_index()
