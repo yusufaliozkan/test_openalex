@@ -142,29 +142,27 @@ else:
                         num_results = merged_df['id'].notnull().sum()
                         st.success(f"{num_results} result(s) found.")
 
+                    oa_status_summary = merged_df['open_access.oa_status'].value_counts(dropna=False).reset_index()
+                    oa_status_summary.columns = ['OA status', '# Outputs']
+                    merged_df['open_access.is_oa'] = merged_df['open_access.is_oa'].map({True: 'Open Access', False: 'Closed Access'})
+                    oa_summary = merged_df['open_access.is_oa'].value_counts(dropna=False).reset_index()
+                    oa_summary.columns = ['Is OA?', '# Outputs']
+
+
                     # OA Summary
                     @st.fragment
-                    def results(merged_df):                        
+                    def results(merged_df, oa_summary):                        
                         st.subheader("Open Access Status Summary", anchor=False)
-                        oa_status_summary = merged_df['open_access.oa_status'].value_counts(dropna=False).reset_index()
-                        oa_status_summary.columns = ['OA status', '# Outputs']
-
-                        # Map boolean to string for readability
-                        merged_df['open_access.is_oa'] = merged_df['open_access.is_oa'].map({True: 'Open Access', False: 'Closed Access'})
-
-                        # Get counts including NaN
-                        oa_summary = merged_df['open_access.is_oa'].value_counts(dropna=False).reset_index()
-                        oa_summary.columns = ['Is OA?', '# Outputs']
-
-                        # Replace NaN values with "Unknown"
-                        oa_summary['Is OA?'] = oa_summary['Is OA?'].fillna("Unknown")
-
-                        items = [
-                            f"**{int(row['# Outputs'])}** *{row['Is OA?']}*"
-                            for _, row in oa_summary.iterrows()
-                        ]
-
-                        st.write(f"{' and '.join(items)} papers found")
+                        if len(oa_summary) >= 1:
+                            items = [
+                                f"**{row['# Outputs']}** *{row['Is OA?']}*"
+                                for _, row in oa_summary.iterrows()
+                            ]
+                            st.write(f"{' and '.join(items)} papers found")
+                        elif len(oa_summary) == 1:
+                            st.write(f'''
+                                **{oa_summary.iloc[0]['# Outputs']}** *{oa_summary.iloc[0]['Is OA?']}* papers found.
+                            ''')
                         available_oa_statuses = oa_status_summary['OA status'].dropna().unique().tolist()
                         selected_statuses = st.multiselect(
                             'Filter by OA Status',
@@ -249,7 +247,7 @@ else:
                             country_freq.columns = ['Country Code', '# Count']
                             st.subheader("Country Affiliations")
                             st.dataframe(country_freq, hide_index=True,  use_container_width=False)
-                    results(merged_df)
+                    results(merged_df, oa_summary)
                     @st.fragment
                     def all_results(all_results_df):
                         display = st.toggle('Show all results')                        
