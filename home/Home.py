@@ -228,6 +228,9 @@ else:
                             ], axis=1)
 
                             expected_cols = ['author.display_name', 'display_name', 'country_code', 'type']
+                            for col in expected_cols:
+                                if col not in institutions_df.columns:
+                                    institutions_df[col] = "No info"
                             existing_cols = [col for col in expected_cols if col in institutions_df.columns]
                             institutions_table = institutions_df[existing_cols].drop_duplicates().reset_index(drop=True)
 
