@@ -143,15 +143,15 @@ else:
                         st.success(f"{num_results} result(s) found.")
 
                     # OA Summary
-                    oa_status_summary = merged_df['open_access.oa_status'].value_counts(dropna=False).reset_index()
-                    oa_status_summary.columns = ['OA status', '# Outputs']
-                    merged_df['open_access.is_oa'] = merged_df['open_access.is_oa'].map({True: 'Open Access', False: 'Closed Access'})
-                    oa_summary = merged_df['open_access.is_oa'].value_counts(dropna=False).reset_index()
-                    oa_summary.columns = ['Is OA?', '# Outputs']
-
                     @st.fragment
-                    def oa_summary_function(merged_df, oa_status_summary,oa_summary):
+                    def oa_summary_function(merged_df, oa_status_summary,oa_summary):                        
                         st.subheader("Open Access Status Summary", anchor=False)
+
+                        oa_status_summary = merged_df['open_access.oa_status'].value_counts(dropna=False).reset_index()
+                        oa_status_summary.columns = ['OA status', '# Outputs']
+                        merged_df['open_access.is_oa'] = merged_df['open_access.is_oa'].map({True: 'Open Access', False: 'Closed Access'})
+                        oa_summary = merged_df['open_access.is_oa'].value_counts(dropna=False).reset_index()
+                        oa_summary.columns = ['Is OA?', '# Outputs']
                         if len(oa_summary) >= 2:
                             items = [
                                 f"**{row['# Outputs']}** *{row['Is OA?']}*"
