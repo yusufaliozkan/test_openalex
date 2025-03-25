@@ -111,7 +111,7 @@ if dois:
             # Process in batches
             for batch in batch_dois(df_dois['doi_submitted'].tolist(), batch_size=20):
                 filter_string = '|'.join(batch)
-                url = f"https://api.openalex.org/works?filter=doi:{filter_string}&mailto=support@openalex.org"
+                url = f"https://api.openalex.org/works?filter=doi:{filter_string}&mailto=y.ozkan@imperial.ac.uk"
                 response = requests.get(url)
                 if response.status_code == 200:
                     results = response.json().get('results', [])
