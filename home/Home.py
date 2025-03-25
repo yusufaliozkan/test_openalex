@@ -163,16 +163,16 @@ else:
                                 **{oa_summary.iloc[0]['# Outputs']}** *{oa_summary.iloc[0]['Is OA?']}* papers found.
                             ''')
                         col1, col2 = st.columns([1,4])
+                        available_oa_statuses = oa_status_summary['OA status'].dropna().unique().tolist()
+                        selected_statuses = st.multiselect(
+                            'Filter by OA Status',
+                            options=available_oa_statuses,
+                            default=[] 
+                            # default=available_oa_statuses  # All selected by default
+                        )
                         with col1:
                             st.dataframe(oa_status_summary, hide_index =True,  use_container_width=False)
                         with col2:
-                            available_oa_statuses = oa_status_summary['OA status'].dropna().unique().tolist()
-                            selected_statuses = st.multiselect(
-                                'Filter by OA Status',
-                                options=available_oa_statuses,
-                                default=[] 
-                                # default=available_oa_statuses  # All selected by default
-                            )
                             if selected_statuses:
                                 filtered_df = merged_df[merged_df['open_access.oa_status'].isin(selected_statuses)]
                             else:
