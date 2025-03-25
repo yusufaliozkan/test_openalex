@@ -144,7 +144,7 @@ else:
 
                     # OA Summary
                     @st.fragment
-                    def oa_summary_function(merged_df, oa_status_summary,oa_summary):                        
+                    def oa_summary_function(merged_df):                        
                         st.subheader("Open Access Status Summary", anchor=False)
 
                         oa_status_summary = merged_df['open_access.oa_status'].value_counts(dropna=False).reset_index()
