@@ -170,12 +170,13 @@ else:
                             selected_statuses = st.multiselect(
                                 'Filter by OA Status',
                                 options=available_oa_statuses,
-                                # default=available_oa_statuses  # All selected by default
+                                default=available_oa_statuses  # All selected by default
                             )
                             filtered_df = merged_df[merged_df['open_access.oa_status'].isin(selected_statuses)]
                             filtered_df= filtered_df.reset_index(drop=True)
                             filtered_df.index +=1
                             filtered_df = filtered_df[['doi','primary_location.source.display_name', 'publication_year', 'open_access.is_oa','open_access.oa_status', 'open_access.oa_url', 'primary_location.license_id']]
+                            filtered_df.columns = ['DOI', 'Journal', 'Publication year', 'Is OA?', 'OA Status', 'OA URL', 'Licence']
                             filtered_df
                     oa_summary_function(merged_df, oa_status_summary,oa_summary)
                     # JOURNALS
