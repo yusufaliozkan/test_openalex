@@ -16,7 +16,7 @@ import json
 from urllib.parse import quote, unquote
 
 st.set_page_config(layout = "wide", 
-                    page_title='OpenAlex DOI Search Tools',
+                    page_title='OpenAlex DOI Search Tool',
                     page_icon="https://openalex.org/img/openalex-logo-icon-black-and-white.ea51cede.png",
                     initial_sidebar_state="auto") 
 pd.set_option('display.max_colwidth', None)
