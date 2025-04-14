@@ -39,78 +39,74 @@ sidebar_content()
 
 st.title('OpenAlex DOI Search Tool', anchor=False)
 
-# Check if 'data' parameter is present in the URL
-query_params = st.experimental_get_query_params()
-doi_list = []
+df_dois = None
 
-if 'data' in query_params:
-    encoded_data = query_params['data'][0]
-    doi_list = decode_dois(encoded_data)
-    st.success("DOIs loaded from shared link.")
-else:
-    # User input for DOIs
-    radio = st.radio('Select an option', ['Insert DOIs', 'Upload a file with DOIs'])
-    if radio == 'Insert DOIs':
-        st.write('Please insert [DOIs](https://www.doi.org/) (commencing "10.") in separate rows. Maximum **700 DOIs permitted**!')
-        dois = st.text_area(
-            'Type or paste in one DOI per line in this box, then press Ctrl+Enter.', 
-            help='DOIs will be without a hyperlink such as 10.1136/bmjgh-2023-013696',
-            placeholder=''' e.g.
-10.1136/bmjgh-2023-013696
-10.1097/jac.0b013e31822cbdfd
-'''
+radio = st.radio('Select an option', ['Insert DOIs', 'Upload a file with DOIs'])
+if radio == 'Insert DOIs':
+    st.write('Please insert [DOIs](https://www.doi.org/) (commencing "10.") in separarate rows. Maximum **700 DOIs permitted**!')
+    dois = st.text_area(
+        'Type or paste in one DOI per line in this box, then press Ctrl+Enter.', 
+        help='DOIs will be without a hyperlink such as 10.1136/bmjgh-2023-013696',
+        placeholder=''' e.g.
+        10.1136/bmjgh-2023-013696
+        10.1097/jac.0b013e31822cbdfd
+        '''
         )
-        doi_list = [doi.strip() for doi in dois.split('\n') if doi.strip()]
-    else:
-        st.write('Please upload and submit a .csv file of [DOIs](https://www.doi.org/) (commencing “10.") in separate rows. Maximum **700 DOIs permitted**!')
-        st.warning('The title of the column containing DOIs should be one of the followings: doi, DOI, dois, DOIs, Hyperlinked DOI. Otherwise the tool will not identify DOIs.')
-        uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
+    # Split the input text into individual DOIs based on newline character
+    doi_list = dois.split('\n')
+    
+    # Remove any empty strings that may result from extra newlines
+    doi_list = [doi.strip() for doi in doi_list if doi.strip()]
+    
+    # Create a DataFrame
+    df_dois = pd.DataFrame(doi_list, columns=["doi_submitted"])
+else:
+    st.write('Please upload and submit a .csv file of [DOIs](https://www.doi.org/) (commencing “10.") in separate rows. Maximum **700 DOIs permitted**!')
+    st.warning('The title of the column containing DOIs should be one of the followings: doi, DOI, dois, DOIs, Hyperlinked DOI. Otherwise the tool will not identify DOIs.')
+    dois = st.file_uploader("Choose a CSV file", type="csv")
 
-        if uploaded_file is not None:
-            try:
-                df = pd.read_csv(uploaded_file, engine='python')  # more tolerant to inconsistent rows
-            except pd.errors.ParserError as e:
-                st.error("There was a problem parsing your CSV file. Check for stray commas or improperly quoted values.")
-                st.exception(e)
-                st.stop()
-            
-            doi_columns = ['doi', 'DOI', 'dois', 'DOIs', 'Hyperlinked DOI']
-            doi_column = next((col for col in doi_columns if col in df.columns), None)
-            
-            if doi_column:
-                doi_list = df[doi_column].dropna().tolist()
-            else:
-                st.error('''
-No DOI column in the file.
-
-Make sure that the column listing DOIs have one of the following names:
-'doi', 'DOI', 'dois', 'DOIs', 'Hyperlinked DOI'
-''')
-                st.stop()
+    if dois is not None:
+        try:
+            df = pd.read_csv(dois, engine='python')  # more tolerant to inconsistent rows
+        except pd.errors.ParserError as e:
+            st.error("There was a problem parsing your CSV file. Check for stray commas or improperly quoted values.")
+            st.exception(e)
+            st.stop()
+        
+        doi_columns = ['doi', 'DOI', 'dois', 'DOIs', 'Hyperlinked DOI']
+        doi_column = next((col for col in doi_columns if col in df.columns), None)
+        
+        if doi_column:
+            df_dois = df[[doi_column]]
+            df_dois.columns = ['doi_submitted']
         else:
-            st.write("Please upload a CSV file containing DOIs.")
+            st.error('''
+            No DOI column in the file.
+            
+            Make sure that the column listing DOIs have one of the following names:
+            'doi', 'DOI', 'dois', 'DOIs', 'Hyperlinked DOI'
+            ''')
+            st.stop()
+    else:
+        st.write("Please upload a CSV file containing DOIs.")
 
-# Proceed if DOIs are available
-if doi_list:
-    if len(doi_list) > 700:
-        st.error('Please enter 700 or fewer DOIs')
-        st.stop()
-
-    # Clean and deduplicate DOIs
-    doi_list = list(set([doi.replace('https://doi.org/', '').strip() for doi in doi_list if doi.strip()]))
-
-    st.info(f'You entered {len(doi_list)} unique DOIs.')
-
-    # Display entered DOIs
-    with st.expander('See the DOIs you entered'):
-        df_dois = pd.DataFrame(doi_list, columns=['DOI'])
-        st.dataframe(df_dois)
-
-    # Generate shareable link
-    encoded_data = encode_dois(doi_list)
-    base_url = st.request.url.split('?')[0]
-    shareable_link = f"{base_url}?data={encoded_data}"
-    st.markdown(f"**Shareable Link:** [Copy this link]({shareable_link})")
+if df_dois is not None and len(df_dois) > 700:
+    st.error('Please enter 500 or fewer DOIs')
+else:
+    if dois:
+        df_dois = df_dois.dropna()
+        df_dois['doi_submitted'] = df_dois['doi_submitted'].str.replace('https://doi.org/', '')
+        df_dois = df_dois.drop_duplicates().reset_index(drop=True)
+        no_dois = len(df_dois)
+        if len(df_dois) > 100:
+            st.toast('You entered over 100 DOIs. It may take some time to retrieve results (upto 90 seconds). Please wait.')
+        if len(df_dois) >100:
+            st.warning('You entered over 100 DOIs. It may take some time to retrieve results (upto 90 seconds).')
+        st.info(f'You entered {no_dois} unique DOIs')
+        with st.expander(f'See the DOIs you entered'):
+            df_dois = df_dois.reset_index(drop=True)
+            df_dois.index +=1
+            st.dataframe(df_dois,  use_container_width=False)
 
         submit = st.button('Search DOIs', icon=":material/search:")
         
