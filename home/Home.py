@@ -30,6 +30,10 @@ os.makedirs("sessions", exist_ok=True)
 
 st.title('OpenAlex DOI Search Tool', anchor=False)
 
+# Handle session from query param
+query_params = st.experimental_get_query_params()
+session_id = query_params.get("session_id", [None])[0]
+
 df_dois = None
 
 radio = st.radio('Select an option', ['Insert DOIs', 'Upload a file with DOIs'])
