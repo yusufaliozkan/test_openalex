@@ -286,7 +286,7 @@ else:
                         json.dump(all_results, f)
 
                     st.query_params.result_id = unique_id
-                    
+
                     if 'result_id' in st.query_params:
                         unique_id = st.query_params.result_id
                         file_path = f"results_{unique_id}.json"
@@ -302,6 +302,9 @@ else:
                         else:
                             st.error("No stored results found for the shared link.")
 
+                    base_url = "https://testopenalex.streamlit.app"  # Update this accordingly
+                    shareable_url = f"{base_url}?result_id={unique_id}"
+                    st.success(f"Your shareable link is: {shareable_url}")
 
                 else:
                     st.error("No DOIs found in the OpenAlex database. Check the submitted DOIs and resubmit.")
