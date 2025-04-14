@@ -282,7 +282,7 @@ else:
                     st.query_params.result_id = unique_id
 
                     # Define your app's base URL (this may need to be hard-coded or set through configuration)
-                    base_url = "https://your_app.streamlit.app"
+                    base_url = "https://testopenalex.streamlit.app"
 
                     # Retrieve the current query parameters as a dictionary
                     params = st.query_params.to_dict()
