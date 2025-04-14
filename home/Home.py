@@ -278,12 +278,23 @@ else:
 
                     unique_id = str(uuid.uuid4())
 
-                    with open(f"results_{unique_id}.json", "w") as f:
-                        json.dump(all_results, f)
+                    # Update the query parameters in the URL
+                    st.query_params.result_id = unique_id
 
-                    # Update the URL so it contains the unique identifier
-                    st.experimental_set_query_params(result_id=unique_id)
-                    st.success(f"Your shareable link is: {st.get_url()}")
+                    # Define your app's base URL (this may need to be hard-coded or set through configuration)
+                    base_url = "https://your_app.streamlit.app"
+
+                    # Retrieve the current query parameters as a dictionary
+                    params = st.query_params.to_dict()
+
+                    # Construct a query string by joining key=value pairs
+                    query_string = "&".join([f"{key}={value}" for key, value in params.items()])
+
+                    # Combine the base URL with the query string to form the full shareable URL
+                    shareable_url = f"{base_url}?{query_string}"
+
+                    # Display the shareable URL
+                    st.success(f"Your shareable link is: {shareable_url}")
 
 
                 else:
