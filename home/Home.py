@@ -284,14 +284,6 @@ else:
                     st.experimental_set_query_params(result_id=unique_id)
                     st.success(f"Your shareable link is: {st.get_url()}")
 
-                    # On app start-up, check if a result_id is in the URL query parameters
-                    query_params = st.experimental_get_query_params()
-                    if 'result_id' in query_params:
-                        unique_id = query_params['result_id'][0]
-                        # Retrieve stored results (error handling omitted for brevity)
-                        with open(f"results_{unique_id}.json", "r") as f:
-                            all_results = json.load(f)
-                        st.write("Loaded your previous results!")
 
                 else:
                     st.error("No DOIs found in the OpenAlex database. Check the submitted DOIs and resubmit.")
