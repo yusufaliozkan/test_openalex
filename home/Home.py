@@ -14,20 +14,9 @@ from sidebar_content import sidebar_content
 import base64
 import json
 from urllib.parse import quote, unquote
-
-def encode_dois(dois):
-    json_str = json.dumps(dois)
-    b64_bytes = base64.urlsafe_b64encode(json_str.encode('utf-8'))
-    return b64_bytes.decode('utf-8')
-
-# Function to decode DOIs from a URL-safe string
-def decode_dois(b64_str):
-    try:
-        json_str = base64.urlsafe_b64decode(b64_str.encode('utf-8')).decode('utf-8')
-        return json.loads(json_str)
-    except Exception as e:
-        st.error("Failed to decode DOIs from URL.")
-        return []
+import os
+import uuid
+import time
 
 st.set_page_config(layout = "wide", 
                     page_title='OpenAlex DOI Search Tool',
@@ -36,6 +25,8 @@ st.set_page_config(layout = "wide",
 pd.set_option('display.max_colwidth', None)
 
 sidebar_content() 
+os.makedirs("sessions", exist_ok=True)
+
 
 st.title('OpenAlex DOI Search Tool', anchor=False)
 
