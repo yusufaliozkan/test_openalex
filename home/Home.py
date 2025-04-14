@@ -267,7 +267,6 @@ else:
                             st.write(all_results_df) 
                     display_all_results(all_results_df)
 
-                    all_results(all_results_df)
                     end_time = time.time()
                     processing_time = end_time - start_time
                     formatted_time = time.strftime("%M:%S", time.gmtime(processing_time))
