@@ -13,6 +13,7 @@ import time
 from sidebar_content import sidebar_content
 import uuid
 import json
+import os
 
 st.set_page_config(layout = "wide", 
                     page_title='OpenAlex DOI Search Tool',
@@ -281,20 +282,25 @@ else:
                     # Update the query parameters in the URL
                     st.query_params.result_id = unique_id
 
-                    # Define your app's base URL (this may need to be hard-coded or set through configuration)
-                    base_url = "https://testopenalex.streamlit.app"
+                    with open(f"results_{unique_id}.json", "w") as f:
+                        json.dump(all_results, f)
 
-                    # Retrieve the current query parameters as a dictionary
-                    params = st.query_params.to_dict()
-
-                    # Construct a query string by joining key=value pairs
-                    query_string = "&".join([f"{key}={value}" for key, value in params.items()])
-
-                    # Combine the base URL with the query string to form the full shareable URL
-                    shareable_url = f"{base_url}?{query_string}"
-
-                    # Display the shareable URL
-                    st.success(f"Your shareable link is: {shareable_url}")
+                    st.query_params.result_id = unique_id
+                    
+                    if 'result_id' in st.query_params:
+                        unique_id = st.query_params.result_id
+                        file_path = f"results_{unique_id}.json"
+                        
+                        if os.path.exists(file_path):
+                            with open(file_path, "r") as f:
+                                loaded_results = json.load(f)
+                            st.success("Loaded your shared search results!")
+                            # Here, you can display the data as needed, for example:
+                            st.write(loaded_results)
+                            # Or if you want to re-display it in a dataframe:
+                            # st.dataframe(pd.DataFrame(loaded_results))
+                        else:
+                            st.error("No stored results found for the shared link.")
 
 
                 else:
