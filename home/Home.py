@@ -259,12 +259,14 @@ else:
                             st.dataframe(country_freq, hide_index=True,  use_container_width=False)
                     results(merged_df, oa_summary, oa_status_summary)
                     @st.fragment
-                    def all_results(all_results_df):
+                    def display_all_results(all_results_df):
                         display = st.toggle('Show all results')                        
                         if display:
                             st.subheader('All results', anchor=False)
                             all_results_df = all_results_df.loc[:, ~all_results_df.columns.str.startswith('abstract_inverted_index.')]
-                            all_results_df
+                            st.write(all_results_df) 
+                    display_all_results(all_results_df)
+
                     all_results(all_results_df)
                     end_time = time.time()
                     processing_time = end_time - start_time
