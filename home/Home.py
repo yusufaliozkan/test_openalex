@@ -31,8 +31,7 @@ os.makedirs("sessions", exist_ok=True)
 st.title('OpenAlex DOI Search Tool', anchor=False)
 
 # Handle session from query param
-query_params = st.experimental_get_query_params()
-session_id = query_params.get("session_id", [None])[0]
+session_id = st.query_params.get("session_id", None)
 
 df_dois = None
 
