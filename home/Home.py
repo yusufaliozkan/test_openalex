@@ -83,7 +83,7 @@ if df_dois is not None:
             st.query_params.session_id = new_id
 
             st.success("Link generated! You can copy and share this:")
-            st.code(f"{st.request.url}?session_id={new_id}", language="text")
+            st.code(f"{st.request.url}?query={new_id}", language="text")
 
         if st.button("🔍 Search DOIs"):
             with st.status("Searching DOIs...", expanded=True) as status:
@@ -106,4 +106,3 @@ if df_dois is not None:
                     st.dataframe(df_results)
                 else:
                     st.warning("No results found.")
-                    
