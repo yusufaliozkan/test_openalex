@@ -172,9 +172,9 @@ else:
                                 remove = st.button('Remove selected duplicate(s)')
                                 if remove:
                                     merged_df = merged_df[~merged_df['id'].isin(selected_ids)]
-                    @st.fragment
                     results(duplicates_df, merged_df)
-                          
+                    @st.fragment
+ 
                     oa_status_summary = merged_df['open_access.oa_status'].value_counts(dropna=False).reset_index()
                     oa_status_summary.columns = ['OA status', '# Outputs']
                     merged_df['open_access.is_oa'] = merged_df['open_access.is_oa'].map({True: 'Open Access', False: 'Closed Access'})
