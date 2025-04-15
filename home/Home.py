@@ -301,15 +301,16 @@ else:
                             country_freq.columns = ['Country Code', '# Count']
                             st.subheader("Country Affiliations", anchor=False)
                             st.dataframe(country_freq, hide_index=True,  use_container_width=False)
+                        def all_results(all_results_df):
+                            display = st.toggle('Show all results')                        
+                            if display:
+                                st.subheader('All results', anchor=False)
+                                all_results_df = all_results_df.loc[:, ~all_results_df.columns.str.startswith('abstract_inverted_index.')]
+                                all_results_df
+                        all_results(all_results_df)
                     results(merged_df, oa_summary, oa_status_summary, duplicates_df)
                     @st.fragment
-                    def all_results(all_results_df):
-                        display = st.toggle('Show all results')                        
-                        if display:
-                            st.subheader('All results', anchor=False)
-                            all_results_df = all_results_df.loc[:, ~all_results_df.columns.str.startswith('abstract_inverted_index.')]
-                            all_results_df
-                    all_results(all_results_df)
+
                     end_time = time.time()
                     processing_time = end_time - start_time
                     formatted_time = time.strftime("%M:%S", time.gmtime(processing_time))
