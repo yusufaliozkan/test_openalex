@@ -173,7 +173,7 @@ else:
                                 st.session_state.merged_df = merged_df[~merged_df['id'].isin(selected_ids)]
 
                     # Then outside the function
-                    merged_df
+                    st.session_state.merged_df
 
                     merged_df = merged_df.loc[:, ~merged_df.columns.str.startswith('abstract_inverted_index.')]
                     all_results_df = merged_df.copy()
