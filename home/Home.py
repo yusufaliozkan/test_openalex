@@ -302,7 +302,7 @@ else:
                                 st.dataframe(top_publishers, hide_index=True,  use_container_width=False)
 
                         st.subheader("Affiliations", anchor=False)
-                        with st.expander('Results', expanded=False):
+                        with st.expander('Results', expanded=True):
                             col1, col2 = st.columns(2)
                             with col1:
                                 # AUTHORS
