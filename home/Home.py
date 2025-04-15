@@ -127,7 +127,7 @@ else:
                 # Normalize and flatten nested fields
                 results_df = pd.json_normalize(all_results, sep='.')
                 results_df
-                results_df = results_df.drop_duplicates()
+                results_df = results_df.drop_duplicates(subset='id')
 
 
                 # Add cleaned DOI for merging
