@@ -379,10 +379,10 @@ else:
                                 filtered_raw_df = merged_df.copy()
 
                             col1, col2 = st.columns(2)
-                            col1:
+                            with col1:
                                 citation_count = filtered_raw_df['cited_by_count'].sum()
                                 st.metric(label='Citation count', value=citation_count)   
-                            col2:
+                            with col2:
                                 fwci = filtered_raw_df['fwci'].mean()
                                 st.metric(label='Field Weighted Citation Impact mean', value=fwci)                         
 
