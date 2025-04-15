@@ -136,6 +136,9 @@ else:
                     # Merge with original DOIs
                     merged_df = df_dois.merge(results_df, on='doi_submitted', how='left')
 
+                    duplicates_df = merged_df[merged_df.duplicated(subset='doi', keep=False)]
+                    duplicates_df = duplicates_df.reset_index(drop=True)
+
                     if merged_df['id'].isnull().all():
                         st.warning("No DOIs found in the OpenAlex database.")
                     else:
@@ -147,9 +150,6 @@ else:
                             st.success(f"{num_results} result(s) found.")
                     merged_df
                     duplicates_df
-
-                    duplicates_df = merged_df[merged_df.duplicated(subset='doi', keep=False)]
-                    duplicates_df = duplicates_df.reset_index(drop=True)
 
                     if not duplicates_df.empty:
                         duplicate_count = duplicates_df['doi'].nunique()
