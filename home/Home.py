@@ -129,10 +129,10 @@ else:
                 # Add cleaned DOI for merging
                 if not results_df.empty and 'doi' in results_df.columns:
                     results_df['doi_submitted'] = results_df['doi'].str.replace('https://doi.org/', '', regex=False)
-                    results_df
 
                     # Merge with original DOIs
                     merged_df = df_dois.merge(results_df, on='doi_submitted', how='left')
+                    merged_df
                     merged_df = merged_df.loc[:, ~merged_df.columns.str.startswith('abstract_inverted_index.')]
                     all_results_df = merged_df.copy()
                     merged_df = merged_df.dropna(subset='id')
