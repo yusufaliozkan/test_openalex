@@ -169,6 +169,26 @@ else:
                                     merged_df = merged_df[~merged_df['id'].isin(selected_ids)]
                         return merged_df
 
+
+                    def main():
+                        """
+                        Main function to run the Streamlit application.
+                        """
+
+                        # Create a copy to work with to avoid modifying the original df
+                        merged_df = df.copy()
+
+                        # Find duplicates
+                        duplicates_df = find_duplicates(merged_df)
+
+                        # Handle duplicates using the duplicate_function
+                        merged_df = duplicate_function(duplicates_df, merged_df)
+
+                        # Display the updated DataFrame
+                        st.dataframe(merged_df)
+
+                    if __name__ == "__main__":
+                        main()
                     # Then outside the function
                     merged_df = duplicate_function(duplicates_df, merged_df)
                     merged_df
