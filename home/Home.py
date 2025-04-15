@@ -171,6 +171,7 @@ else:
 
                     # Then outside the function
                     merged_df = duplicate_function(duplicates_df, merged_df)
+                    merged_df
 
                     merged_df = merged_df.loc[:, ~merged_df.columns.str.startswith('abstract_inverted_index.')]
                     all_results_df = merged_df.copy()
