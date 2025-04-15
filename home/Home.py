@@ -380,16 +380,18 @@ else:
 
                             filtered_raw_df['author_count'] = filtered_raw_df['authorships'].apply(lambda x: len(x) if isinstance(x, list) else 0)
 
-                            col1, col2, col3 = st.columns(3)
+                            col1, col2, col3, col4 = st.columns(4)
                             with col1:
+                                st.metric(label='Number of publications', value=num_results)
+                            with col2:
                                 citation_count = filtered_raw_df['cited_by_count'].sum()
                                 st.metric(label='Citation count', value=citation_count)   
-                            with col2:
+                            with col3:
                                 fwci = filtered_raw_df['fwci'].mean().round(2)
                                 st.metric(label='Field Weighted Citation Impact mean', value=fwci)
-                            with col3:
+                            with col4:
                                 num_authors = filtered_raw_df['author_count'].sum()
-                                st.metric(label='# Authors', value=num_authors)                       
+                                st.metric(label='Total number of Authors', value=num_authors)                       
 
                             year_counts = filtered_raw_df['publication_year'].value_counts().reset_index()
                             year_counts.columns = ['Publication Year', 'Count']
