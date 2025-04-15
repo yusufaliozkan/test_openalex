@@ -221,7 +221,7 @@ else:
                             else:
                                 st.dataframe(oa_status_summary, hide_index =True,  use_container_width=False)
                         with col2:
-                            merged_df
+                            
                             def safe_get_nested(row, path):
                                 current = row
                                 for key in path:
@@ -230,7 +230,7 @@ else:
                                     else:
                                         return None
                                 return current
-
+                            filtered_df
                             filtered_df['primary_location.source.display_name'] = filtered_df.apply(
                                 lambda row: safe_get_nested(row.get('primary_location', {}), ['source', 'display_name']),
                                 axis=1
