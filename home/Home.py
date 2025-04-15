@@ -289,19 +289,17 @@ else:
                                     top_journals = merged_df['primary_location.source.display_name'].value_counts(dropna=False).reset_index()
                                 top_journals.columns = ['Journal name', '# Outputs']
                                 top_journals = top_journals.dropna()
-                                st.subheader("Journals", anchor=False)
                                 st.dataframe(top_journals, hide_index=True,  use_container_width=False)
 
                             with col2:
                                 # PUBLISHERS
                                 if selected_statuses:
-                                    top_journals = filtered_raw_df['primary_location.source.host_organization_name'].value_counts(dropna=False).reset_index()
+                                    top_publishers = filtered_raw_df['primary_location.source.host_organization_name'].value_counts(dropna=False).reset_index()
                                 else:
-                                    top_journals = merged_df['primary_location.source.host_organization_name'].value_counts(dropna=False).reset_index()
-                                top_journals.columns = ['Journal name', '# Outputs']
-                                top_journals = top_journals.dropna()
-                                st.subheader("Journals", anchor=False)
-                                st.dataframe(top_journals, hide_index=True,  use_container_width=False)
+                                    top_publishers = merged_df['primary_location.source.host_organization_name'].value_counts(dropna=False).reset_index()
+                                top_publishers.columns = ['Publisher name', '# Outputs']
+                                top_publishers = top_publishers.dropna()
+                                st.dataframe(top_publishers, hide_index=True,  use_container_width=False)
 
 
                         col1, col2, col3 = st.columns(3)
