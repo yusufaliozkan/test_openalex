@@ -168,6 +168,8 @@ else:
                                 if remove:
                                     merged_df = merged_df[~merged_df['id'].isin(selected_ids)]
                         return merged_df
+
+                    # Then outside the function
                     merged_df = duplicate_function(duplicates_df, merged_df)
 
                     merged_df = merged_df.loc[:, ~merged_df.columns.str.startswith('abstract_inverted_index.')]
