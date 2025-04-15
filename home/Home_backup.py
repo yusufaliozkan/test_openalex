@@ -11,6 +11,8 @@ import numpy as np
 import plotly.express as px
 import time
 from sidebar_content import sidebar_content
+import pycountry
+
 
 st.set_page_config(layout = "wide", 
                     page_title='OpenAlex DOI Search Tool',
@@ -167,7 +169,7 @@ else:
 
                     oa_status_summary = merged_df['open_access.oa_status'].value_counts(dropna=False).reset_index()
                     oa_status_summary.columns = ['OA status', '# Outputs']
-                    merged_df['open_access.is_oa'] = merged_df['open_access.is_oa'].map({True: 'Open Access', False: 'Closed Access'})
+                    # merged_df['open_access.is_oa'] = merged_df['open_access.is_oa'].map({True: 'Open Access', False: 'Closed Access'})
                     oa_summary = merged_df['open_access.is_oa'].value_counts(dropna=False).reset_index()
                     oa_summary.columns = ['Is OA?', '# Outputs']
 
@@ -192,6 +194,21 @@ else:
                                 if remove:
                                     merged_df = merged_df[~merged_df['id'].isin(selected_ids)]
 
+                        if merged_df['id'].isnull().all():
+                            st.warning("No DOIs found in the OpenAlex database.")
+                        else:
+                            num_results = merged_df['id'].notnull().sum()
+                            # if not duplicates_df.empty:
+                            #     duplicate_count = duplicates_df['doi'].nunique()
+                            #     st.success(f"{num_results} result(s) found with {duplicate_count} duplicate(s).")
+                            # else:
+                            #     st.success(f"{num_results} result(s) found.")
+
+                        oa_status_summary = merged_df['open_access.oa_status'].value_counts(dropna=False).reset_index()
+                        oa_status_summary.columns = ['OA status', '# Outputs']
+                        merged_df['open_access.is_oa'] = merged_df['open_access.is_oa'].map({True: 'Open Access', False: 'Closed Access'})
+                        oa_summary = merged_df['open_access.is_oa'].value_counts(dropna=False).reset_index()
+                        oa_summary.columns = ['Is OA?', '# Outputs']
 
                         if merged_df.empty:
                             st.error('No item to display!')
@@ -207,6 +224,7 @@ else:
                             st.write(f'''
                                 **{oa_summary.iloc[0]['# Outputs']}** *{oa_summary.iloc[0]['Is OA?']}* papers found.
                             ''')
+
                         available_oa_statuses = oa_status_summary['OA status'].dropna().unique().tolist()
                         selected_statuses = st.multiselect(
                             'Filter by OA Status',
@@ -220,7 +238,7 @@ else:
                             filtered_raw_df = filtered_df.copy()
                             
                         else:
-                            filtered_df = merged_df.copy()   
+                            filtered_df = merged_df.copy()
                         col1, col2 = st.columns([1,4])
                         with col1:
                             if selected_statuses:
@@ -243,8 +261,6 @@ else:
                                         return None
                                 return current
 
-                            
-                            
                             # filtered_df['primary_location.source.display_name'] = filtered_df.apply(
                             #     lambda row: safe_get_nested(row.get('primary_location', {}), ['source', 'display_name']),
                             #     axis=1
@@ -317,10 +333,23 @@ else:
                             st.dataframe(institution_freq, hide_index=True,  use_container_width=False)
                         with col3:
                             # Country frequency table
+                            def code_to_name(code):
+                                try:
+                                    return pycountry.countries.get(alpha_2=code).name
+                                except:
+                                    return code  # fallback to code if not found
+
+                            # Compute frequency table
                             country_freq = institutions_table['country_code'].value_counts(dropna=True).reset_index()
                             country_freq.columns = ['Country Code', '# Count']
+
+                            # Map codes to full names
+                            country_freq['Country'] = country_freq['Country Code'].apply(code_to_name)
+                            country_freq = country_freq[['Country', '# Count']]  # Reorder columns
+
+                            # Show in Streamlit
                             st.subheader("Country Affiliations", anchor=False)
-                            st.dataframe(country_freq, hide_index=True,  use_container_width=False)
+                            st.dataframe(country_freq, hide_index=True, use_container_width=False)
                     results(merged_df, oa_summary, oa_status_summary, duplicates_df)
                     @st.fragment
                     def all_results(all_results_df):
