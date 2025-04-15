@@ -136,7 +136,7 @@ else:
                     # Merge with original DOIs
                     merged_df = df_dois.merge(results_df, on='doi_submitted', how='left')
                     merged_df
-                    merged_df['journal'] = merged_df['journal'].fillna('No result')
+                    merged_df = merged_df.fillna('No result')
 
                     duplicates_df = merged_df[merged_df.duplicated(subset='doi', keep=False)]
                     duplicates_df = duplicates_df.reset_index(drop=True)
