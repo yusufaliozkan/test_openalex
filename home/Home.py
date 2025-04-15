@@ -154,12 +154,13 @@ else:
                             st.success(f"{num_results} result(s) found.")
 
                     @st.fragment
-                    def results(duplicates_df, merged_df):
+                    def show_duplicate_editor(duplicates_df, merged_df):
                         if not duplicates_df.empty:
                             duplicate_count = duplicates_df['doi'].nunique()
                             show_duplicates = st.toggle(f'{duplicate_count} duplicate(s) found. Display and edit duplicates.')
                             if show_duplicates:
                                 st.info("To remove duplicate, click the one you wish to remove from the 'select_row_to_remove' column and press 'Remove selected duplicate(s)'")
+                                duplicates_df = duplicates_df.copy()
                                 duplicates_df['select_row_to_remove'] = False
                                 duplicates_df = duplicates_df[['select_row_to_remove'] + [col for col in duplicates_df.columns if col != 'select_row_to_remove']]
                                 editable = "select_row_to_remove"
@@ -169,11 +170,12 @@ else:
                                     disabled=disabled_columns
                                 )
                                 selected_ids = duplicates_df[duplicates_df['select_row_to_remove']]['id'].tolist()
-                                remove = st.button('Remove selected duplicate(s)')
-                                if remove:
-                                    merged_df = merged_df[~merged_df['id'].isin(selected_ids)]
-                    results(duplicates_df, merged_df)
-                    @st.fragment
+                                if st.button('Remove selected duplicate(s)'):
+                                    merged_df.drop(merged_df[merged_df['id'].isin(selected_ids)].index, inplace=True)
+                        return merged_df
+
+                    # Call the fragment
+                    merged_df = show_duplicate_editor(duplicates_df, merged_df)
  
                     oa_status_summary = merged_df['open_access.oa_status'].value_counts(dropna=False).reset_index()
                     oa_status_summary.columns = ['OA status', '# Outputs']
