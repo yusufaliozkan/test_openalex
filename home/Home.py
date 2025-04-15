@@ -246,7 +246,7 @@ else:
                                 if selected_statuses:
                                     oa_status_summary = filtered_df['open_access.oa_status'].value_counts(dropna=False).reset_index()
                                     oa_status_summary.columns = ['OA status', '# Outputs']
-                                    merged_df['open_access.is_oa'] = merged_df['open_access.is_oa'].map({True: 'Open Access', False: 'Closed Access'})
+                                    # merged_df['open_access.is_oa'] = merged_df['open_access.is_oa'].map({True: 'Open Access', False: 'Closed Access'})
                                     oa_summary = merged_df['open_access.is_oa'].value_counts(dropna=False).reset_index()
                                     oa_summary.columns = ['Is OA?', '# Outputs']
                                     st.dataframe(oa_status_summary, hide_index =True,  use_container_width=False)
