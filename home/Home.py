@@ -212,16 +212,14 @@ else:
                             st.error('No item to display!')
                             st.stop()
                         st.subheader("Open Access Status Summary", anchor=False)
-                        if len(oa_summary) >= 1:
+                        if len(oa_summary) > 0:
                             items = [
                                 f"**{int(row['# Outputs'])}** *{row['Is OA?'] if pd.notna(row['Is OA?']) else 'Unknown'}*"
                                 for _, row in oa_summary.iterrows()
                             ]
                             st.write(f"{' and '.join(items)} papers found")
-                        elif len(oa_summary) == 1:
-                            st.write(f'''
-                                **{oa_summary.iloc[0]['# Outputs']}** *{oa_summary.iloc[0]['Is OA?']}* papers found.
-                            ''')
+                        else:
+                            st.write("No open access summary available.")
                         available_oa_statuses = oa_status_summary['OA status'].dropna().unique().tolist()
                         selected_statuses = st.multiselect(
                             'Filter by OA Status',
