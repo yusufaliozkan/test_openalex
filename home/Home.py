@@ -277,7 +277,33 @@ else:
                                 filtered_df = filtered_df[['doi', 'type_crossref','primary_location.source.display_name', 'primary_location.source.host_organization_name', 'publication_year', 'publication_date', 'open_access.is_oa','open_access.oa_status', 'open_access.oa_url', 'primary_location.license']]
                                 filtered_df.columns = ['DOI', 'Type','Journal', 'Publisher','Publication year', 'Publication date','Is OA?', 'OA Status', 'OA URL', 'Licence']
                                 filtered_df
-                
+
+                        st.subheader("Journals and Publishers", anchor=False)
+                        with st.expander('Results'):
+                        col1, col2 = st.columns(2)
+                        with col1:
+                            # JOURNALS
+                            if selected_statuses:
+                                top_journals = filtered_raw_df['primary_location.source.display_name'].value_counts(dropna=False).reset_index()
+                            else:
+                                top_journals = merged_df['primary_location.source.display_name'].value_counts(dropna=False).reset_index()
+                            top_journals.columns = ['Journal name', '# Outputs']
+                            top_journals = top_journals.dropna()
+                            st.subheader("Journals", anchor=False)
+                            st.dataframe(top_journals, hide_index=True,  use_container_width=False)
+
+                        with col2:
+                            # PUBLISHERS
+                            if selected_statuses:
+                                top_journals = filtered_raw_df['primary_location.source.host_organization_name'].value_counts(dropna=False).reset_index()
+                            else:
+                                top_journals = merged_df['primary_location.source.host_organization_name'].value_counts(dropna=False).reset_index()
+                            top_journals.columns = ['Journal name', '# Outputs']
+                            top_journals = top_journals.dropna()
+                            st.subheader("Journals", anchor=False)
+                            st.dataframe(top_journals, hide_index=True,  use_container_width=False)
+
+
                         col1, col2, col3 = st.columns(3)
                         with col1:
                             # JOURNALS
