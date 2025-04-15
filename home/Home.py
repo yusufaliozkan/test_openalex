@@ -210,7 +210,7 @@ else:
                             filtered_raw_df = filtered_df.copy()
                             
                         else:
-                            filtered_df = merged_df    
+                            filtered_df = merged_df.copy()   
                         col1, col2 = st.columns([1,4])
                         with col1:
                             if selected_statuses:
