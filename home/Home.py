@@ -378,6 +378,9 @@ else:
                             else:
                                 filtered_raw_df = merged_df.copy()
 
+                            filtered_raw_df['author_count'] = filtered_raw_df['authorships'].apply(lambda x: len(x) if isinstance(x, list) else 0)
+                            filtered_raw_df
+
                             col1, col2 = st.columns(2)
                             with col1:
                                 citation_count = filtered_raw_df['cited_by_count'].sum()
