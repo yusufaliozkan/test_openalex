@@ -154,7 +154,6 @@ else:
                             st.success(f"{num_results} result(s) found.")
 
 
-
                     if not duplicates_df.empty:
                         duplicate_count = duplicates_df['doi'].nunique()
                         show_duplicates = st.toggle(f'{duplicate_count} duplicate(s) found. Display and edit duplicates.')
