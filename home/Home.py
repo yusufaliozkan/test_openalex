@@ -126,7 +126,11 @@ else:
 
                 for record in all_results:
                     record.setdefault('primary_location', {})
-                    record['primary_location'].setdefault('source', {})
+
+                    # If 'source' is missing or None, replace with empty dict
+                    if not isinstance(record['primary_location'].get('source'), dict):
+                        record['primary_location']['source'] = {}
+
                     record['primary_location']['source'].setdefault('display_name', None)
 
                 # Normalize and flatten nested fields
