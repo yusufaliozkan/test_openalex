@@ -153,6 +153,28 @@ else:
                         else:
                             st.success(f"{num_results} result(s) found.")
 
+
+
+                    if not duplicates_df.empty:
+                        duplicate_count = duplicates_df['doi'].nunique()
+                        show_duplicates = st.toggle(f'{duplicate_count} duplicate(s) found. Display and edit duplicates.')
+                        if show_duplicates:
+                            st.info("To remove duplicate, click the one you wish to remove from the 'select_row_to_remove' column and press 'Remove selected duplicate(s)'")
+                            duplicates_df['select_row_to_remove'] = False
+                            duplicates_df = duplicates_df[['select_row_to_remove'] + [col for col in duplicates_df.columns if col != 'select_row_to_remove']]
+                            editable = "select_row_to_remove"
+                            disabled_columns = [col for col in duplicates_df.columns if col != editable]
+                            duplicates_df = st.data_editor(
+                                duplicates_df,
+                                disabled=disabled_columns
+                            )
+                            selected_ids = duplicates_df[duplicates_df['select_row_to_remove']]['id'].tolist()
+                            remove = st.button('Remove selected duplicate(s)')
+                            if remove:
+                                merged_df = merged_df[~merged_df['id'].isin(selected_ids)]
+                                oa_summary = merged_df['open_access.is_oa'].value_counts(dropna=False).reset_index()
+                                oa_summary.columns = ['Is OA?', '# Outputs']
+                                
                     oa_status_summary = merged_df['open_access.oa_status'].value_counts(dropna=False).reset_index()
                     oa_status_summary.columns = ['OA status', '# Outputs']
                     merged_df['open_access.is_oa'] = merged_df['open_access.is_oa'].map({True: 'Open Access', False: 'Closed Access'})
@@ -162,25 +184,7 @@ else:
                     # OA Summary
                     @st.fragment
                     def results(merged_df, oa_summary, oa_status_summary, duplicates_df):
-                        if not duplicates_df.empty:
-                            duplicate_count = duplicates_df['doi'].nunique()
-                            show_duplicates = st.toggle(f'{duplicate_count} duplicate(s) found. Display and edit duplicates.')
-                            if show_duplicates:
-                                st.info("To remove duplicate, click the one you wish to remove from the 'select_row_to_remove' column and press 'Remove selected duplicate(s)'")
-                                duplicates_df['select_row_to_remove'] = False
-                                duplicates_df = duplicates_df[['select_row_to_remove'] + [col for col in duplicates_df.columns if col != 'select_row_to_remove']]
-                                editable = "select_row_to_remove"
-                                disabled_columns = [col for col in duplicates_df.columns if col != editable]
-                                duplicates_df = st.data_editor(
-                                    duplicates_df,
-                                    disabled=disabled_columns
-                                )
-                                selected_ids = duplicates_df[duplicates_df['select_row_to_remove']]['id'].tolist()
-                                remove = st.button('Remove selected duplicate(s)')
-                                if remove:
-                                    merged_df = merged_df[~merged_df['id'].isin(selected_ids)]
-                                    oa_summary = merged_df['open_access.is_oa'].value_counts(dropna=False).reset_index()
-                                    oa_summary.columns = ['Is OA?', '# Outputs']
+
                         if merged_df.empty:
                             st.error('No item to display!')
                             st.stop()
