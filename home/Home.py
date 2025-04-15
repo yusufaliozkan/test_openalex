@@ -372,6 +372,11 @@ else:
                                 st.dataframe(country_freq, hide_index=True, use_container_width=False)
                         st.subheader('Metrics', anchor=False)
                         with st.expander('Results', expanded=True):
+                            if selected_statuses:
+                                filtered_df = merged_df[merged_df['open_access.oa_status'].isin(selected_statuses)]
+                                filtered_raw_df = filtered_df.copy()
+                            else:
+                                filtered_df = merged_df.copy()
                             citation_count = filtered_raw_df['cited_by_count'].sum()
                             st.metric(label='Citation count', value=citation_count)                            
 
