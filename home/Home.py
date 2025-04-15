@@ -177,7 +177,7 @@ else:
                                 selected_ids = duplicates_df[duplicates_df['select_row_to_remove']]['id'].tolist()
                                 selected_ids
                                 merged_df = merged_df[~merged_df['id'].isin(selected_ids)]
-                        if merged_df.empty:
+                        if not merged_df.empty:
                             st.warning('No results found')
                         else:
                             st.subheader("Open Access Status Summary", anchor=False)
