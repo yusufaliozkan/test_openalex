@@ -139,8 +139,9 @@ else:
                     duplicates_df = merged_df[merged_df.duplicated(subset='doi', keep=False)]
                     duplicates_df = duplicates_df.reset_index(drop=True)
                     if not duplicates_df.empty:
+                        duplicate_count = duplicates_df['doi'].nunique()
+                        duplicate_count
                         duplicates_df
-
 
                     merged_df = merged_df.loc[:, ~merged_df.columns.str.startswith('abstract_inverted_index.')]
                     all_results_df = merged_df.copy()
