@@ -173,9 +173,9 @@ else:
                         oa_summary = merged_df['open_access.is_oa'].value_counts(dropna=False).reset_index()
                         oa_summary.columns = ['Is OA?', '# Outputs']
 
-                        # # OA Summary
-                        # @st.fragment
-                        # def results(merged_df, oa_summary, oa_status_summary, duplicates_df):
+                    # OA Summary
+                    @st.fragment
+                    def results(merged_df, oa_summary, oa_status_summary, duplicates_df):
                         
                         if not duplicates_df.empty:
                             duplicate_count = duplicates_df['doi'].nunique()
@@ -324,23 +324,23 @@ else:
                             country_freq.columns = ['Country Code', '# Count']
                             st.subheader("Country Affiliations", anchor=False)
                             st.dataframe(country_freq, hide_index=True,  use_container_width=False)
-            results(merged_df, oa_summary, oa_status_summary, duplicates_df)
-            @st.fragment
-                    # def all_results(all_results_df):
-                    #     display = st.toggle('Show all results')                        
-                    #     if display:
-                    #         st.subheader('All results', anchor=False)
-                    #         all_results_df = all_results_df.loc[:, ~all_results_df.columns.str.startswith('abstract_inverted_index.')]
-                    #         all_results_df
-                    # all_results(all_results_df)
-                    # end_time = time.time()
-                    # processing_time = end_time - start_time
-                    # formatted_time = time.strftime("%M:%S", time.gmtime(processing_time))
-                    # status.update(
-                    #     label=f"Search complete! Results found for {num_results} DOIs in {formatted_time} minutes.",
-                    #     state="complete",
-                    #     expanded=True
-                    # )
+                    results(merged_df, oa_summary, oa_status_summary, duplicates_df)
+                    @st.fragment
+                    def all_results(all_results_df):
+                        display = st.toggle('Show all results')                        
+                        if display:
+                            st.subheader('All results', anchor=False)
+                            all_results_df = all_results_df.loc[:, ~all_results_df.columns.str.startswith('abstract_inverted_index.')]
+                            all_results_df
+                    all_results(all_results_df)
+                    end_time = time.time()
+                    processing_time = end_time - start_time
+                    formatted_time = time.strftime("%M:%S", time.gmtime(processing_time))
+                    status.update(
+                        label=f"Search complete! Results found for {num_results} DOIs in {formatted_time} minutes.",
+                        state="complete",
+                        expanded=True
+                    )
 
                 else:
                     st.error("No DOIs found in the OpenAlex database. Check the submitted DOIs and resubmit.")
