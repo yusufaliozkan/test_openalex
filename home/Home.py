@@ -161,7 +161,7 @@ else:
 
                     # OA Summary
                     @st.fragment
-                    def results(merged_df, oa_summary, oa_status_summary, duplicates_df):
+                    def results(merged_df, oa_summary, oa_status_summary, duplicates_df, all_results_df):
                         if not duplicates_df.empty:
                             duplicate_count = duplicates_df['doi'].nunique()
                             show_duplicates = st.toggle(f'{duplicate_count} duplicate(s) found. Display duplicates.')
@@ -308,7 +308,7 @@ else:
                                 all_results_df = all_results_df.loc[:, ~all_results_df.columns.str.startswith('abstract_inverted_index.')]
                                 all_results_df
                         all_results(all_results_df)
-                    results(merged_df, oa_summary, oa_status_summary, duplicates_df)
+                    results(merged_df, oa_summary, oa_status_summary, duplicates_df, all_results_df)
                     @st.fragment
 
                     end_time = time.time()
