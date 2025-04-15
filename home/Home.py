@@ -162,7 +162,9 @@ else:
                         if not duplicates_df.empty:
                             duplicate_count = duplicates_df['doi'].nunique()
                             st.warning(f'The search found {duplicate_count} duplicate(s).')
-                            duplicates_df                     
+                            show_duplicates = st.toggle('See the list of duplicates')
+                            if show_duplicates:
+                                duplicates_df                     
                         st.subheader("Open Access Status Summary", anchor=False)
                         if len(oa_summary) >= 1:
                             items = [
