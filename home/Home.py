@@ -174,7 +174,7 @@ else:
 
                     # Then outside the function
                     st.session_state.merged_df = duplicate_function(duplicates_df, st.session_state.merged_df)
-
+                    st.session_state.merged_df
                     merged_df
 
                     merged_df = merged_df.loc[:, ~merged_df.columns.str.startswith('abstract_inverted_index.')]
