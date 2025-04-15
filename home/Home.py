@@ -167,8 +167,8 @@ else:
                                 remove = st.button('Remove selected duplicate(s)')
                                 if remove:
                                     merged_df = merged_df[~merged_df['id'].isin(selected_ids)]
-                       duplicate_function(duplicates_df, merged_df)
-                       @st.fragment 
+                    duplicate_function(duplicates_df, merged_df)
+                    @st.fragment 
 
                     merged_df = merged_df.loc[:, ~merged_df.columns.str.startswith('abstract_inverted_index.')]
                     all_results_df = merged_df.copy()
