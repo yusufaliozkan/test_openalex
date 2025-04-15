@@ -231,10 +231,10 @@ else:
                                         return None
                                 return current
                             
-                            # filtered_df['primary_location.source.display_name'] = filtered_df.apply(
-                            #     lambda row: safe_get_nested(row.get('primary_location', {}), ['source', 'display_name']),
-                            #     axis=1
-                            # )
+                            filtered_df['primary_location.source.display_name'] = filtered_df.apply(
+                                lambda row: safe_get_nested(row.get('primary_location', {}), ['source', 'display_name']),
+                                axis=1
+                            )
 
                             # filtered_df['primary_location.source.host_organization_name'] = filtered_df.apply(
                             #     lambda row: safe_get_nested(row.get('primary_location', {}), ['source', 'host_organization_name']),
