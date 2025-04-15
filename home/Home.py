@@ -301,6 +301,8 @@ else:
                             country_freq.columns = ['Country Code', '# Count']
                             st.subheader("Country Affiliations", anchor=False)
                             st.dataframe(country_freq, hide_index=True,  use_container_width=False)
+                    results(merged_df, oa_summary, oa_status_summary, duplicates_df)
+                    @st.fragment
                     def all_results(all_results_df):
                         display = st.toggle('Show all results')                        
                         if display:
@@ -316,9 +318,6 @@ else:
                         state="complete",
                         expanded=True
                     )
-                    results(merged_df, oa_summary, oa_status_summary, duplicates_df)
-                    @st.fragment
-
 
                 else:
                     st.error("No DOIs found in the OpenAlex database. Check the submitted DOIs and resubmit.")
