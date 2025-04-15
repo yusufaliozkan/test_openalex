@@ -125,12 +125,9 @@ else:
                     time.sleep(1)  # Be polite to the API
 
                 for record in all_results:
-                    if 'primary_location' not in record:
-                        record['primary_location'] = {}
-                    if 'source' not in record['primary_location']:
-                        record['primary_location']['source'] = {}
-                    if 'display_name' not in record['primary_location']['source']:
-                        record['primary_location']['source']['display_name'] = None
+                    record.setdefault('primary_location', {})
+                    record['primary_location'].setdefault('source', {})
+                    record['primary_location']['source'].setdefault('display_name', None)
 
                 # Normalize and flatten nested fields
                 results_df = pd.json_normalize(all_results, sep='.')
