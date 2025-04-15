@@ -166,7 +166,9 @@ else:
                             duplicate_count = duplicates_df['doi'].nunique()
                             show_duplicates = st.toggle(f'{duplicate_count} duplicate(s) found. Display duplicates.')
                             if show_duplicates:
-                                duplicates_df['doi_to_remove'] = True
+                                duplicates_df['doi_to_remove'] = False
+                                duplicates_df = duplicates_df[['doi_to_remove'] + [col for col in duplicates_df.columns if col != 'doi_to_remove']]
+
                                 editable = "doi_to_remove"
                                 disabled_columns = [col for col in duplicates_df.columns if col != editable]
                                 duplicates_df = st.data_editor(
