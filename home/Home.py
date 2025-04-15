@@ -167,6 +167,8 @@ else:
                             duplicate_count = duplicates_df['doi'].nunique()
                             show_duplicates = st.toggle(f'{duplicate_count} duplicate(s) found. Display duplicates.')
                             if show_duplicates:
+                                editable = "doi"
+                                disabled_columns = [col for col in duplicates_df.columns if col != editable]
                                 st.data_editor(duplicates_df)                     
                         st.subheader("Open Access Status Summary", anchor=False)
                         if len(oa_summary) >= 1:
