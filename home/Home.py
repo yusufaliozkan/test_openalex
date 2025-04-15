@@ -149,7 +149,7 @@ else:
                         num_results = merged_df['id'].notnull().sum()
                         if not duplicates_df.empty:
                             duplicate_count = duplicates_df['doi'].nunique()
-                            st.success(f"{num_results} result(s) found. The search found {duplicate_count} duplicate(s).")
+                            st.success(f"{num_results} result(s) found with {duplicate_count} duplicate(s).")
                         else:
                             st.success(f"{num_results} result(s) found.")
 
