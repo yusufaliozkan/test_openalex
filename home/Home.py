@@ -11,9 +11,6 @@ import numpy as np
 import plotly.express as px
 import time
 from sidebar_content import sidebar_content
-import uuid
-import json
-import os
 
 st.set_page_config(layout = "wide", 
                     page_title='OpenAlex DOI Search Tool',
@@ -260,14 +257,13 @@ else:
                             st.dataframe(country_freq, hide_index=True,  use_container_width=False)
                     results(merged_df, oa_summary, oa_status_summary)
                     @st.fragment
-                    def display_all_results(all_results_df):
+                    def all_results(all_results_df):
                         display = st.toggle('Show all results')                        
                         if display:
                             st.subheader('All results', anchor=False)
                             all_results_df = all_results_df.loc[:, ~all_results_df.columns.str.startswith('abstract_inverted_index.')]
-                            st.write(all_results_df) 
-                    display_all_results(all_results_df)
-
+                            all_results_df
+                    all_results(all_results_df)
                     end_time = time.time()
                     processing_time = end_time - start_time
                     formatted_time = time.strftime("%M:%S", time.gmtime(processing_time))
@@ -276,35 +272,6 @@ else:
                         state="complete",
                         expanded=True
                     )
-
-                    unique_id = str(uuid.uuid4())
-
-                    # Update the query parameters in the URL
-                    st.query_params.result_id = unique_id
-
-                    with open(f"results_{unique_id}.json", "w") as f:
-                        json.dump(all_results, f)
-
-                    st.query_params.result_id = unique_id
-
-                    if 'result_id' in st.query_params:
-                        unique_id = st.query_params.result_id
-                        file_path = f"results_{unique_id}.json"
-                        
-                        if os.path.exists(file_path):
-                            with open(file_path, "r") as f:
-                                loaded_results = json.load(f)
-                            st.success("Loaded your shared search results!")
-                            # Here, you can display the data as needed, for example:
-                            st.write(loaded_results)
-                            # Or if you want to re-display it in a dataframe:
-                            # st.dataframe(pd.DataFrame(loaded_results))
-                        else:
-                            st.error("No stored results found for the shared link.")
-
-                    base_url = "https://testopenalex.streamlit.app"  # Update this accordingly
-                    shareable_url = f"{base_url}?result_id={unique_id}"
-                    st.success(f"Your shareable link is: {shareable_url}")
 
                 else:
                     st.error("No DOIs found in the OpenAlex database. Check the submitted DOIs and resubmit.")
