@@ -241,6 +241,24 @@ else:
                                 
                             else:
                                 filtered_df = merged_df.copy()
+
+                            filtered_df
+                            year_counts = filtered_df['Publication year'].value_counts().reset_index()
+                            year_counts.columns = ['Publication Year', 'Count']
+                            year_counts = year_counts.sort_values('Publication Year')
+
+                            # Create Plotly chart
+                            fig = px.bar(
+                                year_counts,
+                                x='Publication Year',
+                                y='Count',
+                                title='Number of Publications per Year',
+                                labels={'Count': 'Number of Publications'},
+                            )
+
+                            # Display it in Streamlit
+                            st.plotly_chart(fig, use_container_width=True)
+
                             col1, col2 = st.columns([1,4])
                             with col1:
                                 if selected_statuses:
