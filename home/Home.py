@@ -124,16 +124,17 @@ else:
                         print(f"Request failed for batch starting with {batch[0]}")
                     time.sleep(1)  # Be polite to the API
 
+                for record in all_results:
+                    if 'primary_location' not in record:
+                        record['primary_location'] = {}
+                    if 'source' not in record['primary_location']:
+                        record['primary_location']['source'] = {}
+                    if 'display_name' not in record['primary_location']['source']:
+                        record['primary_location']['source']['display_name'] = None
+
                 # Normalize and flatten nested fields
                 results_df = pd.json_normalize(all_results, sep='.')
                 results_df = results_df.drop_duplicates(subset='id')
-
-                # Ensure all expected columns exist
-                expected_columns = ['primary_location.source.display_name', 'doi']
-                for col in expected_columns:
-                    if col not in results_df.columns:
-                        results_df[col] = None
-                results_df
 
                 # Add cleaned DOI for merging
                 if not results_df.empty and 'doi' in results_df.columns:
@@ -142,6 +143,7 @@ else:
 
                     # Merge with original DOIs
                     merged_df = df_dois.merge(results_df, on='doi_submitted', how='left')
+                    merged_df
                     merged_df['primary_location.source.display_name'] = merged_df['primary_location.source.display_name'].fillna('No result')
 
                     duplicates_df = merged_df[merged_df.duplicated(subset='doi', keep=False)]
