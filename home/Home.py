@@ -126,13 +126,11 @@ else:
 
                 # Normalize and flatten nested fields
                 results_df = pd.json_normalize(all_results, sep='.')
-                results_df
 
-                results_df['doi_submitted'] = results_df['doi_submitted'].str.strip().str.lower()
-                
                 # Add cleaned DOI for merging
                 if not results_df.empty and 'doi' in results_df.columns:
                     results_df['doi_submitted'] = results_df['doi'].str.replace('https://doi.org/', '', regex=False)
+                    results_df['doi_submitted'] = results_df['doi_submitted'].str.strip().str.lower()
 
                     # Merge with original DOIs
                     merged_df = df_dois.merge(results_df, on='doi_submitted', how='left')
