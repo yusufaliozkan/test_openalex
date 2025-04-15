@@ -179,7 +179,8 @@ else:
                                 if remove:
                                     merged_df = merged_df[~merged_df['id'].isin(selected_ids)]
                         if merged_df.empty:
-                            st.write('emptry')
+                            st.error('No item to display!')
+                            st.stop()
                         st.subheader("Open Access Status Summary", anchor=False)
                         if len(oa_summary) >= 1:
                             items = [
