@@ -209,7 +209,6 @@ else:
                         # merged_df['open_access.is_oa'] = merged_df['open_access.is_oa'].map({True: 'Open Access', False: 'Closed Access'})
                         oa_summary = merged_df['open_access.is_oa'].value_counts(dropna=False).reset_index()
                         oa_summary.columns = ['Is OA?', '# Outputs']
-                        merged_df
 
                         if merged_df.empty:
                             st.error('No item to display!')
