@@ -243,7 +243,7 @@ else:
                                 filtered_df = merged_df.copy()
 
                             filtered_df
-                            year_counts = filtered_df['Publication year'].value_counts().reset_index()
+                            year_counts = filtered_df['publication_year'].value_counts().reset_index()
                             year_counts.columns = ['Publication Year', 'Count']
                             year_counts = year_counts.sort_values('Publication Year')
 
