@@ -202,8 +202,6 @@ else:
                             # else:
                             #     st.success(f"{num_results} result(s) found.")
 
-                        merged_df
-
                         oa_status_summary = merged_df['open_access.oa_status'].value_counts(dropna=False).reset_index()
                         oa_status_summary.columns = ['OA status', '# Outputs']
                         merged_df['open_access.is_oa'] = merged_df['open_access.is_oa'].map({True: 'Open Access', False: 'Closed Access'})
@@ -238,7 +236,8 @@ else:
                             filtered_raw_df = filtered_df.copy()
                             
                         else:
-                            filtered_df = merged_df.copy()   
+                            filtered_df = merged_df.copy()
+                        filtered_df 
                         col1, col2 = st.columns([1,4])
                         with col1:
                             if selected_statuses:
