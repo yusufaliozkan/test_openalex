@@ -148,8 +148,6 @@ else:
                             st.success(f"{num_results} result(s) found with {duplicate_count} duplicate(s).")
                         else:
                             st.success(f"{num_results} result(s) found.")
-                    merged_df
-                    duplicates_df
 
                     if not duplicates_df.empty:
                         duplicate_count = duplicates_df['doi'].nunique()
