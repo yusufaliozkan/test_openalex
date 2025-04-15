@@ -204,14 +204,24 @@ else:
                             else:
                                 st.dataframe(oa_status_summary, hide_index =True,  use_container_width=False)
                         with col2:
-                            # Safely extract nested fields
-                            filtered_df['primary_location.source.display_name'] = filtered_df['primary_location'].apply(
-                                lambda x: x.get('source', {}).get('display_name') if isinstance(x, dict) else None
+                            def safe_get_nested(row, path):
+                                current = row
+                                for key in path:
+                                    if isinstance(current, dict):
+                                        current = current.get(key, None)
+                                    else:
+                                        return None
+                                return current
+
+                            filtered_df['primary_location.source.display_name'] = filtered_df.apply(
+                                lambda row: safe_get_nested(row.get('primary_location', {}), ['source', 'display_name']),
+                                axis=1
                             )
 
-                            filtered_df['primary_location.source.host_organization_name'] = filtered_df['primary_location'].apply(
-                                lambda x: x.get('source', {}).get('host_organization_name') if isinstance(x, dict) else None
-                            )                   
+                            filtered_df['primary_location.source.host_organization_name'] = filtered_df.apply(
+                                lambda row: safe_get_nested(row.get('primary_location', {}), ['source', 'host_organization_name']),
+                                axis=1
+                            )                  
                             filtered_df= filtered_df.reset_index(drop=True)
                             filtered_df.index +=1
                             filtered_df
