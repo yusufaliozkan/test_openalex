@@ -214,7 +214,7 @@ else:
                         if merged_df.empty:
                             st.error('No item to display!')
                             st.stop()
-                        st.container = container_status()
+                        container_status = st.container()
                         st.subheader("Open Access Status Summary", anchor=False)
                         if len(oa_summary) >= 1:
                             items = [
