@@ -383,7 +383,7 @@ else:
                                 citation_count = filtered_raw_df['cited_by_count'].sum()
                                 st.metric(label='Citation count', value=citation_count)   
                             with col2:
-                                fwci = filtered_raw_df['fwci'].mean()
+                                fwci = filtered_raw_df['fwci'].mean().round(2)
                                 st.metric(label='Field Weighted Citation Impact mean', value=fwci)                         
 
                             year_counts = filtered_raw_df['publication_year'].value_counts().reset_index()
