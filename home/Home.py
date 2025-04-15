@@ -123,10 +123,16 @@ else:
                     else:
                         print(f"Request failed for batch starting with {batch[0]}")
                     time.sleep(1)  # Be polite to the API
-
+                    
                 # Normalize and flatten nested fields
                 results_df = pd.json_normalize(all_results, sep='.')
                 results_df = results_df.drop_duplicates(subset='id')
+
+                # Ensure all expected columns exist
+                expected_columns = ['primary_location.source.display_name', 'doi']
+                for col in expected_columns:
+                    if col not in results_df.columns:
+                        results_df[col] = None
 
                 # Add cleaned DOI for merging
                 if not results_df.empty and 'doi' in results_df.columns:
