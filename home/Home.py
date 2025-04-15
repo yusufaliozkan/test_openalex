@@ -336,6 +336,6 @@ else:
                         
                         
         results(merged_df, oa_summary, oa_status_summary, duplicates_df)
-        @st.fragment 
+        @st.fragment
     # else:
     #     st.warning("Enter DOIs in the text area or upload a file to start search.")
