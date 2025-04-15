@@ -132,6 +132,8 @@ else:
                         record['primary_location']['source'] = {}
 
                     record['primary_location']['source'].setdefault('display_name', None)
+                    record['primary_location']['source'].setdefault('host_organization', None)
+                    record['primary_location']['source'].setdefault('host_organization_name', None)
 
                 # Normalize and flatten nested fields
                 results_df = pd.json_normalize(all_results, sep='.')
