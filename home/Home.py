@@ -136,9 +136,6 @@ else:
                     # Merge with original DOIs
                     merged_df = df_dois.merge(results_df, on='doi_submitted', how='left')
 
-                    if 'merged_df' not in st.session_state:
-                        st.session_state.merged_df = merged_df
-
                     duplicates_df = merged_df[merged_df.duplicated(subset='doi', keep=False)]
                     duplicates_df = duplicates_df.reset_index(drop=True)
 
@@ -170,11 +167,10 @@ else:
                                 remove = st.button('Remove selected duplicate(s)')
                                 if remove:
                                     merged_df = merged_df[~merged_df['id'].isin(selected_ids)]
-                        return merged_df
+                                    return merged_df
 
                     # Then outside the function
-                    st.session_state.merged_df = duplicate_function(duplicates_df, st.session_state.merged_df)
-                    st.session_state.merged_df
+                    merged_df = duplicate_function(duplicates_df, merged_df)
                     merged_df
 
                     merged_df = merged_df.loc[:, ~merged_df.columns.str.startswith('abstract_inverted_index.')]
