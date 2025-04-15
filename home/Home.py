@@ -138,10 +138,6 @@ else:
 
                     duplicates_df = merged_df[merged_df.duplicated(subset='doi', keep=False)]
                     duplicates_df = duplicates_df.reset_index(drop=True)
-                    if not duplicates_df.empty:
-                        duplicate_count = duplicates_df['doi'].nunique()
-                        duplicate_count
-                        duplicates_df
 
                     merged_df = merged_df.loc[:, ~merged_df.columns.str.startswith('abstract_inverted_index.')]
                     all_results_df = merged_df.copy()
@@ -162,7 +158,11 @@ else:
 
                     # OA Summary
                     @st.fragment
-                    def results(merged_df, oa_summary, oa_status_summary):                        
+                    def results(merged_df, oa_summary, oa_status_summary):
+                        if not duplicates_df.empty:
+                            duplicate_count = duplicates_df['doi'].nunique()
+                            duplicate_count
+                            duplicates_df                     
                         st.subheader("Open Access Status Summary", anchor=False)
                         if len(oa_summary) >= 1:
                             items = [
