@@ -172,7 +172,6 @@ else:
                                     duplicates_df,
                                     disabled=disabled_columns
                                 )
-                                duplicates_df                  
                         st.subheader("Open Access Status Summary", anchor=False)
                         if len(oa_summary) >= 1:
                             items = [
