@@ -159,13 +159,9 @@ else:
                     oa_summary = merged_df['open_access.is_oa'].value_counts(dropna=False).reset_index()
                     oa_summary.columns = ['Is OA?', '# Outputs']
 
-                    if 'merged_df' not in st.session_state:
-                        st.session_state['merged_df'] = merged_df.copy()
-
                     # OA Summary
                     @st.fragment
                     def results(merged_df, oa_summary, oa_status_summary, duplicates_df):
-
                         if not duplicates_df.empty:
                             duplicate_count = duplicates_df['doi'].nunique()
                             show_duplicates = st.toggle(f'{duplicate_count} duplicate(s) found. Display and edit duplicates.')
@@ -182,8 +178,8 @@ else:
                                 selected_ids = duplicates_df[duplicates_df['select_row_to_remove']]['id'].tolist()
                                 remove = st.button('Remove selected duplicate(s)')
                                 if remove:
-                                    st.session_state['merged_df'] = st.session_state['merged_df'][~st.session_state['merged_df']['id'].isin(selected_ids)]
-                                    df_to_use = st.session_state['merged_df']
+                                    merged_df = merged_df[~merged_df['id'].isin(selected_ids)]
+
 
                         if merged_df.empty:
                             st.error('No item to display!')
