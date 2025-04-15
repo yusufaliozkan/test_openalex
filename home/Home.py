@@ -136,6 +136,9 @@ else:
                     # Merge with original DOIs
                     merged_df = df_dois.merge(results_df, on='doi_submitted', how='left')
 
+                    if 'merged_df' not in st.session_state:
+                        st.session_state.merged_df = merged_df
+
                     duplicates_df = merged_df[merged_df.duplicated(subset='doi', keep=False)]
                     duplicates_df = duplicates_df.reset_index(drop=True)
 
@@ -170,7 +173,8 @@ else:
                         return merged_df
 
                     # Then outside the function
-                    merged_df = duplicate_function(duplicates_df, merged_df)
+                    st.session_state.merged_df = duplicate_function(duplicates_df, st.session_state.merged_df)
+
                     merged_df
 
                     merged_df = merged_df.loc[:, ~merged_df.columns.str.startswith('abstract_inverted_index.')]
