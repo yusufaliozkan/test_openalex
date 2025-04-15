@@ -98,7 +98,8 @@ else:
         if submit or st.session_state.get('status_expanded', False):
             if submit:
                 st.session_state['status_expanded'] = True
-            with st.status("Searching DOIs in OpenAlex", expanded=st.session_state.get('status_expanded', True)) as status:
+            with st.spinner("Searching DOIs in OpenAlex"):
+            # with st.status("Searching DOIs in OpenAlex", expanded=st.session_state.get('status_expanded', True)) as status:
                 df_dois['doi_submitted'] = df_dois['doi_submitted'].str.replace('https://doi.org/', '', regex=False)
                 df_dois['doi_submitted'] = df_dois['doi_submitted'].str.strip().str.lower()
 
@@ -372,5 +373,8 @@ else:
                     st.error("No DOIs found in the OpenAlex database. Check the submitted DOIs and resubmit.")
                     df_dois
                     status.update(label=f"Search complete without any results!", state="complete", expanded=True)
+
+
+
     else:
         st.warning("Enter DOIs in the text area or upload a file to start search.")
