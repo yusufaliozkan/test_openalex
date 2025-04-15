@@ -173,6 +173,7 @@ else:
                     # merged_df['open_access.is_oa'] = merged_df['open_access.is_oa'].map({True: 'Open Access', False: 'Closed Access'})
                     oa_summary = merged_df['open_access.is_oa'].value_counts(dropna=False).reset_index()
                     oa_summary.columns = ['Is OA?', '# Outputs']
+                    container_status = st.container()
 
                     # OA Summary
                     @st.fragment
@@ -214,7 +215,7 @@ else:
                         if merged_df.empty:
                             st.error('No item to display!')
                             st.stop()
-                        container_status = st.container()
+                        
                         st.subheader("Open Access Status Summary", anchor=False)
                         if len(oa_summary) >= 1:
                             items = [
@@ -364,7 +365,7 @@ else:
                     end_time = time.time()
                     processing_time = end_time - start_time
                     formatted_time = time.strftime("%M:%S", time.gmtime(processing_time))
-                    container_status = st.container()
+                    # container_status = st.container()
                     container_status.write(f"Search complete! Results found for {num_results} DOIs in {formatted_time} minutes.")
                     # status.update(
                     #     label=f"Search complete! Results found for {num_results} DOIs in {formatted_time} minutes.",
