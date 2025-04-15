@@ -211,13 +211,13 @@ else:
                                 authors_df = filtered_raw_df.explode('authorships').reset_index(drop=True)
                             else:
                                 authors_df = merged_df.explode('authorships').reset_index(drop=True)
-
+                            
                             authors_df = pd.json_normalize(authors_df['authorships']).reset_index(drop=True)
-                            authors_table = authors_df[[ 
-                                'author.display_name', 
-                                'author.orcid', 
-                                'author_position', 
-                                'is_corresponding', 
+                            authors_table = authors_df[[
+                                'author.display_name',
+                                'author.orcid',
+                                'author_position',
+                                'is_corresponding',
                                 'raw_author_name'
                             ]].drop_duplicates().reset_index(drop=True)
                             
