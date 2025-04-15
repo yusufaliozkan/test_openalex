@@ -164,8 +164,9 @@ else:
                     def results(merged_df, oa_summary, oa_status_summary, duplicates_df):
                         if not duplicates_df.empty:
                             duplicate_count = duplicates_df['doi'].nunique()
-                            show_duplicates = st.toggle(f'{duplicate_count} duplicate(s) found. Display duplicates.')
+                            show_duplicates = st.toggle(f'{duplicate_count} duplicate(s) found. Display and edit duplicates.')
                             if show_duplicates:
+                                st.write("To remove duplicate, click the one you wish to remove and press 'Remove selected duplicate(s)'")
                                 duplicates_df['select_row_to_remove'] = False
                                 duplicates_df = duplicates_df[['select_row_to_remove'] + [col for col in duplicates_df.columns if col != 'select_row_to_remove']]
                                 editable = "select_row_to_remove"
