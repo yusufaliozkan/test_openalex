@@ -237,6 +237,7 @@ else:
                             
                         else:
                             filtered_df = merged_df.copy()
+                        merged_df
                         col1, col2 = st.columns([1,4])
                         with col1:
                             if selected_statuses:
