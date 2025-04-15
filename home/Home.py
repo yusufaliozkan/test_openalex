@@ -123,7 +123,7 @@ else:
                     else:
                         print(f"Request failed for batch starting with {batch[0]}")
                     time.sleep(1)  # Be polite to the API
-                    
+
                 # Normalize and flatten nested fields
                 results_df = pd.json_normalize(all_results, sep='.')
                 results_df = results_df.drop_duplicates(subset='id')
@@ -141,8 +141,7 @@ else:
 
                     # Merge with original DOIs
                     merged_df = df_dois.merge(results_df, on='doi_submitted', how='left')
-                    merged_df
-                    merged_df['primary_location.source.display_name'] = merged_df['primary_location.source.display_name'].fillna('No result')
+                    # merged_df['primary_location.source.display_name'] = merged_df['primary_location.source.display_name'].fillna('No result')
 
                     duplicates_df = merged_df[merged_df.duplicated(subset='doi', keep=False)]
                     duplicates_df = duplicates_df.reset_index(drop=True)
