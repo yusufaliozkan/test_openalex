@@ -175,7 +175,7 @@ else:
                                     disabled=disabled_columns
                                 )
                                 selected_ids = duplicates_df[duplicates_df['select_row_to_remove']]['id'].tolist()
-                                remove = st.button('Remove selected duplicate')
+                                remove = st.button('Remove selected duplicate(s)')
                                 if remove:
                                     merged_df = merged_df[~merged_df['id'].isin(selected_ids)]
                         st.subheader("Open Access Status Summary", anchor=False)
