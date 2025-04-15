@@ -173,9 +173,9 @@ else:
                         oa_summary = merged_df['open_access.is_oa'].value_counts(dropna=False).reset_index()
                         oa_summary.columns = ['Is OA?', '# Outputs']
 
-                        # OA Summary
-                        @st.fragment
-                        def results(merged_df, oa_summary, oa_status_summary, duplicates_df):
+                        # # OA Summary
+                        # @st.fragment
+                        # def results(merged_df, oa_summary, oa_status_summary, duplicates_df):
                         
                         if not duplicates_df.empty:
                             duplicate_count = duplicates_df['doi'].nunique()
