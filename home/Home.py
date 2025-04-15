@@ -243,8 +243,7 @@ else:
                                 filtered_df = merged_df.copy()
 
                             # Display it in Streamlit
-                            st.plotly_chart(fig, use_container_width=True)
-
+                            
                             col1, col2 = st.columns([1,4])
                             with col1:
                                 if selected_statuses:
@@ -386,6 +385,7 @@ else:
                                 title='Number of Publications per Year',
                                 labels={'Count': 'Number of Publications'},
                             )
+                            st.plotly_chart(fig, use_container_width=True)
                     results(merged_df, oa_summary, oa_status_summary, duplicates_df)
                     @st.fragment
                     def all_results(all_results_df):
