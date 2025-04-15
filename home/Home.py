@@ -125,7 +125,6 @@ else:
 
                 # Normalize and flatten nested fields
                 results_df = pd.json_normalize(all_results, sep='.')
-                results_df
 
                 # Add cleaned DOI for merging
                 if not results_df.empty and 'doi' in results_df.columns:
@@ -194,7 +193,7 @@ else:
                             filtered_df = filtered_df[['doi', 'type_crossref','primary_location.source.display_name', 'primary_location.source.host_organization_name', 'publication_year', 'publication_date', 'open_access.is_oa','open_access.oa_status', 'open_access.oa_url', 'primary_location.license']]
                             filtered_df.columns = ['DOI', 'Type','Journal', 'Publisher','Publication year', 'Publication date','Is OA?', 'OA Status', 'OA URL', 'Licence']
                             filtered_df
-
+                
                         col1, col2, col3 = st.columns(3)
                         with col1:
                             # JOURNALS
