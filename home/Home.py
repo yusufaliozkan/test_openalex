@@ -167,7 +167,7 @@ else:
                                 remove = st.button('Remove selected duplicate(s)')
                                 if remove:
                                     merged_df = merged_df[~merged_df['id'].isin(selected_ids)]
-                                    return merged_df
+                        return merged_df
 
                     # Then outside the function
                     merged_df = duplicate_function(duplicates_df, merged_df)
