@@ -138,6 +138,7 @@ else:
                 if not results_df.empty and 'doi' in results_df.columns:
                     results_df['doi_submitted'] = results_df['doi'].str.replace('https://doi.org/', '', regex=False)
                     results_df['doi_submitted'] = results_df['doi_submitted'].str.strip().str.lower()
+                    results_df
 
                     # Merge with original DOIs
                     merged_df = df_dois.merge(results_df, on='doi_submitted', how='left')
