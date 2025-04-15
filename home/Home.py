@@ -149,7 +149,7 @@ else:
                         else:
                             st.success(f"{num_results} result(s) found.")
                     @st.fragment
-                    def duplicate(duplicates_df, merged_df):
+                    def duplicate_function(duplicates_df, merged_df):
                         if not duplicates_df.empty:
                             duplicate_count = duplicates_df['doi'].nunique()
                             show_duplicates = st.toggle(f'{duplicate_count} duplicate(s) found. Display and edit duplicates.')
@@ -167,7 +167,7 @@ else:
                                 remove = st.button('Remove selected duplicate(s)')
                                 if remove:
                                     merged_df = merged_df[~merged_df['id'].isin(selected_ids)]
-                       duplicate(duplicates_df, merged_df)
+                       duplicate_function(duplicates_df, merged_df)
                        @st.fragment 
 
                     merged_df = merged_df.loc[:, ~merged_df.columns.str.startswith('abstract_inverted_index.')]
