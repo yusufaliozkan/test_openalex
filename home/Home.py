@@ -363,11 +363,11 @@ else:
                     end_time = time.time()
                     processing_time = end_time - start_time
                     formatted_time = time.strftime("%M:%S", time.gmtime(processing_time))
-                    status.update(
-                        label=f"Search complete! Results found for {num_results} DOIs in {formatted_time} minutes.",
-                        state="complete",
-                        expanded=True
-                    )
+                    # status.update(
+                    #     label=f"Search complete! Results found for {num_results} DOIs in {formatted_time} minutes.",
+                    #     state="complete",
+                    #     expanded=True
+                    # )
 
                 else:
                     st.error("No DOIs found in the OpenAlex database. Check the submitted DOIs and resubmit.")
