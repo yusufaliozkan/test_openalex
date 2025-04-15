@@ -205,6 +205,8 @@ else:
                         
                         if selected_statuses:
                             filtered_df = merged_df[merged_df['open_access.oa_status'].isin(selected_statuses)]
+                            merged_df
+                            filtered_df
                             filtered_raw_df = filtered_df.copy()
                             
                         else:
@@ -230,7 +232,7 @@ else:
                                     else:
                                         return None
                                 return current
-                            filtered_df
+                            
                             filtered_df['primary_location.source.display_name'] = filtered_df.apply(
                                 lambda row: safe_get_nested(row.get('primary_location', {}), ['source', 'display_name']),
                                 axis=1
