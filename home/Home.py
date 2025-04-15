@@ -145,10 +145,12 @@ else:
                             st.success(f"{num_results} result(s) found with {duplicate_count} duplicate(s).")
                         else:
                             st.success(f"{num_results} result(s) found.")
+                    merged_df
+                    duplicates_df
 
                     duplicates_df = merged_df[merged_df.duplicated(subset='doi', keep=False)]
                     duplicates_df = duplicates_df.reset_index(drop=True)
-                    
+
                     if not duplicates_df.empty:
                         duplicate_count = duplicates_df['doi'].nunique()
                         show_duplicates = st.toggle(f'{duplicate_count} duplicate(s) found. Display and edit duplicates.')
