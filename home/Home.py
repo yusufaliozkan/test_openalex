@@ -373,7 +373,7 @@ else:
                         st.subheader('Metrics', anchor=False)
                         with st.expander('Results', expanded=True):
                             # citation_count = filtered_df[]
-                            filtered_df
+                            filtered_raw_df
 
                             year_counts = filtered_df['Publication year'].value_counts().reset_index()
                             year_counts.columns = ['Publication Year', 'Count']
