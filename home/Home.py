@@ -98,6 +98,7 @@ else:
                 st.session_state['status_expanded'] = True
             with st.status("Searching DOIs in OpenAlex", expanded=st.session_state.get('status_expanded', True)) as status:
                 df_dois['doi_submitted'] = df_dois['doi_submitted'].str.replace('https://doi.org/', '', regex=False)
+                df_dois['doi_submitted'] = df_dois['doi_submitted'].str.strip().str.lower()
 
                 # df = pd.read_csv('your_doi_file.csv') or use your existing df
                 df_dois['doi_submitted'] = df_dois['doi_submitted'].str.strip().str.replace('https://doi.org/', '', regex=False)
