@@ -124,6 +124,17 @@ else:
                         print(f"Request failed for batch starting with {batch[0]}")
                     time.sleep(1)  # Be polite to the API
 
+                for record in all_results:
+                    record.setdefault('primary_location', {})
+
+                    # If 'source' is missing or None, replace with empty dict
+                    if not isinstance(record['primary_location'].get('source'), dict):
+                        record['primary_location']['source'] = {}
+
+                    record['primary_location']['source'].setdefault('display_name', None)
+                    record['primary_location']['source'].setdefault('host_organization', None)
+                    record['primary_location']['source'].setdefault('host_organization_name', None)
+
                 # Normalize and flatten nested fields
                 results_df = pd.json_normalize(all_results, sep='.')
                 results_df = results_df.drop_duplicates(subset='id')
@@ -135,6 +146,7 @@ else:
 
                     # Merge with original DOIs
                     merged_df = df_dois.merge(results_df, on='doi_submitted', how='left')
+                    merged_df['primary_location.source.display_name'] = merged_df['primary_location.source.display_name'].fillna('No journal name')
 
                     duplicates_df = merged_df[merged_df.duplicated(subset='doi', keep=False)]
                     duplicates_df = duplicates_df.reset_index(drop=True)
@@ -202,12 +214,13 @@ else:
                             default=[] 
                             # default=available_oa_statuses  # All selected by default
                         )
+                        
                         if selected_statuses:
                             filtered_df = merged_df[merged_df['open_access.oa_status'].isin(selected_statuses)]
                             filtered_raw_df = filtered_df.copy()
                             
                         else:
-                            filtered_df = merged_df    
+                            filtered_df = merged_df.copy()   
                         col1, col2 = st.columns([1,4])
                         with col1:
                             if selected_statuses:
@@ -220,6 +233,7 @@ else:
                             else:
                                 st.dataframe(oa_status_summary, hide_index =True,  use_container_width=False)
                         with col2:
+                            
                             def safe_get_nested(row, path):
                                 current = row
                                 for key in path:
@@ -229,15 +243,17 @@ else:
                                         return None
                                 return current
 
-                            filtered_df['primary_location.source.display_name'] = filtered_df.apply(
-                                lambda row: safe_get_nested(row.get('primary_location', {}), ['source', 'display_name']),
-                                axis=1
-                            )
+                            
+                            
+                            # filtered_df['primary_location.source.display_name'] = filtered_df.apply(
+                            #     lambda row: safe_get_nested(row.get('primary_location', {}), ['source', 'display_name']),
+                            #     axis=1
+                            # )
 
-                            filtered_df['primary_location.source.host_organization_name'] = filtered_df.apply(
-                                lambda row: safe_get_nested(row.get('primary_location', {}), ['source', 'host_organization_name']),
-                                axis=1
-                            )                  
+                            # filtered_df['primary_location.source.host_organization_name'] = filtered_df.apply(
+                            #     lambda row: safe_get_nested(row.get('primary_location', {}), ['source', 'host_organization_name']),
+                            #     axis=1
+                            # )         
                             filtered_df= filtered_df.reset_index(drop=True)
                             filtered_df.index +=1
                             filtered_df = filtered_df[['doi', 'type_crossref','primary_location.source.display_name', 'primary_location.source.host_organization_name', 'publication_year', 'publication_date', 'open_access.is_oa','open_access.oa_status', 'open_access.oa_url', 'primary_location.license']]
