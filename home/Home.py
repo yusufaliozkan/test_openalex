@@ -317,8 +317,8 @@ else:
                             state="complete",
                             expanded=True
                         )
-                    results(merged_df, oa_summary, oa_status_summary, duplicates_df)
-                    @st.fragment
+                        results(merged_df, oa_summary, oa_status_summary, duplicates_df)
+                        @st.fragment
                 else:
                     st.error("No DOIs found in the OpenAlex database. Check the submitted DOIs and resubmit.")
                     df_dois
