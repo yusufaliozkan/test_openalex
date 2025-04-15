@@ -214,7 +214,7 @@ else:
                         st.subheader("Open Access Status Summary", anchor=False)
                         if len(oa_summary) >= 1:
                             items = [
-                                f"**{row['# Outputs']}** *{row['Is OA?']}*"
+                                f"**{int(row['# Outputs'])}** *{row['Is OA?']}*"
                                 for _, row in oa_summary.iterrows()
                             ]
                             st.write(f"{' and '.join(items)} papers found")
