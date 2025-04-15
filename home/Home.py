@@ -138,7 +138,6 @@ else:
                 # Normalize and flatten nested fields
                 results_df = pd.json_normalize(all_results, sep='.')
                 results_df = results_df.drop_duplicates(subset='id')
-                results_df
 
                 # Add cleaned DOI for merging
                 if not results_df.empty and 'doi' in results_df.columns:
@@ -147,7 +146,6 @@ else:
 
                     # Merge with original DOIs
                     merged_df = df_dois.merge(results_df, on='doi_submitted', how='left')
-                    merged_df
                     merged_df['primary_location.source.display_name'] = merged_df['primary_location.source.display_name'].fillna('No result')
 
                     duplicates_df = merged_df[merged_df.duplicated(subset='doi', keep=False)]
