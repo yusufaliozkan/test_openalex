@@ -112,8 +112,6 @@ else:
                 # Store results
                 all_results = []
 
-                df_dois
-
                 # Process in batches
                 for batch in batch_dois(df_dois['doi_submitted'].tolist(), batch_size=20):
                     filter_string = '|'.join(batch)
@@ -137,6 +135,24 @@ else:
 
                     # Merge with original DOIs
                     merged_df = df_dois.merge(results_df, on='doi_submitted', how='left')
+
+                    if not duplicates_df.empty:
+                        duplicate_count = duplicates_df['doi'].nunique()
+                        show_duplicates = st.toggle(f'{duplicate_count} duplicate(s) found. Display and edit duplicates.')
+                        if show_duplicates:
+                            st.info("To remove duplicate, click the one you wish to remove from the 'select_row_to_remove' column and press 'Remove selected duplicate(s)'")
+                            duplicates_df['select_row_to_remove'] = False
+                            duplicates_df = duplicates_df[['select_row_to_remove'] + [col for col in duplicates_df.columns if col != 'select_row_to_remove']]
+                            editable = "select_row_to_remove"
+                            disabled_columns = [col for col in duplicates_df.columns if col != editable]
+                            duplicates_df = st.data_editor(
+                                duplicates_df,
+                                disabled=disabled_columns
+                            )
+                            selected_ids = duplicates_df[duplicates_df['select_row_to_remove']]['id'].tolist()
+                            remove = st.button('Remove selected duplicate(s)')
+                            if remove:
+                                merged_df = merged_df[~merged_df['id'].isin(selected_ids)]
 
                     duplicates_df = merged_df[merged_df.duplicated(subset='doi', keep=False)]
                     duplicates_df = duplicates_df.reset_index(drop=True)
