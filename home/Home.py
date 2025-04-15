@@ -168,13 +168,14 @@ else:
                             if show_duplicates:
                                 duplicates_df['select_row_to_remove'] = False
                                 duplicates_df = duplicates_df[['select_row_to_remove'] + [col for col in duplicates_df.columns if col != 'select_row_to_remove']]
-
                                 editable = "select_row_to_remove"
                                 disabled_columns = [col for col in duplicates_df.columns if col != editable]
                                 duplicates_df = st.data_editor(
                                     duplicates_df,
                                     disabled=disabled_columns
                                 )
+                            selected_ids = edited_df[edited_df['select_row_to_remove']]['id'].tolist()
+                            selected_ids
                         st.subheader("Open Access Status Summary", anchor=False)
                         if len(oa_summary) >= 1:
                             items = [
