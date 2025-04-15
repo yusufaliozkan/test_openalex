@@ -214,6 +214,7 @@ else:
                         if merged_df.empty:
                             st.error('No item to display!')
                             st.stop()
+                        st.container = container_status()
                         st.subheader("Open Access Status Summary", anchor=False)
                         if len(oa_summary) >= 1:
                             items = [
@@ -363,6 +364,7 @@ else:
                     end_time = time.time()
                     processing_time = end_time - start_time
                     formatted_time = time.strftime("%M:%S", time.gmtime(processing_time))
+                    container_status.write(f"Search complete! Results found for {num_results} DOIs in {formatted_time} minutes.")
                     # status.update(
                     #     label=f"Search complete! Results found for {num_results} DOIs in {formatted_time} minutes.",
                     #     state="complete",
