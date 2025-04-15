@@ -364,6 +364,7 @@ else:
                     end_time = time.time()
                     processing_time = end_time - start_time
                     formatted_time = time.strftime("%M:%S", time.gmtime(processing_time))
+                    container_status = st.container()
                     container_status.write(f"Search complete! Results found for {num_results} DOIs in {formatted_time} minutes.")
                     # status.update(
                     #     label=f"Search complete! Results found for {num_results} DOIs in {formatted_time} minutes.",
