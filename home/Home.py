@@ -161,7 +161,7 @@ else:
                     def results(merged_df, oa_summary, oa_status_summary):
                         if not duplicates_df.empty:
                             duplicate_count = duplicates_df['doi'].nunique()
-                            duplicate_count
+                            st.warning(f'The search found {duplicate_count} duplicate(s).')
                             duplicates_df                     
                         st.subheader("Open Access Status Summary", anchor=False)
                         if len(oa_summary) >= 1:
