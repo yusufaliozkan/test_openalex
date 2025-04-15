@@ -135,6 +135,7 @@ else:
 
                     # Merge with original DOIs
                     merged_df = df_dois.merge(results_df, on='doi_submitted', how='left')
+                    merged_df['journal'] = merged_df['journal'].fillna('No result')
 
                     duplicates_df = merged_df[merged_df.duplicated(subset='doi', keep=False)]
                     duplicates_df = duplicates_df.reset_index(drop=True)
@@ -230,11 +231,13 @@ else:
                                     else:
                                         return None
                                 return current
+
                             
-                            filtered_df['primary_location.source.display_name'] = filtered_df.apply(
-                                lambda row: safe_get_nested(row.get('primary_location', {}), ['source', 'display_name']),
-                                axis=1
-                            )
+                            
+                            # filtered_df['primary_location.source.display_name'] = filtered_df.apply(
+                            #     lambda row: safe_get_nested(row.get('primary_location', {}), ['source', 'display_name']),
+                            #     axis=1
+                            # )
 
                             # filtered_df['primary_location.source.host_organization_name'] = filtered_df.apply(
                             #     lambda row: safe_get_nested(row.get('primary_location', {}), ['source', 'host_organization_name']),
