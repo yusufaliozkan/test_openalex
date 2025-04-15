@@ -146,6 +146,9 @@ else:
                         else:
                             st.success(f"{num_results} result(s) found.")
 
+                    duplicates_df = merged_df[merged_df.duplicated(subset='doi', keep=False)]
+                    duplicates_df = duplicates_df.reset_index(drop=True)
+                    
                     if not duplicates_df.empty:
                         duplicate_count = duplicates_df['doi'].nunique()
                         show_duplicates = st.toggle(f'{duplicate_count} duplicate(s) found. Display and edit duplicates.')
@@ -164,8 +167,6 @@ else:
                             if remove:
                                 merged_df = merged_df[~merged_df['id'].isin(selected_ids)]
 
-                    duplicates_df = merged_df[merged_df.duplicated(subset='doi', keep=False)]
-                    duplicates_df = duplicates_df.reset_index(drop=True)
 
                     merged_df = merged_df.loc[:, ~merged_df.columns.str.startswith('abstract_inverted_index.')]
                     all_results_df = merged_df.copy()
