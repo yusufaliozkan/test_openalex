@@ -133,16 +133,13 @@ else:
                     results_df['doi_submitted'] = results_df['doi'].str.replace('https://doi.org/', '', regex=False)
                     results_df['doi_submitted'] = results_df['doi_submitted'].str.strip().str.lower()
 
-                    # Merge with original DOIs
-                    merged_df = df_dois.merge(results_df, on='doi_submitted', how='left')
-
+                    # Initialize merged_df in session_state only once
                     if 'merged_df' not in st.session_state:
                         st.session_state.merged_df = df_dois.merge(results_df, on='doi_submitted', how='left')
 
                     merged_df = st.session_state.merged_df
 
-                    duplicates_df = merged_df[merged_df.duplicated(subset='doi', keep=False)]
-                    duplicates_df = duplicates_df.reset_index(drop=True)
+                    duplicates_df = merged_df[merged_df.duplicated(subset='doi', keep=False)].reset_index(drop=True)
 
                     if merged_df['id'].isnull().all():
                         st.warning("No DOIs found in the OpenAlex database.")
@@ -160,20 +157,18 @@ else:
                         if show_duplicates:
                             st.info("To remove duplicate, click the one you wish to remove from the 'select_row_to_remove' column and press 'Remove selected duplicate(s)'")
                             duplicates_df['select_row_to_remove'] = False
-                            duplicates_df = duplicates_df[['select_row_to_remove'] + [col for col in duplicates_df.columns if col != 'select_row_to_remove']]
                             editable = "select_row_to_remove"
                             disabled_columns = [col for col in duplicates_df.columns if col != editable]
                             duplicates_df = st.data_editor(
-                                duplicates_df,
+                                duplicates_df[['select_row_to_remove'] + [col for col in duplicates_df.columns if col != 'select_row_to_remove']],
                                 disabled=disabled_columns
                             )
                             selected_ids = duplicates_df[duplicates_df['select_row_to_remove']]['id'].tolist()
-                            remove = st.button('Remove selected duplicate(s)')
-                            if remove:
+                            if st.button('Remove selected duplicate(s)') and selected_ids:
                                 st.session_state.merged_df = merged_df[~merged_df['id'].isin(selected_ids)]
 
-                    # Then outside the function
-                    st.session_state.merged_df
+                    # ✅ Display or return the updated merged_df at the end
+                    st.dataframe(st.session_state.merged_df)  # or return it from a function
 
                     merged_df = merged_df.loc[:, ~merged_df.columns.str.startswith('abstract_inverted_index.')]
                     all_results_df = merged_df.copy()
