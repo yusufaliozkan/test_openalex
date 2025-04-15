@@ -195,7 +195,6 @@ else:
                                 remove = st.button('Remove selected duplicate(s)')
                                 if remove:
                                     merged_df = merged_df[~merged_df['id'].isin(selected_ids)]
-                        merged_df
                         if merged_df['id'].isnull().all():
                             st.warning("No DOIs found in the OpenAlex database.")
                         else:
@@ -211,6 +210,7 @@ else:
                         merged_df['open_access.is_oa'] = merged_df['open_access.is_oa'].map({True: 'Open Access', False: 'Closed Access'})
                         oa_summary = merged_df['open_access.is_oa'].value_counts(dropna=False).reset_index()
                         oa_summary.columns = ['Is OA?', '# Outputs']
+                        merged_df
 
                         if merged_df.empty:
                             st.error('No item to display!')
