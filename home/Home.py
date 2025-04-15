@@ -301,91 +301,71 @@ else:
                                 top_publishers = top_publishers.dropna()
                                 st.dataframe(top_publishers, hide_index=True,  use_container_width=False)
 
+                        st.subheader("Affiliations", anchor=False)
+                            col1, col2 = st.columns(2)
+                            with col1:
+                                # AUTHORS
+                                if selected_statuses:
+                                    authors_df = filtered_raw_df.explode('authorships').reset_index(drop=True)
+                                else:
+                                    authors_df = merged_df.explode('authorships').reset_index(drop=True)
+                                
+                                authors_df = pd.json_normalize(authors_df['authorships']).reset_index(drop=True)
+                                authors_table = authors_df[[
+                                    'author.display_name',
+                                    'author.orcid',
+                                    'author_position',
+                                    'is_corresponding',
+                                    'raw_author_name'
+                                ]].drop_duplicates().reset_index(drop=True)
+                                
+                                # st.subheader("Authors", anchor=False)
+                                # st.dataframe(authors_table,  use_container_width=False)
 
-                        col1, col2, col3 = st.columns(3)
-                        with col1:
-                            # JOURNALS
-                            if selected_statuses:
-                                top_journals = filtered_raw_df['primary_location.source.display_name'].value_counts(dropna=False).reset_index()
-                            else:
-                                top_journals = merged_df['primary_location.source.display_name'].value_counts(dropna=False).reset_index()
-                            top_journals.columns = ['Journal name', '# Outputs']
-                            top_journals = top_journals.dropna()
-                            st.subheader("Journals", anchor=False)
-                            st.dataframe(top_journals, hide_index=True,  use_container_width=False)
+                                institutions_df = authors_df.explode('institutions').reset_index(drop=True)
+                                institution_details = pd.json_normalize(institutions_df['institutions']).reset_index(drop=True)
+                                institutions_df = pd.concat([
+                                    institutions_df.drop(columns=['institutions']).reset_index(drop=True),
+                                    institution_details
+                                ], axis=1)
 
-                            # PUBLISHERS
-                            if selected_statuses:
-                                top_journals = filtered_raw_df['primary_location.source.host_organization_name'].value_counts(dropna=False).reset_index()
-                            else:
-                                top_journals = merged_df['primary_location.source.host_organization_name'].value_counts(dropna=False).reset_index()
-                            top_journals.columns = ['Journal name', '# Outputs']
-                            top_journals = top_journals.dropna()
-                            st.subheader("Journals", anchor=False)
-                            st.dataframe(top_journals, hide_index=True,  use_container_width=False)
-                        with col2:
-                            # AUTHORS
-                            if selected_statuses:
-                                authors_df = filtered_raw_df.explode('authorships').reset_index(drop=True)
-                            else:
-                                authors_df = merged_df.explode('authorships').reset_index(drop=True)
-                            
-                            authors_df = pd.json_normalize(authors_df['authorships']).reset_index(drop=True)
-                            authors_table = authors_df[[
-                                'author.display_name',
-                                'author.orcid',
-                                'author_position',
-                                'is_corresponding',
-                                'raw_author_name'
-                            ]].drop_duplicates().reset_index(drop=True)
-                            
-                            # st.subheader("Authors", anchor=False)
-                            # st.dataframe(authors_table,  use_container_width=False)
-
-                            institutions_df = authors_df.explode('institutions').reset_index(drop=True)
-                            institution_details = pd.json_normalize(institutions_df['institutions']).reset_index(drop=True)
-                            institutions_df = pd.concat([
-                                institutions_df.drop(columns=['institutions']).reset_index(drop=True),
-                                institution_details
-                            ], axis=1)
-
-                            expected_cols = ['author.display_name', 'display_name', 'country_code', 'type']
-                            for col in expected_cols:
-                                if col not in institutions_df.columns:
-                                    institutions_df[col] = "No info"
-                            existing_cols = [col for col in expected_cols if col in institutions_df.columns]
-                            institutions_table = institutions_df[existing_cols].drop_duplicates().reset_index(drop=True)
+                                expected_cols = ['author.display_name', 'display_name', 'country_code', 'type']
+                                for col in expected_cols:
+                                    if col not in institutions_df.columns:
+                                        institutions_df[col] = "No info"
+                                existing_cols = [col for col in expected_cols if col in institutions_df.columns]
+                                institutions_table = institutions_df[existing_cols].drop_duplicates().reset_index(drop=True)
 
 
-                            institutions_table.columns = ['author', 'institution', 'country_code', 'type']
+                                institutions_table.columns = ['author', 'institution', 'country_code', 'type']
 
-                            # st.subheader("Author Institutions")
-                            # st.dataframe(institutions_table,  use_container_width=False)
+                                # st.subheader("Author Institutions")
+                                # st.dataframe(institutions_table,  use_container_width=False)
 
-                            # Institution frequency table
-                            institution_freq = institutions_table['institution'].value_counts(dropna=True).reset_index()
-                            institution_freq.columns = ['Institution', '# Count']
-                            st.subheader("Institutional Affiliations", anchor=False)
-                            st.dataframe(institution_freq, hide_index=True,  use_container_width=False)
-                        with col3:
-                            # Country frequency table
-                            def code_to_name(code):
-                                try:
-                                    return pycountry.countries.get(alpha_2=code).name
-                                except:
-                                    return code  # fallback to code if not found
+                                # Institution frequency table
+                                institution_freq = institutions_table['institution'].value_counts(dropna=True).reset_index()
+                                institution_freq.columns = ['Institution', '# Count']
+                                st.subheader("Institutional Affiliations", anchor=False)
+                                st.dataframe(institution_freq, hide_index=True,  use_container_width=False)
+                            with col2:
+                                # Country frequency table
+                                def code_to_name(code):
+                                    try:
+                                        return pycountry.countries.get(alpha_2=code).name
+                                    except:
+                                        return code  # fallback to code if not found
 
-                            # Compute frequency table
-                            country_freq = institutions_table['country_code'].value_counts(dropna=True).reset_index()
-                            country_freq.columns = ['Country Code', '# Count']
+                                # Compute frequency table
+                                country_freq = institutions_table['country_code'].value_counts(dropna=True).reset_index()
+                                country_freq.columns = ['Country Code', '# Count']
 
-                            # Map codes to full names
-                            country_freq['Country'] = country_freq['Country Code'].apply(code_to_name)
-                            country_freq = country_freq[['Country', '# Count']]  # Reorder columns
+                                # Map codes to full names
+                                country_freq['Country'] = country_freq['Country Code'].apply(code_to_name)
+                                country_freq = country_freq[['Country', '# Count']]  # Reorder columns
 
-                            # Show in Streamlit
-                            st.subheader("Country Affiliations", anchor=False)
-                            st.dataframe(country_freq, hide_index=True, use_container_width=False)
+                                # Show in Streamlit
+                                st.subheader("Country Affiliations", anchor=False)
+                                st.dataframe(country_freq, hide_index=True, use_container_width=False)
                     results(merged_df, oa_summary, oa_status_summary, duplicates_df)
                     @st.fragment
                     def all_results(all_results_df):
