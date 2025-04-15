@@ -179,6 +179,8 @@ else:
                                 remove = st.button('Remove selected duplicate(s)')
                                 if remove:
                                     merged_df = merged_df[~merged_df['id'].isin(selected_ids)]
+                                    oa_summary = merged_df['open_access.is_oa'].value_counts(dropna=False).reset_index()
+                                    oa_summary.columns = ['Is OA?', '# Outputs']
                         if merged_df.empty:
                             st.error('No item to display!')
                             st.stop()
