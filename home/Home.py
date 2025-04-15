@@ -162,8 +162,7 @@ else:
 
                     # OA Summary
                     @st.fragment
-                    def results(merged_df, oa_summary, oa_status_summary):
-                        duplicates_df
+                    def results(merged_df, oa_summary, oa_status_summary, duplicates_df):
                         if not duplicates_df.empty:
                             duplicate_count = duplicates_df['doi'].nunique()
                             show_duplicates = st.toggle(f'{duplicate_count} duplicate(s) found. Display duplicates.')
