@@ -155,21 +155,21 @@ else:
                     all_results_df = merged_df.copy()
                     merged_df = merged_df.dropna(subset='id')
                     
-                    if merged_df['id'].isnull().all():
-                        st.warning("No DOIs found in the OpenAlex database.")
-                    else:
-                        num_results = merged_df['id'].notnull().sum()
-                        if not duplicates_df.empty:
-                            duplicate_count = duplicates_df['doi'].nunique()
-                            st.success(f"{num_results} result(s) found with {duplicate_count} duplicate(s).")
-                        else:
-                            st.success(f"{num_results} result(s) found.")
+                    # if merged_df['id'].isnull().all():
+                    #     st.warning("No DOIs found in the OpenAlex database.")
+                    # else:
+                    #     num_results = merged_df['id'].notnull().sum()
+                    #     if not duplicates_df.empty:
+                    #         duplicate_count = duplicates_df['doi'].nunique()
+                    #         st.success(f"{num_results} result(s) found with {duplicate_count} duplicate(s).")
+                    #     else:
+                    #         st.success(f"{num_results} result(s) found.")
 
-                    oa_status_summary = merged_df['open_access.oa_status'].value_counts(dropna=False).reset_index()
-                    oa_status_summary.columns = ['OA status', '# Outputs']
-                    merged_df['open_access.is_oa'] = merged_df['open_access.is_oa'].map({True: 'Open Access', False: 'Closed Access'})
-                    oa_summary = merged_df['open_access.is_oa'].value_counts(dropna=False).reset_index()
-                    oa_summary.columns = ['Is OA?', '# Outputs']
+                    # oa_status_summary = merged_df['open_access.oa_status'].value_counts(dropna=False).reset_index()
+                    # oa_status_summary.columns = ['OA status', '# Outputs']
+                    # merged_df['open_access.is_oa'] = merged_df['open_access.is_oa'].map({True: 'Open Access', False: 'Closed Access'})
+                    # oa_summary = merged_df['open_access.is_oa'].value_counts(dropna=False).reset_index()
+                    # oa_summary.columns = ['Is OA?', '# Outputs']
 
                     # OA Summary
                     @st.fragment
@@ -191,6 +191,16 @@ else:
                                 remove = st.button('Remove selected duplicate(s)')
                                 if remove:
                                     merged_df = merged_df[~merged_df['id'].isin(selected_ids)]
+
+                        if merged_df['id'].isnull().all():
+                            st.warning("No DOIs found in the OpenAlex database.")
+                        else:
+                            num_results = merged_df['id'].notnull().sum()
+                            if not duplicates_df.empty:
+                                duplicate_count = duplicates_df['doi'].nunique()
+                                st.success(f"{num_results} result(s) found with {duplicate_count} duplicate(s).")
+                            else:
+                                st.success(f"{num_results} result(s) found.")
 
                         oa_status_summary = merged_df['open_access.oa_status'].value_counts(dropna=False).reset_index()
                         oa_status_summary.columns = ['OA status', '# Outputs']
