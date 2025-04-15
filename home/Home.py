@@ -147,7 +147,11 @@ else:
                         st.warning("No DOIs found in the OpenAlex database.")
                     else:
                         num_results = merged_df['id'].notnull().sum()
-                        st.success(f"{num_results} result(s) found.")
+                        if not duplicates_df.empty:
+                            duplicate_count = duplicates_df['doi'].nunique()
+                            st.success(f"{num_results} result(s) found. The search found {duplicate_count} duplicate(s).")
+                        else:
+                            st.success(f"{num_results} result(s) found.")
 
                     oa_status_summary = merged_df['open_access.oa_status'].value_counts(dropna=False).reset_index()
                     oa_status_summary.columns = ['OA status', '# Outputs']
@@ -161,7 +165,6 @@ else:
                     def results(merged_df, oa_summary, oa_status_summary):
                         if not duplicates_df.empty:
                             duplicate_count = duplicates_df['doi'].nunique()
-                            st.warning(f'The search found {duplicate_count} duplicate(s).')
                             show_duplicates = st.toggle(f'{duplicate_count} duplicate(s) found. Display duplicates.')
                             if show_duplicates:
                                 duplicates_df                     
