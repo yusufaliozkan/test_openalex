@@ -125,6 +125,7 @@ else:
 
                 # Normalize and flatten nested fields
                 results_df = pd.json_normalize(all_results, sep='.')
+                results_df
 
                 # Add cleaned DOI for merging
                 if not results_df.empty and 'doi' in results_df.columns:
