@@ -158,6 +158,7 @@ else:
                     all_results_df = merged_df.copy()
                     merged_df = merged_df.dropna(subset='id')
                     
+                    container_status = st.container()
                     if merged_df['id'].isnull().all():
                         st.warning("No DOIs found in the OpenAlex database.")
                     else:
@@ -173,7 +174,6 @@ else:
                     # merged_df['open_access.is_oa'] = merged_df['open_access.is_oa'].map({True: 'Open Access', False: 'Closed Access'})
                     oa_summary = merged_df['open_access.is_oa'].value_counts(dropna=False).reset_index()
                     oa_summary.columns = ['Is OA?', '# Outputs']
-                    container_status = st.container()
 
                     # OA Summary
                     @st.fragment
@@ -365,8 +365,7 @@ else:
                     end_time = time.time()
                     processing_time = end_time - start_time
                     formatted_time = time.strftime("%M:%S", time.gmtime(processing_time))
-                    # container_status = st.container()
-                    container_status.write(f"Search complete! Results found for {num_results} DOIs in {formatted_time} minutes.")
+                    container_status.write(f"Search complete in {formatted_time} minutes.")
                     # status.update(
                     #     label=f"Search complete! Results found for {num_results} DOIs in {formatted_time} minutes.",
                     #     state="complete",
