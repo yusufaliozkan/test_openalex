@@ -217,7 +217,7 @@ else:
                                 f"**{row['# Outputs']}** *{row['Is OA?']}*"
                                 for _, row in oa_summary.iterrows()
                             ]
-                            # st.write(f"{' and '.join(items)} papers found")
+                            st.write(f"{' and '.join(items)} papers found")
                         elif len(oa_summary) == 1:
                             st.write(f'''
                                 **{oa_summary.iloc[0]['# Outputs']}** *{oa_summary.iloc[0]['Is OA?']}* papers found.
