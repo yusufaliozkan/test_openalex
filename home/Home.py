@@ -147,6 +147,7 @@ else:
                     # Merge with original DOIs
                     merged_df = df_dois.merge(results_df, on='doi_submitted', how='left')
                     merged_df['primary_location.source.display_name'] = merged_df['primary_location.source.display_name'].fillna('No journal name')
+                    merged_df
 
                     duplicates_df = merged_df[merged_df.duplicated(subset='doi', keep=False)]
                     duplicates_df = duplicates_df.reset_index(drop=True)
@@ -222,6 +223,7 @@ else:
                             st.write(f'''
                                 **{oa_summary.iloc[0]['# Outputs']}** *{oa_summary.iloc[0]['Is OA?']}* papers found.
                             ''')
+
                         available_oa_statuses = oa_status_summary['OA status'].dropna().unique().tolist()
                         selected_statuses = st.multiselect(
                             'Filter by OA Status',
