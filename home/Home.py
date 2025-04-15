@@ -126,6 +126,7 @@ else:
 
                 # Normalize and flatten nested fields
                 results_df = pd.json_normalize(all_results, sep='.')
+                results_df
 
                 results_df['doi_submitted'] = results_df['doi_submitted'].str.strip().str.lower()
                 
