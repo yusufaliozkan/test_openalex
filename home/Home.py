@@ -215,67 +215,68 @@ else:
                             st.stop()
                         
                         st.subheader("Open Access Status Summary", anchor=False)
-                        if len(oa_summary) >= 1:
-                            items = [
-                                f"**{row['# Outputs']}** *{row['Is OA?']}*"
-                                for _, row in oa_summary.iterrows()
-                            ]
-                            st.write(f"{' and '.join(items)} papers found")
-                        elif len(oa_summary) == 1:
-                            st.write(f'''
-                                **{oa_summary.iloc[0]['# Outputs']}** *{oa_summary.iloc[0]['Is OA?']}* papers found.
-                            ''')
+                        with st.expander('See results'):
+                            if len(oa_summary) >= 1:
+                                items = [
+                                    f"**{row['# Outputs']}** *{row['Is OA?']}*"
+                                    for _, row in oa_summary.iterrows()
+                                ]
+                                st.write(f"{' and '.join(items)} papers found")
+                            elif len(oa_summary) == 1:
+                                st.write(f'''
+                                    **{oa_summary.iloc[0]['# Outputs']}** *{oa_summary.iloc[0]['Is OA?']}* papers found.
+                                ''')
 
-                        available_oa_statuses = oa_status_summary['OA status'].dropna().unique().tolist()
-                        selected_statuses = st.multiselect(
-                            'Filter by OA Status',
-                            options=available_oa_statuses,
-                            default=[] 
-                            # default=available_oa_statuses  # All selected by default
-                        )
-                        
-                        if selected_statuses:
-                            filtered_df = merged_df[merged_df['open_access.oa_status'].isin(selected_statuses)]
-                            filtered_raw_df = filtered_df.copy()
+                            available_oa_statuses = oa_status_summary['OA status'].dropna().unique().tolist()
+                            selected_statuses = st.multiselect(
+                                'Filter by OA Status',
+                                options=available_oa_statuses,
+                                default=[] 
+                                # default=available_oa_statuses  # All selected by default
+                            )
                             
-                        else:
-                            filtered_df = merged_df.copy()
-                        col1, col2 = st.columns([1,4])
-                        with col1:
                             if selected_statuses:
-                                oa_status_summary = filtered_df['open_access.oa_status'].value_counts(dropna=False).reset_index()
-                                oa_status_summary.columns = ['OA status', '# Outputs']
-                                merged_df['open_access.is_oa'] = merged_df['open_access.is_oa'].map({True: 'Open Access', False: 'Closed Access'})
-                                oa_summary = merged_df['open_access.is_oa'].value_counts(dropna=False).reset_index()
-                                oa_summary.columns = ['Is OA?', '# Outputs']
-                                st.dataframe(oa_status_summary, hide_index =True,  use_container_width=False)
+                                filtered_df = merged_df[merged_df['open_access.oa_status'].isin(selected_statuses)]
+                                filtered_raw_df = filtered_df.copy()
+                                
                             else:
-                                st.dataframe(oa_status_summary, hide_index =True,  use_container_width=False)
-                        with col2:
-                            
-                            def safe_get_nested(row, path):
-                                current = row
-                                for key in path:
-                                    if isinstance(current, dict):
-                                        current = current.get(key, None)
-                                    else:
-                                        return None
-                                return current
+                                filtered_df = merged_df.copy()
+                            col1, col2 = st.columns([1,4])
+                            with col1:
+                                if selected_statuses:
+                                    oa_status_summary = filtered_df['open_access.oa_status'].value_counts(dropna=False).reset_index()
+                                    oa_status_summary.columns = ['OA status', '# Outputs']
+                                    merged_df['open_access.is_oa'] = merged_df['open_access.is_oa'].map({True: 'Open Access', False: 'Closed Access'})
+                                    oa_summary = merged_df['open_access.is_oa'].value_counts(dropna=False).reset_index()
+                                    oa_summary.columns = ['Is OA?', '# Outputs']
+                                    st.dataframe(oa_status_summary, hide_index =True,  use_container_width=False)
+                                else:
+                                    st.dataframe(oa_status_summary, hide_index =True,  use_container_width=False)
+                            with col2:
+                                
+                                def safe_get_nested(row, path):
+                                    current = row
+                                    for key in path:
+                                        if isinstance(current, dict):
+                                            current = current.get(key, None)
+                                        else:
+                                            return None
+                                    return current
 
-                            # filtered_df['primary_location.source.display_name'] = filtered_df.apply(
-                            #     lambda row: safe_get_nested(row.get('primary_location', {}), ['source', 'display_name']),
-                            #     axis=1
-                            # )
+                                # filtered_df['primary_location.source.display_name'] = filtered_df.apply(
+                                #     lambda row: safe_get_nested(row.get('primary_location', {}), ['source', 'display_name']),
+                                #     axis=1
+                                # )
 
-                            # filtered_df['primary_location.source.host_organization_name'] = filtered_df.apply(
-                            #     lambda row: safe_get_nested(row.get('primary_location', {}), ['source', 'host_organization_name']),
-                            #     axis=1
-                            # )         
-                            filtered_df= filtered_df.reset_index(drop=True)
-                            filtered_df.index +=1
-                            filtered_df = filtered_df[['doi', 'type_crossref','primary_location.source.display_name', 'primary_location.source.host_organization_name', 'publication_year', 'publication_date', 'open_access.is_oa','open_access.oa_status', 'open_access.oa_url', 'primary_location.license']]
-                            filtered_df.columns = ['DOI', 'Type','Journal', 'Publisher','Publication year', 'Publication date','Is OA?', 'OA Status', 'OA URL', 'Licence']
-                            filtered_df
+                                # filtered_df['primary_location.source.host_organization_name'] = filtered_df.apply(
+                                #     lambda row: safe_get_nested(row.get('primary_location', {}), ['source', 'host_organization_name']),
+                                #     axis=1
+                                # )         
+                                filtered_df= filtered_df.reset_index(drop=True)
+                                filtered_df.index +=1
+                                filtered_df = filtered_df[['doi', 'type_crossref','primary_location.source.display_name', 'primary_location.source.host_organization_name', 'publication_year', 'publication_date', 'open_access.is_oa','open_access.oa_status', 'open_access.oa_url', 'primary_location.license']]
+                                filtered_df.columns = ['DOI', 'Type','Journal', 'Publisher','Publication year', 'Publication date','Is OA?', 'OA Status', 'OA URL', 'Licence']
+                                filtered_df
                 
                         col1, col2, col3 = st.columns(3)
                         with col1:
