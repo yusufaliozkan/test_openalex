@@ -135,7 +135,7 @@ else:
 
                     # Merge with original DOIs
                     merged_df = df_dois.merge(results_df, on='doi_submitted', how='left')
-                    duplicates = merged_df[merged_df.duplicated()]
+                    duplicates = merged_df[merged_df.duplicated(subset='doi', keep=False)]
                     duplicates
 
 
