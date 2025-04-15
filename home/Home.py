@@ -215,7 +215,7 @@ else:
                             st.stop()
                         
                         st.subheader("Open Access Status Summary", anchor=False)
-                        with st.expander('See results'):
+                        with st.expander('Results',  expanded= True):
                             if len(oa_summary) >= 1:
                                 items = [
                                     f"**{row['# Outputs']}** *{row['Is OA?']}*"
@@ -279,7 +279,7 @@ else:
                                 filtered_df
 
                         st.subheader("Journals and Publishers", anchor=False)
-                        with st.expander('Results'):
+                        with st.expander('Results', expanded= True):
                             col1, col2 = st.columns(2)
                             with col1:
                                 # JOURNALS
