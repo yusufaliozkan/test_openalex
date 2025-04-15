@@ -376,7 +376,7 @@ else:
                                 filtered_df = merged_df[merged_df['open_access.oa_status'].isin(selected_statuses)]
                                 filtered_raw_df = filtered_df.copy()
                             else:
-                                filtered_df = merged_df.copy()
+                                filtered_raw_df = merged_df.copy()
                             citation_count = filtered_raw_df['cited_by_count'].sum()
                             st.metric(label='Citation count', value=citation_count)                            
 
