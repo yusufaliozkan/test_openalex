@@ -231,15 +231,15 @@ else:
                                         return None
                                 return current
                             
-                            filtered_df['primary_location.source.display_name'] = filtered_df.apply(
-                                lambda row: safe_get_nested(row.get('primary_location', {}), ['source', 'display_name']),
-                                axis=1
-                            )
+                            # filtered_df['primary_location.source.display_name'] = filtered_df.apply(
+                            #     lambda row: safe_get_nested(row.get('primary_location', {}), ['source', 'display_name']),
+                            #     axis=1
+                            # )
 
-                            filtered_df['primary_location.source.host_organization_name'] = filtered_df.apply(
-                                lambda row: safe_get_nested(row.get('primary_location', {}), ['source', 'host_organization_name']),
-                                axis=1
-                            )                  
+                            # filtered_df['primary_location.source.host_organization_name'] = filtered_df.apply(
+                            #     lambda row: safe_get_nested(row.get('primary_location', {}), ['source', 'host_organization_name']),
+                            #     axis=1
+                            # )         
                             filtered_df= filtered_df.reset_index(drop=True)
                             filtered_df.index +=1
                             filtered_df = filtered_df[['doi', 'type_crossref','primary_location.source.display_name', 'primary_location.source.host_organization_name', 'publication_year', 'publication_date', 'open_access.is_oa','open_access.oa_status', 'open_access.oa_url', 'primary_location.license']]
