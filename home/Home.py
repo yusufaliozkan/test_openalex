@@ -98,7 +98,7 @@ else:
         if submit or st.session_state.get('status_expanded', False):
             if submit:
                 st.session_state['status_expanded'] = True
-            with st.spinner("Searching DOIs in OpenAlex"):
+            with st.progress("Searching DOIs in OpenAlex"):
             # with st.status("Searching DOIs in OpenAlex", expanded=st.session_state.get('status_expanded', True)) as status:
                 df_dois['doi_submitted'] = df_dois['doi_submitted'].str.replace('https://doi.org/', '', regex=False)
                 df_dois['doi_submitted'] = df_dois['doi_submitted'].str.strip().str.lower()
