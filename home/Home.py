@@ -370,11 +370,9 @@ else:
                                 # Show in Streamlit
                                 st.subheader("Country Affiliations", anchor=False)
                                 st.dataframe(country_freq, hide_index=True, use_container_width=False)
-                            filtered_df
                         st.subheader('Metrics', anchor=False)
                         with st.expander('Results', expanded=True):
-                            filtered_df
-                            year_counts = filtered_df['publication_year'].value_counts().reset_index()
+                            year_counts = filtered_df['Publication year'].value_counts().reset_index()
                             year_counts.columns = ['Publication Year', 'Count']
                             year_counts = year_counts.sort_values('Publication Year')
 
