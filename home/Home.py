@@ -242,20 +242,6 @@ else:
                             else:
                                 filtered_df = merged_df.copy()
 
-                            filtered_df
-                            year_counts = filtered_df['publication_year'].value_counts().reset_index()
-                            year_counts.columns = ['Publication Year', 'Count']
-                            year_counts = year_counts.sort_values('Publication Year')
-
-                            # Create Plotly chart
-                            fig = px.bar(
-                                year_counts,
-                                x='Publication Year',
-                                y='Count',
-                                title='Number of Publications per Year',
-                                labels={'Count': 'Number of Publications'},
-                            )
-
                             # Display it in Streamlit
                             st.plotly_chart(fig, use_container_width=True)
 
@@ -385,6 +371,21 @@ else:
                                 # Show in Streamlit
                                 st.subheader("Country Affiliations", anchor=False)
                                 st.dataframe(country_freq, hide_index=True, use_container_width=False)
+                    
+                        st.subheader('Metrics', anchor=False):
+                        with st.expander('Results', expanded=True):
+                            year_counts = filtered_df['publication_year'].value_counts().reset_index()
+                            year_counts.columns = ['Publication Year', 'Count']
+                            year_counts = year_counts.sort_values('Publication Year')
+
+                            # Create Plotly chart
+                            fig = px.bar(
+                                year_counts,
+                                x='Publication Year',
+                                y='Count',
+                                title='Number of Publications per Year',
+                                labels={'Count': 'Number of Publications'},
+                            )
                     results(merged_df, oa_summary, oa_status_summary, duplicates_df)
                     @st.fragment
                     def all_results(all_results_df):
