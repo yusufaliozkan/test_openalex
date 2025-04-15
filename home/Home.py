@@ -132,6 +132,7 @@ else:
 
                     # Merge with original DOIs
                     merged_df = df_dois.merge(results_df, on='doi_submitted', how='left')
+                    results_df
                     merged_df
                     merged_df = merged_df.loc[:, ~merged_df.columns.str.startswith('abstract_inverted_index.')]
                     all_results_df = merged_df.copy()
