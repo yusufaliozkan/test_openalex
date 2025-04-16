@@ -396,7 +396,7 @@ else:
 
                             col1, col2, col3, col4 = st.columns(4)
                             with col1:
-                                st.metric(label='# Author per publication', value=num_authors/num_papers, border=True)
+                                st.metric(label='# Author per publication', value=(num_authors/num_papers).round(2), border=True)
                             with col2:
                                 apc_paid_usd = filtered_raw_df['apc_paid.value_usd'].sum()
                                 st.metric(label='APC paid (USD)', value=f'${apc_paid_usd:,.2f}', border=True)         
