@@ -392,7 +392,10 @@ else:
                                 st.metric(label='Field Weighted Citation Impact mean', value=fwci)
                             with col4:
                                 num_authors = filtered_raw_df['author_count'].sum()
-                                st.metric(label='Total number of Authors', value=num_authors)                       
+                                st.metric(label='Total number of Authors', value=num_authors)
+
+                                apc_paid_usd = filtered_raw_df['apc_paid.value_usd'].sum()
+                                apc_paid_usd         
 
                             year_counts = filtered_raw_df['publication_year'].value_counts().reset_index()
                             year_counts.columns = ['Publication Year', 'Count']
