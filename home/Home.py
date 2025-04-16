@@ -382,7 +382,7 @@ else:
 
                             col1, col2, col3, col4 = st.columns(4)
                             with col1:
-                                num_papers = filtered_raw_df.len()
+                                num_papers = len(filtered_raw_df)
                                 st.metric(label='Number of publications', value=num_papers)
                             with col2:
                                 citation_count = filtered_raw_df['cited_by_count'].sum()
