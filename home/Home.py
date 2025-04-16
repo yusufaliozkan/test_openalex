@@ -383,19 +383,21 @@ else:
                             col1, col2, col3, col4 = st.columns(4)
                             with col1:
                                 num_papers = len(filtered_raw_df)
-                                st.metric(label='Number of publications', value=num_papers)
+                                st.metric(label='Number of publications', value=num_papers, border=True)
                             with col2:
                                 citation_count = filtered_raw_df['cited_by_count'].sum()
-                                st.metric(label='Citation count', value=citation_count)   
+                                st.metric(label='Citation count', value=citation_count, border=True)   
                             with col3:
                                 fwci = filtered_raw_df['fwci'].mean().round(2)
-                                st.metric(label='Field Weighted Citation Impact mean', value=fwci)
+                                st.metric(label='Field Weighted Citation Impact mean', value=fwci, border=True)
                             with col4:
                                 num_authors = filtered_raw_df['author_count'].sum()
-                                st.metric(label='Total number of Authors', value=num_authors)
+                                st.metric(label='Total number of Authors', value=num_authors, border=True)
 
+                            col1, col2, col3, col4 = st.columns(4)
+                            with col1:
                                 apc_paid_usd = filtered_raw_df['apc_paid.value_usd'].sum()
-                                apc_paid_usd         
+                                st.metric(label='APC paid (USD)', value=apc_paid_usd, border=True)         
 
                             year_counts = filtered_raw_df['publication_year'].value_counts().reset_index()
                             year_counts.columns = ['Publication Year', 'Count']
