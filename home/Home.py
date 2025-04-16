@@ -404,7 +404,7 @@ else:
                             year_counts = filtered_raw_df['publication_year'].value_counts().reset_index()
                             year_counts.columns = ['Publication Year', 'Count']
                             year_counts = year_counts.sort_values('Publication Year')
-
+ 
                             # Create Plotly chart
                             fig = px.bar(
                                 year_counts,
