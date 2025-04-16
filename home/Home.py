@@ -379,7 +379,6 @@ else:
                                 filtered_raw_df = merged_df.copy()
 
                             filtered_raw_df['author_count'] = filtered_raw_df['authorships'].apply(lambda x: len(x) if isinstance(x, list) else 0)
-                            filtered_raw_df
                             col1, col2, col3, col4 = st.columns(4)
                             with col1:
                                 num_papers = len(filtered_raw_df)
