@@ -398,8 +398,11 @@ else:
                             with col1:
                                 st.metric(label='# Author per publication', value=(num_authors/num_papers).round(2), border=True)
                             with col2:
-                                apc_paid_usd = filtered_raw_df['apc_paid.value_usd'].sum()
-                                st.metric(label='APC paid (USD)', value=f'${apc_paid_usd:,.2f}', border=True)         
+                                if 'apc_paid.value_usd' in filtered_raw_df.columns:
+                                    apc_paid_usd = filtered_raw_df['apc_paid.value_usd'].sum()
+                                    st.metric(label='APC paid (USD)', value=f'${apc_paid_usd:,.2f}', border=True)
+                                else:
+                                    st.metric(label='APC paid (USD)', value='Not available', border=True)        
 
                             year_counts = filtered_raw_df['publication_year'].value_counts().reset_index()
                             year_counts.columns = ['Publication Year', 'Count']
