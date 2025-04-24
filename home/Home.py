@@ -388,16 +388,15 @@ else:
                                 if table_view:
                                     col1.dataframe(top_topics, hide_index=True,  use_container_width=False)
                                 else:
-                                    top_topics = top_topics.sort_values(by="# Outputs", ascending=True)
-                                    fig = px.scatter(top_topics, 
-                                                    x="# Outputs", 
-                                                    y="Primary topic",
-                                                    title="Outputs by Primary Topic",
-                                                    size=[10]*len(top_topics),  # fixed dot size
-                                                    color_discrete_sequence=["#636EFA"])
+                                    fig = px.bar(top_topics, 
+                                                x="# Outputs", 
+                                                y="Primary topic", 
+                                                orientation='h',
+                                                title="Outputs by Primary Topic",
+                                                labels={"# Outputs": "Number of Outputs", "Primary topic": "Topic"},
+                                                color_discrete_sequence=["#636EFA"])
 
                                     col1.plotly_chart(fig)
-
                             with col2:
                                 st.write('**Sustainable Development Goals (SDGs)**')
                                 if selected_statuses:
