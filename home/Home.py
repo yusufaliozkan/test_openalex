@@ -338,7 +338,7 @@ else:
 
                         st.subheader("Affiliations", anchor=False)
                         with st.expander('Results', expanded=True):
-                            col1, col2 = st.columns([1,4])
+                            col1, col2 = st.columns(2)
                             with col1:
                                 # AUTHORS
                                 if selected_statuses:
@@ -401,19 +401,7 @@ else:
 
                                 # Show in Streamlit
                                 st.subheader("Country Affiliations", anchor=False)
-                                table_view = st.toggle('Display as a table', key='countries')
-                                if table_view:
-                                    st.dataframe(country_freq, hide_index=True, use_container_width=False)
-                                else:
-                                    fig = px.choropleth(country_freq,
-                                                        locations="Country",
-                                                        locationmode="country names",
-                                                        color="# Count",
-                                                        color_continuous_scale="Plasma",  # changed from "Blues" to "Viridis"
-                                                        title="Country Affiliations Map")
-                                    fig.update_layout(coloraxis_colorbar=dict(title="# of Affiliations"))
-                                    fig.update_traces(zmin=0, zmax=country_freq["# Count"].max())
-                                    st.plotly_chart(fig, use_container_width=True)
+                                st.dataframe(country_freq, hide_index=True, use_container_width=False)
 
                         st.subheader("Topics and SDGs", anchor=False)
                         with st.expander('Results', expanded= True):
