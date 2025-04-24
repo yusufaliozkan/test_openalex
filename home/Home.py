@@ -408,6 +408,13 @@ else:
                                 sdg_df.columns = ["SDG name", "# Outputs"]
                                 col2.dataframe(sdg_df, hide_index=True,  use_container_width=False)
 
+                                fig = px.bar(sdg_df.sort_values("# Outputs", ascending=True),
+                                            x="# Outputs", y="SDG name",
+                                            orientation='h',
+                                            title="Number of Outputs by SDG",
+                                            labels={"# Outputs": "Number of Outputs", "SDG name": "Sustainable Development Goal"})
+
+                                col2.plotly_chart(fig, use_container_width=True)
 
                         st.subheader('Metrics', anchor=False)
                         with st.expander('Results', expanded=True):
