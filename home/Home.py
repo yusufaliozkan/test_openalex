@@ -255,8 +255,22 @@ else:
                                     oa_summary = merged_df['open_access.is_oa'].value_counts(dropna=False).reset_index()
                                     oa_summary.columns = ['Is OA?', '# Outputs']
                                     st.dataframe(oa_status_summary, hide_index =True,  use_container_width=False)
+                                    fig = px.pie(oa_status_summary, 
+                                                names="OA status", 
+                                                values="# Outputs", 
+                                                title="Open Access Status Distribution",
+                                                color_discrete_sequence=px.colors.sequential.Blues)
+
+                                    st.plotly_chart(fig, use_container_width=True)
                                 else:
                                     st.dataframe(oa_status_summary, hide_index =True,  use_container_width=False)
+                                    fig = px.pie(oa_status_summary, 
+                                                names="OA status", 
+                                                values="# Outputs", 
+                                                title="Open Access Status Distribution",
+                                                color_discrete_sequence=px.colors.sequential.Blues)
+
+                                    st.plotly_chart(fig, use_container_width=True)
                             with col2:
                                 
                                 def safe_get_nested(row, path):
