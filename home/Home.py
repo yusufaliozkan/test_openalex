@@ -394,12 +394,12 @@ else:
                                 fig = px.treemap(top_topics, path=["Primary topic"], values="# Outputs",
                                                 title="Outputs by Topic (Treemap)")
 
-                                st.plotly_chart(fig)
+                                col1.plotly_chart(fig)
 
                                 fig = px.sunburst(top_topics, path=["Primary topic"], values="# Outputs",
                                                 title="Outputs by Topic (Sunburst Chart)")
 
-                                st.plotly_chart(fig)
+                                col1.plotly_chart(fig)
 
                         st.subheader('Metrics', anchor=False)
                         with st.expander('Results', expanded=True):
