@@ -384,69 +384,59 @@ else:
                                 st.subheader("Institutional Affiliations", anchor=False)
                                 st.dataframe(institution_freq, hide_index=True,  use_container_width=False)
                             with col2:
+                                # Country frequency table
                                 def code_to_name(code):
                                     try:
                                         return pycountry.countries.get(alpha_2=code).name
                                     except:
-                                        return code  # fallback
+                                        return code  # fallback to code if not found
 
-                                # Frequency table
+                                # Compute frequency table
                                 country_freq = institutions_table['country_code'].value_counts(dropna=True).reset_index()
                                 country_freq.columns = ['Country Code', '# Count']
+
+                                # Map codes to full names
                                 country_freq['Country'] = country_freq['Country Code'].apply(code_to_name)
+                                country_freq = country_freq[['Country', '# Count']]  # Reorder columns
 
-                                # Geocode each country name to get lat/lon (use caching to avoid repeating)
-                                @st.cache_data
-                                def geocode_countries(df):
-                                    geolocator = Nominatim(user_agent="country-mapper")
-                                    latitudes, longitudes = [], []
+                                # Show in Streamlit
+                                st.subheader("Country Affiliations", anchor=False)
+                                st.dataframe(country_freq, hide_index=True, use_container_width=False)
+                                geolocator = Nominatim(user_agent="country_locator")
 
-                                    for country in df['Country']:
-                                        try:
-                                            location = geolocator.geocode(country, timeout=10)
-                                            if location:
-                                                latitudes.append(location.latitude)
-                                                longitudes.append(location.longitude)
-                                            else:
-                                                latitudes.append(None)
-                                                longitudes.append(None)
-                                        except GeocoderTimedOut:
-                                            latitudes.append(None)
-                                            longitudes.append(None)
-                                    
-                                    df['lat'] = latitudes
-                                    df['lon'] = longitudes
-                                    return df.dropna(subset=['lat', 'lon'])
+                                def get_lat_lon(country):
+                                    try:
+                                        location = geolocator.geocode(country)
+                                        return location.latitude, location.longitude
+                                    except:
+                                        return None, None
 
-                                # Get lat/lon
-                                country_freq = geocode_countries(country_freq)
+                                country_freq[['lat', 'lon']] = country_freq['Country'].apply(lambda x: pd.Series(get_lat_lon(x)))
 
-                                # Show data as map using pydeck
-                                st.subheader("Global Country Affiliations Map")
+                                # Drop countries that couldn't be geolocated
+                                country_freq = country_freq.dropna(subset=['lat', 'lon'])
 
-                                layer = pdk.Layer(
-                                    "ScatterplotLayer",
-                                    data=country_freq,
-                                    get_position='[lon, lat]',
-                                    get_radius="# Count",
-                                    get_fill_color='[200, 30, 0, 160]',
-                                    pickable=True,
-                                )
-
-                                view_state = pdk.ViewState(
-                                    latitude=20,
-                                    longitude=0,
-                                    zoom=1,
-                                    pitch=0,
-                                )
-
-                                r = pdk.Deck(
-                                    layers=[layer],
-                                    initial_view_state=view_state,
-                                    tooltip={"text": "{Country}: {# Count}"},
-                                )
-
-                                st.pydeck_chart(r)
+                                # Plot with pydeck
+                                st.pydeck_chart(pdk.Deck(
+                                    map_style='mapbox://styles/mapbox/light-v9',
+                                    initial_view_state=pdk.ViewState(
+                                        latitude=20,
+                                        longitude=0,
+                                        zoom=1,
+                                        pitch=0,
+                                    ),
+                                    layers=[
+                                        pdk.Layer(
+                                            'ScatterplotLayer',
+                                            data=country_freq,
+                                            get_position='[lon, lat]',
+                                            get_fill_color='[200, 30, 0, 160]',
+                                            get_radius='`# Count` * 10000',
+                                            pickable=True,
+                                        )
+                                    ],
+                                    tooltip={"text": "{Country}\n# Affiliations: {# Count}"}
+                                ))
 
                         st.subheader("Topics and SDGs", anchor=False)
                         with st.expander('Results', expanded= True):
