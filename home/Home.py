@@ -413,8 +413,8 @@ else:
                                     'display_name'
                                 ]].drop_duplicates().reset_index(drop=True)
                                 sdg_table
-                                sdg_df = filtered_df.explode('sustainable_development_goals').reset_index(drop=True)
-                                sdg_df
+                                # sdg_df = filtered_df.explode('sustainable_development_goals').reset_index(drop=True)
+                                # sdg_df
 
 
                         st.subheader('Metrics', anchor=False)
