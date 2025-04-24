@@ -14,7 +14,8 @@ from sidebar_content import sidebar_content
 import pycountry
 import matplotlib.pyplot as plt
 import numpy as np
-
+from geopy.geocoders import Nominatim
+import pydeck as pdk
 
 st.set_page_config(layout = "wide", 
                     page_title='OpenAlex DOI Search Tool',
@@ -402,14 +403,44 @@ else:
                                 st.subheader("Country Affiliations", anchor=False)
                                 st.dataframe(country_freq, hide_index=True, use_container_width=False)
 
-                                fig = px.scatter_geo(country_freq,
-                                                    locations="Country",
-                                                    locationmode="country names",
-                                                    size="# Count",
-                                                    title="Affiliations by Country (Bubble Map)",
-                                                    projection="natural earth")
+                                geolocator = Nominatim(user_agent="geoapi")
 
-                                st.plotly_chart(fig, use_container_width=True)
+                                def get_coordinates(country):
+                                    try:
+                                        location = geolocator.geocode(country, timeout=10)
+                                        if location:
+                                            return pd.Series([location.latitude, location.longitude])
+                                    except:
+                                        return pd.Series([None, None])
+
+                                # Get lat/lon
+                                country_freq[['lat', 'lon']] = country_freq['Country'].apply(get_coordinates)
+                                time.sleep(1)  # Nominatim rate limit - respect their policy
+                                        
+                                # Drop rows without coordinates
+                                country_freq = country_freq.dropna(subset=['lat', 'lon'])
+
+                                # Define the layer
+                                layer = pdk.Layer(
+                                    "ScatterplotLayer",
+                                    data=country_freq,
+                                    get_position='[lon, lat]',
+                                    get_radius="# Count",
+                                    get_fill_color='[0, 122, 204, 140]',  # muted blue
+                                    pickable=True,
+                                    radius_scale=10000,
+                                    radius_min_pixels=5,
+                                    radius_max_pixels=60,
+                                )
+
+                                # Define the view
+                                view_state = pdk.ViewState(
+                                    latitude=20, longitude=0, zoom=1.5, pitch=0
+                                )
+
+                                # Display
+                                st.pydeck_chart(pdk.Deck(layers=[layer], initial_view_state=view_state, tooltip={"text": "{Country}\n# Outputs: {# Count}"}))
+
 
                         st.subheader("Topics and SDGs", anchor=False)
                         with st.expander('Results', expanded= True):
