@@ -404,6 +404,15 @@ else:
                                 st.plotly_chart(fig)
 
                             with col2:
+                                if selected_statuses:
+                                    sdg_df = filtered_raw_df.explode('sustainable_development_goals').reset_index(drop=True)
+                                else:
+                                    sdg_df = merged_df.explode('sustainable_development_goals').reset_index(drop=True)
+                                sdg_df = pd.json_normalize(sdg_df['sustainable_development_goals']).reset_index(drop=True)
+                                sdg_table = sdg_df[[
+                                    'display_name'
+                                ]].drop_duplicates().reset_index(drop=True)
+                                sdg_table
                                 sdg_df = filtered_df.explode('sustainable_development_goals').reset_index(drop=True)
                                 sdg_df
                                 institution_details = pd.json_normalize(institutions_df['institutions']).reset_index(drop=True)
