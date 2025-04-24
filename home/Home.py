@@ -245,63 +245,72 @@ else:
                                 filtered_df = merged_df.copy()
 
                             # Display it in Streamlit
-                        
-                            custom_colors = {
-                                "closed": "#d62728",   # soft red
-                                "green": "#2ca02c",    # muted green
-                                "gold": "#e6b800",     # warm gold
-                                "hybrid": "#1f77b4",   # calm blue
-                                "bronze": "#b87333"    # bronze tone
-                            }
-                            if selected_statuses:
-                                oa_status_summary = filtered_df['open_access.oa_status'].value_counts(dropna=False).reset_index()
-                                oa_status_summary.columns = ['OA status', '# Outputs']
-                                # merged_df['open_access.is_oa'] = merged_df['open_access.is_oa'].map({True: 'Open Access', False: 'Closed Access'})
-                                oa_summary = merged_df['open_access.is_oa'].value_counts(dropna=False).reset_index()
-                                oa_summary.columns = ['Is OA?', '# Outputs']
-                                st.dataframe(oa_status_summary, hide_index =True,  use_container_width=False)
-                                fig = px.pie(oa_status_summary,
-                                            names="OA status",
-                                            values="# Outputs",
-                                            title="Open Access Status",
-                                            color="OA status",
-                                            color_discrete_map=custom_colors)
-
-                                st.plotly_chart(fig, use_container_width=True)
-                            else:
-                                st.dataframe(oa_status_summary, hide_index =True,  use_container_width=False)
-                                fig = px.pie(oa_status_summary,
-                                            names="OA status",
-                                            values="# Outputs",
-                                            title="Open Access Status",
-                                            color="OA status",
-                                            color_discrete_map=custom_colors)
-
-                                st.plotly_chart(fig, use_container_width=True)
-                                
-                            def safe_get_nested(row, path):
-                                current = row
-                                for key in path:
-                                    if isinstance(current, dict):
-                                        current = current.get(key, None)
+                            
+                            col1, col2 = st.columns([1,4])
+                            with col1:
+                                custom_colors = {
+                                    "closed": "#d62728",   # soft red
+                                    "green": "#2ca02c",    # muted green
+                                    "gold": "#e6b800",     # warm gold
+                                    "hybrid": "#1f77b4",   # calm blue
+                                    "bronze": "#b87333"    # bronze tone
+                                }
+                                if selected_statuses:
+                                    oa_status_summary = filtered_df['open_access.oa_status'].value_counts(dropna=False).reset_index()
+                                    oa_status_summary.columns = ['OA status', '# Outputs']
+                                    # merged_df['open_access.is_oa'] = merged_df['open_access.is_oa'].map({True: 'Open Access', False: 'Closed Access'})
+                                    oa_summary = merged_df['open_access.is_oa'].value_counts(dropna=False).reset_index()
+                                    oa_summary.columns = ['Is OA?', '# Outputs']
+                                    table_view = st.toggle('Display as a table', key='OAstatus1')
+                                    if table_view:
+                                        st.dataframe(oa_status_summary, hide_index =True,  use_container_width=False)
                                     else:
-                                        return None
-                                return current
+                                        fig = px.pie(oa_status_summary,
+                                                    names="OA status",
+                                                    values="# Outputs",
+                                                    title="Open Access Status",
+                                                    color="OA status",
+                                                    color_discrete_map=custom_colors)
 
-                            # filtered_df['primary_location.source.display_name'] = filtered_df.apply(
-                            #     lambda row: safe_get_nested(row.get('primary_location', {}), ['source', 'display_name']),
-                            #     axis=1
-                            # )
+                                        st.plotly_chart(fig, use_container_width=True)
+                                else:
+                                    table_view = st.toggle('Display as a table', key='OAstatus2')
+                                    if table_view:
+                                        st.dataframe(oa_status_summary, hide_index =True,  use_container_width=False)
+                                    else:
+                                        fig = px.pie(oa_status_summary,
+                                                    names="OA status",
+                                                    values="# Outputs",
+                                                    title="Open Access Status",
+                                                    color="OA status",
+                                                    color_discrete_map=custom_colors)
 
-                            # filtered_df['primary_location.source.host_organization_name'] = filtered_df.apply(
-                            #     lambda row: safe_get_nested(row.get('primary_location', {}), ['source', 'host_organization_name']),
-                            #     axis=1
-                            # )         
-                            filtered_df= filtered_df.reset_index(drop=True)
-                            filtered_df.index +=1
-                            filtered_df = filtered_df[['doi', 'type_crossref','primary_location.source.display_name', 'primary_location.source.host_organization_name', 'publication_year', 'publication_date', 'open_access.is_oa','open_access.oa_status', 'open_access.oa_url', 'primary_location.license']]
-                            filtered_df.columns = ['DOI', 'Type','Journal', 'Publisher','Publication year', 'Publication date','Is OA?', 'OA Status', 'OA URL', 'Licence']
-                            filtered_df
+                                        st.plotly_chart(fig, use_container_width=True)
+                            with col2:
+                                
+                                def safe_get_nested(row, path):
+                                    current = row
+                                    for key in path:
+                                        if isinstance(current, dict):
+                                            current = current.get(key, None)
+                                        else:
+                                            return None
+                                    return current
+
+                                # filtered_df['primary_location.source.display_name'] = filtered_df.apply(
+                                #     lambda row: safe_get_nested(row.get('primary_location', {}), ['source', 'display_name']),
+                                #     axis=1
+                                # )
+
+                                # filtered_df['primary_location.source.host_organization_name'] = filtered_df.apply(
+                                #     lambda row: safe_get_nested(row.get('primary_location', {}), ['source', 'host_organization_name']),
+                                #     axis=1
+                                # )         
+                                filtered_df= filtered_df.reset_index(drop=True)
+                                filtered_df.index +=1
+                                filtered_df = filtered_df[['doi', 'type_crossref','primary_location.source.display_name', 'primary_location.source.host_organization_name', 'publication_year', 'publication_date', 'open_access.is_oa','open_access.oa_status', 'open_access.oa_url', 'primary_location.license']]
+                                filtered_df.columns = ['DOI', 'Type','Journal', 'Publisher','Publication year', 'Publication date','Is OA?', 'OA Status', 'OA URL', 'Licence']
+                                filtered_df
 
                         st.subheader("Journals and Publishers", anchor=False)
                         with st.expander('Results', expanded= True):
