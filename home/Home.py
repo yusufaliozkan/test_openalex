@@ -406,15 +406,17 @@ else:
                                 sdg_df = pd.json_normalize(sdg_df['sustainable_development_goals']).reset_index(drop=True)
                                 sdg_df = sdg_df["display_name"].value_counts().reset_index()
                                 sdg_df.columns = ["SDG name", "# Outputs"]
-                                col2.dataframe(sdg_df, hide_index=True,  use_container_width=False)
+                                table_view = st.toggle('Display as a table')
+                                if table_view:
+                                    col2.dataframe(sdg_df, hide_index=True,  use_container_width=False)
+                                else:
+                                    fig = px.bar(sdg_df.sort_values("# Outputs", ascending=True),
+                                                x="# Outputs", y="SDG name",
+                                                orientation='h',
+                                                title="Number of Outputs by SDG",
+                                                labels={"# Outputs": "Number of Outputs", "SDG name": "Sustainable Development Goal"})
 
-                                fig = px.bar(sdg_df.sort_values("# Outputs", ascending=True),
-                                            x="# Outputs", y="SDG name",
-                                            orientation='h',
-                                            title="Number of Outputs by SDG",
-                                            labels={"# Outputs": "Number of Outputs", "SDG name": "Sustainable Development Goal"})
-
-                                col2.plotly_chart(fig, use_container_width=True)
+                                    col2.plotly_chart(fig, use_container_width=True)
 
                         st.subheader('Metrics', anchor=False)
                         with st.expander('Results', expanded=True):
