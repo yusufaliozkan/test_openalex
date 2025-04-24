@@ -402,41 +402,15 @@ else:
                                 # Show in Streamlit
                                 st.subheader("Country Affiliations", anchor=False)
                                 st.dataframe(country_freq, hide_index=True, use_container_width=False)
-                                geolocator = Nominatim(user_agent="country_locator")
 
-                                def get_lat_lon(country):
-                                    try:
-                                        location = geolocator.geocode(country)
-                                        return location.latitude, location.longitude
-                                    except:
-                                        return None, None
+                                fig = px.choropleth(country_freq,
+                                                    locations="Country",
+                                                    locationmode="country names",
+                                                    color="# Count",
+                                                    color_continuous_scale="Blues",
+                                                    title="Country Affiliations Map")
 
-                                country_freq[['lat', 'lon']] = country_freq['Country'].apply(lambda x: pd.Series(get_lat_lon(x)))
-
-                                # Drop countries that couldn't be geolocated
-                                country_freq = country_freq.dropna(subset=['lat', 'lon'])
-
-                                # Plot with pydeck
-                                st.pydeck_chart(pdk.Deck(
-                                    map_style='mapbox://styles/mapbox/light-v9',
-                                    initial_view_state=pdk.ViewState(
-                                        latitude=20,
-                                        longitude=0,
-                                        zoom=1,
-                                        pitch=0,
-                                    ),
-                                    layers=[
-                                        pdk.Layer(
-                                            'ScatterplotLayer',
-                                            data=country_freq,
-                                            get_position='[lon, lat]',
-                                            get_fill_color='[200, 30, 0, 160]',
-                                            get_radius='`# Count` * 10000',
-                                            pickable=True,
-                                        )
-                                    ],
-                                    tooltip={"text": "{Country}\n# Affiliations: {# Count}"}
-                                ))
+                                st.plotly_chart(fig, use_container_width=True)
 
                         st.subheader("Topics and SDGs", anchor=False)
                         with st.expander('Results', expanded= True):
