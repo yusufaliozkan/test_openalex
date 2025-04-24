@@ -406,13 +406,6 @@ else:
                                 counts = sdg_df["display_name"].value_counts().reset_index()
                                 counts.columns = ["display_name", "count"]
                                 st.dataframe(counts)
-                                sdg_table = sdg_df[[
-                                    'author.display_name',
-                                    'author.orcid',
-                                    'author_position',
-                                    'is_corresponding',
-                                    'raw_author_name'
-                                ]].drop_duplicates().reset_index(drop=True)
 
 
                         st.subheader('Metrics', anchor=False)
