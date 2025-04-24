@@ -285,7 +285,7 @@ else:
                         with st.expander('Results', expanded= True):
                             col1, col2 = st.columns(2)
                             with col1:
-                                # JOURNALS
+                                # JOURNALS 
                                 if selected_statuses:
                                     top_journals = filtered_raw_df['primary_location.source.display_name'].value_counts(dropna=False).reset_index()
                                 else:
