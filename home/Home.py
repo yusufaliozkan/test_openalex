@@ -391,8 +391,8 @@ else:
 
                                 st.plotly_chart(fig)
 
-                                labels = data["Primary topic"]
-                                values = data["# Outputs"]
+                                labels = top_topics["Primary topic"].tolist()
+                                values = top_topics["# Outputs"].tolist()
 
                                 # Radar chart setup
                                 angles = np.linspace(0, 2 * np.pi, len(labels), endpoint=False).tolist()
