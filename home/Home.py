@@ -405,20 +405,14 @@ else:
                                 if table_view:
                                     st.dataframe(country_freq, hide_index=True, use_container_width=False)
                                 else:
-                                    fig = px.choropleth(
-                                        country_freq,
-                                        locations="Country",
-                                        locationmode="country names",
-                                        color="# Count",
-                                        color_continuous_scale="Viridis",  # More vibrant than 'Blues'
-                                        title="Country Affiliations Map"
-                                    )
-                                    fig.update_layout(
-                                        geo=dict(showframe=False, showcoastlines=False, projection_type='equirectangular'),
-                                        margin=dict(l=0, r=0, t=30, b=0),
-                                        coloraxis_colorbar=dict(title="# Affiliations")
-                                    )
-                                    col2.plotly_chart(fig, use_container_width=True)
+                                    fig = px.choropleth(country_freq,
+                                                        locations="Country",
+                                                        locationmode="country names",
+                                                        color="# Count",
+                                                        color_continuous_scale="Blues",
+                                                        title="Country Affiliations Map")
+
+                                    st.plotly_chart(fig, use_container_width=True)
 
                         st.subheader("Topics and SDGs", anchor=False)
                         with st.expander('Results', expanded= True):
