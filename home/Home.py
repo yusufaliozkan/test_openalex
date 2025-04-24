@@ -403,7 +403,10 @@ else:
                                 
                                 sdg_df = pd.json_normalize(sdg_df['sustainable_development_goals']).reset_index(drop=True)
                                 sdg_df
-                                authors_table = authors_df[[
+                                counts = sdg_df["display_name"].value_counts().reset_index()
+                                counts.columns = ["display_name", "count"]
+                                st.dataframe(counts)
+                                sdg_table = sdg_df[[
                                     'author.display_name',
                                     'author.orcid',
                                     'author_position',
