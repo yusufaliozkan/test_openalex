@@ -386,12 +386,14 @@ else:
                                 st.dataframe(top_topics, hide_index=True,  use_container_width=False)
 
                                 top_topics = top_topics.sort_values(by="# Outputs", ascending=False)
-                                fig = px.scatter(top_topics, x="# Outputs", y="Primary topic",
+                                fig = px.scatter(top_topics, 
+                                                x="# Outputs", 
+                                                y="Primary topic",
                                                 title="Dot Plot: Outputs by Topic",
                                                 size=[10]*len(top_topics),  # fixed dot size
                                                 color_discrete_sequence=["#636EFA"])
-                                st.plotly_chart(fig)
 
+                                st.plotly_chart(fig)
 
                                 fig = px.bar(top_topics.sort_values(by="# Outputs", ascending=True),
                                             x="# Outputs", y="Primary topic",
