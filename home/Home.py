@@ -377,6 +377,7 @@ else:
                         with st.expander('Results', expanded= True):
                             col1, col2 = st.columns(2)
                             with col1:
+                                st.write('**Primary Topics**')
                                 if selected_statuses:
                                     top_topics = filtered_raw_df['primary_topic.field.display_name'].value_counts(dropna=False).reset_index()
                                 else:
