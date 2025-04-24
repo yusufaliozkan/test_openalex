@@ -396,6 +396,11 @@ else:
 
                                 st.plotly_chart(fig)
 
+                                fig = px.sunburst(top_topics, path=["Primary topic"], values="# Outputs",
+                                                title="Outputs by Topic (Sunburst Chart)")
+
+                                st.plotly_chart(fig)
+
                         st.subheader('Metrics', anchor=False)
                         with st.expander('Results', expanded=True):
                             if selected_statuses:
