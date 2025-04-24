@@ -409,7 +409,7 @@ else:
                                                         locations="Country",
                                                         locationmode="country names",
                                                         color="# Count",
-                                                        color_continuous_scale="Blues",
+                                                        color_continuous_scale="Viridis",  # changed from "Blues" to "Viridis"
                                                         title="Country Affiliations Map")
 
                                     st.plotly_chart(fig, use_container_width=True)
