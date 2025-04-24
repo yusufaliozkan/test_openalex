@@ -248,6 +248,13 @@ else:
                             
                             col1, col2 = st.columns([1,4])
                             with col1:
+                                custom_colors = {
+                                    "closed": "#d62728",   # soft red
+                                    "green": "#2ca02c",    # muted green
+                                    "gold": "#e6b800",     # warm gold
+                                    "hybrid": "#1f77b4",   # calm blue
+                                    "bronze": "#b87333"    # bronze tone
+                                }
                                 if selected_statuses:
                                     oa_status_summary = filtered_df['open_access.oa_status'].value_counts(dropna=False).reset_index()
                                     oa_status_summary.columns = ['OA status', '# Outputs']
@@ -255,20 +262,22 @@ else:
                                     oa_summary = merged_df['open_access.is_oa'].value_counts(dropna=False).reset_index()
                                     oa_summary.columns = ['Is OA?', '# Outputs']
                                     st.dataframe(oa_status_summary, hide_index =True,  use_container_width=False)
-                                    fig = px.pie(oa_status_summary, 
-                                                names="OA status", 
-                                                values="# Outputs", 
+                                    fig = px.pie(oa_status_summary,
+                                                names="OA status",
+                                                values="# Outputs",
                                                 title="Open Access Status Distribution",
-                                                color_discrete_sequence=px.colors.sequential.Blues)
+                                                color="OA status",
+                                                color_discrete_map=custom_colors)
 
                                     st.plotly_chart(fig, use_container_width=True)
                                 else:
                                     st.dataframe(oa_status_summary, hide_index =True,  use_container_width=False)
-                                    fig = px.pie(oa_status_summary, 
-                                                names="OA status", 
-                                                values="# Outputs", 
+                                    fig = px.pie(oa_status_summary,
+                                                names="OA status",
+                                                values="# Outputs",
                                                 title="Open Access Status Distribution",
-                                                color_discrete_sequence=px.colors.sequential.Blues)
+                                                color="OA status",
+                                                color_discrete_map=custom_colors)
 
                                     st.plotly_chart(fig, use_container_width=True)
                             with col2:
