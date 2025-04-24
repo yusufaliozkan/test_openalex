@@ -391,23 +391,10 @@ else:
 
                                 st.plotly_chart(fig)
 
-                                labels = top_topics["Primary topic"].tolist()
-                                values = top_topics["# Outputs"].tolist()
+                                fig = px.treemap(top_topics, path=["Primary topic"], values="# Outputs",
+                                                title="Outputs by Topic (Treemap)")
 
-                                # Radar chart setup
-                                angles = np.linspace(0, 2 * np.pi, len(labels), endpoint=False).tolist()
-                                values += values[:1]  # repeat first value to close the circle
-                                angles += angles[:1]
-
-                                fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(polar=True))
-                                ax.plot(angles, values, 'o-', linewidth=2)
-                                ax.fill(angles, values, alpha=0.25)
-                                ax.set_yticklabels([])
-                                ax.set_xticks(angles[:-1])
-                                ax.set_xticklabels(labels, fontsize=9)
-                                ax.set_title("Outputs by Topic (Radar Chart)")
-
-                                st.pyplot(fig)
+                                st.plotly_chart(fig)
 
                         st.subheader('Metrics', anchor=False)
                         with st.expander('Results', expanded=True):
