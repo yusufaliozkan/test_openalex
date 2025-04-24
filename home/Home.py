@@ -409,7 +409,7 @@ else:
                                                         locations="Country",
                                                         locationmode="country names",
                                                         color="# Count",
-                                                        color_continuous_scale="Viridis",  # changed from "Blues" to "Viridis"
+                                                        color_continuous_scale="Plasma",  # changed from "Blues" to "Viridis"
                                                         title="Country Affiliations Map")
                                     fig.update_layout(coloraxis_colorbar=dict(title="# of Affiliations"))
                                     fig.update_traces(zmin=0, zmax=country_freq["# Count"].max())
