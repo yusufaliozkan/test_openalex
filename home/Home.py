@@ -418,7 +418,8 @@ else:
                                                     x="# Outputs", y="SDG name",
                                                     orientation='h',
                                                     title="Number of Outputs by SDG",
-                                                    labels={"# Outputs": "Number of Outputs", "SDG name": "Sustainable Development Goal"})
+                                                    labels={"# Outputs": "Number of Outputs", "SDG name": "Sustainable Development Goal"},
+                                                    color_discrete_sequence=["#636EFA"])
 
                                         col2.plotly_chart(fig, use_container_width=True)
 
