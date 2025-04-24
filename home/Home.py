@@ -383,6 +383,12 @@ else:
                                 top_topics = top_topics.dropna()
                                 st.dataframe(top_topics, hide_index=True,  use_container_width=False)
 
+                                fig = px.scatter(top_topics, x="Primary topic", y="# Outputs", size="# Outputs",
+                                                hover_name="Primary topic", title="Outputs by Topic",
+                                                size_max=60)
+
+                                st.plotly_chart(fig)
+
                         st.subheader('Metrics', anchor=False)
                         with st.expander('Results', expanded=True):
                             if selected_statuses:
