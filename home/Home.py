@@ -403,7 +403,6 @@ else:
                                 else:
                                     sdg_df = merged_df.explode('sustainable_development_goals').reset_index(drop=True)
                                 sdg_df = pd.json_normalize(sdg_df['sustainable_development_goals']).reset_index(drop=True)
-                                sdg_df
                                 if sdg_df.empty:
                                     st.write('No SDG found')
                                 else:
