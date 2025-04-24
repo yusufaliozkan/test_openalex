@@ -401,12 +401,13 @@ else:
                                 # Show in Streamlit
                                 st.subheader("Country Affiliations", anchor=False)
                                 st.dataframe(country_freq, hide_index=True, use_container_width=False)
-                                fig = px.choropleth(country_freq,
+
+                                fig = px.scatter_geo(country_freq,
                                                     locations="Country",
                                                     locationmode="country names",
-                                                    color="# Count",
-                                                    color_continuous_scale="Blues",
-                                                    title="Country Affiliations Map")
+                                                    size="# Count",
+                                                    title="Affiliations by Country (Bubble Map)",
+                                                    projection="natural earth")
 
                                 st.plotly_chart(fig, use_container_width=True)
 
