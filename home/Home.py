@@ -384,7 +384,6 @@ else:
                                 top_topics.columns = ['Primary topic', '# Outputs']
                                 top_topics = top_topics.dropna()
                                 st.dataframe(top_topics, hide_index=True,  use_container_width=False)
-
                                 top_topics = top_topics.sort_values(by="# Outputs", ascending=True)
                                 fig = px.scatter(top_topics, 
                                                 x="# Outputs", 
@@ -402,10 +401,9 @@ else:
                                     sdg_df = merged_df.explode('sustainable_development_goals').reset_index(drop=True)
                                 
                                 sdg_df = pd.json_normalize(sdg_df['sustainable_development_goals']).reset_index(drop=True)
-                                sdg_df
-                                counts = sdg_df["display_name"].value_counts().reset_index()
-                                counts.columns = ["display_name", "count"]
-                                st.dataframe(counts)
+                                sdg_df = sdg_df["display_name"].value_counts().reset_index()
+                                sdg_df.columns = ["display_name", "count"]
+                                col1.dataframe(sdg_df)
 
 
                         st.subheader('Metrics', anchor=False)
