@@ -383,16 +383,19 @@ else:
                                     top_topics = merged_df['primary_topic.field.display_name'].value_counts(dropna=False).reset_index()
                                 top_topics.columns = ['Primary topic', '# Outputs']
                                 top_topics = top_topics.dropna()
-                                # st.dataframe(top_topics, hide_index=True,  use_container_width=False)
-                                top_topics = top_topics.sort_values(by="# Outputs", ascending=True)
-                                fig = px.scatter(top_topics, 
-                                                x="# Outputs", 
-                                                y="Primary topic",
-                                                title="Outputs by Primary Topic",
-                                                size=[10]*len(top_topics),  # fixed dot size
-                                                color_discrete_sequence=["#636EFA"])
+                                table_view = st.toggle('Display as a table')
+                                if table_view:
+                                    col1.dataframe(top_topics, hide_index=True,  use_container_width=False)
+                                else:
+                                    top_topics = top_topics.sort_values(by="# Outputs", ascending=True)
+                                    fig = px.scatter(top_topics, 
+                                                    x="# Outputs", 
+                                                    y="Primary topic",
+                                                    title="Outputs by Primary Topic",
+                                                    size=[10]*len(top_topics),  # fixed dot size
+                                                    color_discrete_sequence=["#636EFA"])
 
-                                col1.plotly_chart(fig)
+                                    col1.plotly_chart(fig)
 
                             with col2:
                                 if selected_statuses:
