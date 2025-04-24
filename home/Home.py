@@ -338,7 +338,7 @@ else:
 
                         st.subheader("Affiliations", anchor=False)
                         with st.expander('Results', expanded=True):
-                            col1, col2 = st.columns(2)
+                            col1, col2 = st.columns([1,4])
                             with col1:
                                 # AUTHORS
                                 if selected_statuses:
