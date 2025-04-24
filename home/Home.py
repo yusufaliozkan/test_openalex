@@ -392,12 +392,6 @@ else:
 
                                 st.plotly_chart(fig)
 
-                                fig = px.scatter(top_topics, x=[0]*len(top_topics), y=[0]*len(top_topics),
-                                                size="# Outputs", color="Primary topic",
-                                                hover_name="Primary topic", size_max=60,
-                                                title="Packed Bubble Chart of Topics")
-
-                                st.plotly_chart(fig)
 
                                 fig = px.bar(top_topics.sort_values(by="# Outputs", ascending=True),
                                             x="# Outputs", y="Primary topic",
