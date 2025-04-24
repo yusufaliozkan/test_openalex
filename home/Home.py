@@ -401,6 +401,14 @@ else:
 
                                 col1.plotly_chart(fig)
 
+                                fig = px.bar(top_topics.sort_values(by="# Outputs", ascending=True),
+                                            x="# Outputs", y="Primary topic",
+                                            orientation='h',
+                                            title="Outputs by Primary Topic",
+                                            labels={"# Outputs": "Number of Outputs", "Primary topic": "Topic"})
+
+                                st.plotly_chart(fig)
+
                         st.subheader('Metrics', anchor=False)
                         with st.expander('Results', expanded=True):
                             if selected_statuses:
