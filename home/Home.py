@@ -401,6 +401,14 @@ else:
                                 # Show in Streamlit
                                 st.subheader("Country Affiliations", anchor=False)
                                 st.dataframe(country_freq, hide_index=True, use_container_width=False)
+                                fig = px.choropleth(country_freq,
+                                                    locations="Country",
+                                                    locationmode="country names",
+                                                    color="# Count",
+                                                    color_continuous_scale="Blues",
+                                                    title="Country Affiliations Map")
+
+                                st.plotly_chart(fig, use_container_width=True)
 
                         st.subheader("Topics and SDGs", anchor=False)
                         with st.expander('Results', expanded= True):
