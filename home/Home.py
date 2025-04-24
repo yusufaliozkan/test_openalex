@@ -415,30 +415,7 @@ else:
                                 sdg_table
                                 sdg_df = filtered_df.explode('sustainable_development_goals').reset_index(drop=True)
                                 sdg_df
-                                institution_details = pd.json_normalize(institutions_df['institutions']).reset_index(drop=True)
-                                institutions_df = pd.concat([
-                                    institutions_df.drop(columns=['institutions']).reset_index(drop=True),
-                                    institution_details
-                                ], axis=1)
 
-                                expected_cols = ['author.display_name', 'display_name', 'country_code', 'type']
-                                for col in expected_cols:
-                                    if col not in institutions_df.columns:
-                                        institutions_df[col] = "No info"
-                                existing_cols = [col for col in expected_cols if col in institutions_df.columns]
-                                institutions_table = institutions_df[existing_cols].drop_duplicates().reset_index(drop=True)
-
-
-                                institutions_table.columns = ['author', 'institution', 'country_code', 'type']
-
-                                # st.subheader("Author Institutions")
-                                # st.dataframe(institutions_table,  use_container_width=False)
-
-                                # Institution frequency table
-                                institution_freq = institutions_table['institution'].value_counts(dropna=True).reset_index()
-                                institution_freq.columns = ['Institution', '# Count']
-                                st.subheader("Institutional Affiliations", anchor=False)
-                                st.dataframe(institution_freq, hide_index=True,  use_container_width=False)
 
                         st.subheader('Metrics', anchor=False)
                         with st.expander('Results', expanded=True):
