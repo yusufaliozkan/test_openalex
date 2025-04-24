@@ -385,16 +385,12 @@ else:
                                 top_topics = top_topics.dropna()
                                 st.dataframe(top_topics, hide_index=True,  use_container_width=False)
 
-                                df_sorted = top_topics.sort_values("# Outputs", ascending=True)
+                                fig = px.scatter(top_topics, x="# Outputs", y="Primary topic",
+                                                title="Dot Plot: Outputs by Topic",
+                                                size=[10]*len(df),  # fixed dot size
+                                                color_discrete_sequence=["#636EFA"])
 
-                                fig, ax = plt.subplots(figsize=(8, 6))
-                                ax.hlines(y=df_sorted["Primary topic"], xmin=0, xmax=df_sorted["# Outputs"], color='skyblue')
-                                ax.plot(df_sorted["# Outputs"], df_sorted["Primary topic"], "o")
-
-                                ax.set_title("Outputs by Topic (Lollipop Chart)")
-                                ax.set_xlabel("Number of Outputs")
-                                ax.set_ylabel("Primary Topic")
-                                st.pyplot(fig)
+                                st.plotly_chart(fig)
 
                                 fig = px.bar(top_topics.sort_values(by="# Outputs", ascending=True),
                                             x="# Outputs", y="Primary topic",
