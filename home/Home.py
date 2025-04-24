@@ -12,6 +12,8 @@ import plotly.express as px
 import time
 from sidebar_content import sidebar_content
 import pycountry
+import matplotlib.pyplot as plt
+import numpy as np
 
 
 st.set_page_config(layout = "wide", 
@@ -388,6 +390,24 @@ else:
                                                 size_max=60)
 
                                 st.plotly_chart(fig)
+
+                                labels = data["Primary topic"]
+                                values = data["# Outputs"]
+
+                                # Radar chart setup
+                                angles = np.linspace(0, 2 * np.pi, len(labels), endpoint=False).tolist()
+                                values += values[:1]  # repeat first value to close the circle
+                                angles += angles[:1]
+
+                                fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(polar=True))
+                                ax.plot(angles, values, 'o-', linewidth=2)
+                                ax.fill(angles, values, alpha=0.25)
+                                ax.set_yticklabels([])
+                                ax.set_xticks(angles[:-1])
+                                ax.set_xticklabels(labels, fontsize=9)
+                                ax.set_title("Outputs by Topic (Radar Chart)")
+
+                                st.pyplot(fig)
 
                         st.subheader('Metrics', anchor=False)
                         with st.expander('Results', expanded=True):
