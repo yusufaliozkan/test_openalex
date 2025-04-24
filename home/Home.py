@@ -405,8 +405,8 @@ else:
                                 
                                 sdg_df = pd.json_normalize(sdg_df['sustainable_development_goals']).reset_index(drop=True)
                                 sdg_df = sdg_df["display_name"].value_counts().reset_index()
-                                sdg_df.columns = ["display_name", "count"]
-                                col2.dataframe(sdg_df)
+                                sdg_df.columns = ["SDG name", "# Outputs"]
+                                col2.dataframe(sdg_df, hide_index=True,  use_container_width=False)
 
 
                         st.subheader('Metrics', anchor=False)
