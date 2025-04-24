@@ -294,6 +294,14 @@ else:
                                 top_journals = top_journals.dropna()
                                 st.dataframe(top_journals, hide_index=True,  use_container_width=False)
 
+                                if selected_statuses:
+                                    top_topics = filtered_raw_df['primary_topic.field.display_name'].value_counts(dropna=False).reset_index()
+                                else:
+                                    top_topics = merged_df['primary_topic.field.display_name'].value_counts(dropna=False).reset_index()
+                                top_topics.columns = ['Primary topic', '# Outputs']
+                                top_topics = top_topics.dropna()
+                                st.dataframe(top_topics, hide_index=True,  use_container_width=False)
+
                             with col2:
                                 # PUBLISHERS
                                 if selected_statuses:
