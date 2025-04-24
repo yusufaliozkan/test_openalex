@@ -385,7 +385,7 @@ else:
                                 top_topics = top_topics.dropna()
                                 st.dataframe(top_topics, hide_index=True,  use_container_width=False)
 
-                                top_topics = top_topics.sort_values(by="# Outputs", ascending=False)
+                                top_topics = top_topics.sort_values(by="# Outputs", ascending=True)
                                 fig = px.scatter(top_topics, 
                                                 x="# Outputs", 
                                                 y="Primary topic",
