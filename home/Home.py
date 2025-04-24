@@ -411,7 +411,8 @@ else:
                                                         color="# Count",
                                                         color_continuous_scale="Viridis",  # changed from "Blues" to "Viridis"
                                                         title="Country Affiliations Map")
-
+                                    fig.update_layout(coloraxis_colorbar=dict(title="# of Affiliations"))
+                                    fig.update_traces(zmin=0, zmax=country_freq["# Count"].max())
                                     st.plotly_chart(fig, use_container_width=True)
 
                         st.subheader("Topics and SDGs", anchor=False)
