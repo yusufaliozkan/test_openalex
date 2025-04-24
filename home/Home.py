@@ -384,24 +384,53 @@ else:
                                 st.subheader("Institutional Affiliations", anchor=False)
                                 st.dataframe(institution_freq, hide_index=True,  use_container_width=False)
                             with col2:
-                                # Country frequency table
                                 def code_to_name(code):
                                     try:
                                         return pycountry.countries.get(alpha_2=code).name
                                     except:
                                         return code  # fallback to code if not found
 
+                                # Add geolocation for a given country name
+                                geolocator = Nominatim(user_agent="geoapi")
+                                @st.cache_data
+                                def get_lat_lon(country):
+                                    try:
+                                        location = geolocator.geocode(country)
+                                        if location:
+                                            return pd.Series([location.latitude, location.longitude])
+                                    except GeocoderUnavailable:
+                                        pass
+                                    return pd.Series([None, None])
+
                                 # Compute frequency table
                                 country_freq = institutions_table['country_code'].value_counts(dropna=True).reset_index()
                                 country_freq.columns = ['Country Code', '# Count']
-
-                                # Map codes to full names
                                 country_freq['Country'] = country_freq['Country Code'].apply(code_to_name)
-                                country_freq = country_freq[['Country', '# Count']]  # Reorder columns
+                                country_freq[['lat', 'lon']] = country_freq['Country'].apply(get_lat_lon)
+                                country_freq.dropna(subset=['lat', 'lon'], inplace=True)
 
-                                # Show in Streamlit
-                                st.subheader("Country Affiliations", anchor=False)
-                                st.dataframe(country_freq, hide_index=True, use_container_width=False)
+                                # Pydeck chart
+                                layer = pdk.Layer(
+                                    "ScatterplotLayer",
+                                    data=country_freq,
+                                    get_position='[lon, lat]',
+                                    get_radius="# Count",
+                                    get_fill_color='[200, 30, 0, 160]',
+                                    pickable=True
+                                )
+
+                                view_state = pdk.ViewState(
+                                    latitude=20,
+                                    longitude=0,
+                                    zoom=1.2,
+                                    pitch=0
+                                )
+
+                                st.pydeck_chart(pdk.Deck(
+                                    layers=[layer],
+                                    initial_view_state=view_state,
+                                    tooltip={"text": "{Country}\nCount: {# Count}"}
+                                ))
 
                         st.subheader("Topics and SDGs", anchor=False)
                         with st.expander('Results', expanded= True):
