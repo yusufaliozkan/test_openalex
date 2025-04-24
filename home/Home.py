@@ -389,7 +389,7 @@ else:
                                 fig = px.scatter(top_topics, 
                                                 x="# Outputs", 
                                                 y="Primary topic",
-                                                title="Dot Plot: Outputs by Topic",
+                                                title="Outputs by Primary Topic",
                                                 size=[10]*len(top_topics),  # fixed dot size
                                                 color_discrete_sequence=["#636EFA"])
 
