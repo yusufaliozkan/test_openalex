@@ -385,21 +385,16 @@ else:
                                 top_topics = top_topics.dropna()
                                 st.dataframe(top_topics, hide_index=True,  use_container_width=False)
 
-                                fig = px.scatter(top_topics, x="Primary topic", y="# Outputs", size="# Outputs",
-                                                hover_name="Primary topic", title="Outputs by Topic",
-                                                size_max=60)
+                                df_sorted = top_topics.sort_values("# Outputs", ascending=True)
 
-                                st.plotly_chart(fig)
+                                fig, ax = plt.subplots(figsize=(8, 6))
+                                ax.hlines(y=df_sorted["Primary topic"], xmin=0, xmax=df_sorted["# Outputs"], color='skyblue')
+                                ax.plot(df_sorted["# Outputs"], df_sorted["Primary topic"], "o")
 
-                                fig = px.treemap(top_topics, path=["Primary topic"], values="# Outputs",
-                                                title="Outputs by Topic (Treemap)")
-
-                                col1.plotly_chart(fig)
-
-                                fig = px.sunburst(top_topics, path=["Primary topic"], values="# Outputs",
-                                                title="Outputs by Topic (Sunburst Chart)")
-
-                                col1.plotly_chart(fig)
+                                ax.set_title("Outputs by Topic (Lollipop Chart)")
+                                ax.set_xlabel("Number of Outputs")
+                                ax.set_ylabel("Primary Topic")
+                                st.pyplot(fig)
 
                                 fig = px.bar(top_topics.sort_values(by="# Outputs", ascending=True),
                                             x="# Outputs", y="Primary topic",
