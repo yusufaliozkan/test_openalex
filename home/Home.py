@@ -388,6 +388,7 @@ else:
                                 if table_view:
                                     col1.dataframe(top_topics, hide_index=True,  use_container_width=False)
                                 else:
+                                    top_topics = top_topics.sort_values(by="# Outputs", ascending=True)
                                     fig = px.bar(top_topics, 
                                                 x="# Outputs", 
                                                 y="Primary topic", 
