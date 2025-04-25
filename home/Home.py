@@ -473,25 +473,28 @@ else:
                                 if table_view:
                                     st.dataframe(funders_df, hide_index=True, use_container_width=False)
                                 else:
-                                    fig = px.treemap(
-                                        funders_df,
-                                        path=['Funder name'],
-                                        values='Count',
-                                        title="All Funders Treemap",
+                                    fig = px.bar(
+                                        funders_df.sort_values("Count", ascending=True),
+                                        x="Count",
+                                        y="Funder name",
+                                        orientation='h',
+                                        title="Number of Funders",
+                                        labels={"Count": "Number of Funders", "Funder name": "Funder name"},
                                     )
 
-                                    # Always show Funder Name + Count inside the box
-                                    fig.data[0].texttemplate = "%{label}<br>%{value}"
-
-                                    # Make the text larger
+                                    # Update the bar style and fonts
                                     fig.update_traces(
-                                        textfont_size=20,   # bigger text size
-                                        textinfo="label+value"  # label + value visible
+                                        texttemplate='%{x}',  # show the count as text on the bars
+                                        textposition='outside',  # place the text outside bars
                                     )
 
-                                    # Optional: control the minimum text size threshold (small boxes won't have unreadable text)
                                     fig.update_layout(
-                                        uniformtext=dict(minsize=12, mode='hide')
+                                        xaxis_title="Number of Funders",
+                                        yaxis_title="Funder Name",
+                                        yaxis=dict(tickfont=dict(size=14)),
+                                        xaxis=dict(tickfont=dict(size=14)),
+                                        uniformtext_minsize=12,
+                                        uniformtext_mode='hide'
                                     )
 
                                     st.plotly_chart(fig, use_container_width=True)
