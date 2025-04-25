@@ -453,6 +453,32 @@ else:
 
                                         col2.plotly_chart(fig, use_container_width=True)
 
+                        st.subheader("Funders", anchor=False)
+                        with st.expander('Results', expanded= True):
+                            col1, col2 = st.columns(2)
+                            with col1:
+                                st.write('**Funders**')
+                                if selected_statuses:
+                                    grants = filtered_raw_df['grants'].value_counts(dropna=False).reset_index()
+                                else:
+                                    grants = merged_df['grants'].value_counts(dropna=False).reset_index()
+                                grants.columns = ['Grants', 'Count']
+                                grants = grants.dropna()
+                                grants
+                                table_view = st.toggle('Display as a table')
+                                if table_view:
+                                    col1.dataframe(top_topics, hide_index=True,  use_container_width=False)
+                                else:
+                                    top_topics = top_topics.sort_values(by="# Outputs", ascending=True)
+                                    fig = px.bar(top_topics, 
+                                                x="# Outputs", 
+                                                y="Primary topic", 
+                                                orientation='h',
+                                                title="Outputs by Primary Topic",
+                                                labels={"# Outputs": "Number of Outputs", "Primary topic": "Topic"},
+                                                color_discrete_sequence=["#636EFA"])
+
+                                    col1.plotly_chart(fig)
                         st.subheader('Metrics', anchor=False)
                         with st.expander('Results', expanded=True):
                             if selected_statuses:
