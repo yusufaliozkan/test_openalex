@@ -459,26 +459,29 @@ else:
                             with col1:
                                 st.write('**Funders**')
                                 if selected_statuses:
-                                    grants = filtered_raw_df['grants'].value_counts(dropna=False).reset_index()
+                                    funders_df = filtered_raw_df.explode('grants').reset_index(drop=True)
                                 else:
-                                    grants = merged_df['grants'].value_counts(dropna=False).reset_index()
-                                grants.columns = ['Grants', 'Count']
-                                grants = grants.dropna()
-                                grants
-                                table_view = st.toggle('Display as a table')
-                                if table_view:
-                                    col1.dataframe(top_topics, hide_index=True,  use_container_width=False)
+                                    funders_df = merged_df.explode('grants').reset_index(drop=True)
+                                funders_df = pd.json_normalize(funders_df['grants']).reset_index(drop=True)
+                                if funders_df.empty:
+                                    st.warning('No funder found')
                                 else:
-                                    top_topics = top_topics.sort_values(by="# Outputs", ascending=True)
-                                    fig = px.bar(top_topics, 
-                                                x="# Outputs", 
-                                                y="Primary topic", 
-                                                orientation='h',
-                                                title="Outputs by Primary Topic",
-                                                labels={"# Outputs": "Number of Outputs", "Primary topic": "Topic"},
-                                                color_discrete_sequence=["#636EFA"])
+                                    funders_df = funders_df["funder_display_name"].value_counts().reset_index()
+                                    funders_df.columns = ["Funder name", "Count"]
+                                    funders_df
+                                    table_view = st.toggle('Display as a table', key='funder')
+                                    if table_view:
+                                        col2.dataframe(sdg_df, hide_index=True,  use_container_width=False)
+                                    else:
+                                        fig = px.bar(sdg_df.sort_values("# Outputs", ascending=True),
+                                                    x="# Outputs", y="SDG name",
+                                                    orientation='h',
+                                                    title="Number of Outputs by SDG",
+                                                    labels={"# Outputs": "Number of Outputs", "SDG name": "Sustainable Development Goal"},
+                                                    color_discrete_sequence=["#636EFA"])
 
-                                    col1.plotly_chart(fig)
+                                        col2.plotly_chart(fig, use_container_width=True)
+                                    
                         st.subheader('Metrics', anchor=False)
                         with st.expander('Results', expanded=True):
                             if selected_statuses:
