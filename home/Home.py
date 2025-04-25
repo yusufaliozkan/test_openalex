@@ -468,16 +468,16 @@ else:
                                 else:
                                     funders_df = funders_df["funder_display_name"].value_counts().reset_index()
                                     funders_df.columns = ["Funder name", "Count"]
-                                    funders_df
+                                    
                                     table_view = st.toggle('Display as a table', key='funder')
                                     if table_view:
-                                        col2.dataframe(sdg_df, hide_index=True,  use_container_width=False)
+                                        col2.dataframe(funders_df, hide_index=True,  use_container_width=False)
                                     else:
-                                        fig = px.bar(sdg_df.sort_values("# Outputs", ascending=True),
-                                                    x="# Outputs", y="SDG name",
+                                        fig = px.bar(funders_df.sort_values("Count", ascending=True),
+                                                    x="Count", y="Funder name",
                                                     orientation='h',
-                                                    title="Number of Outputs by SDG",
-                                                    labels={"# Outputs": "Number of Outputs", "SDG name": "Sustainable Development Goal"},
+                                                    title="Number of Funders",
+                                                    labels={"Count": "Number of Funders", "Funder name": "Funder name"},
                                                     color_discrete_sequence=["#636EFA"])
 
                                         col2.plotly_chart(fig, use_container_width=True)
