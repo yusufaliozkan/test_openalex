@@ -414,7 +414,7 @@ else:
                                     top_topics = merged_df['primary_topic.field.display_name'].value_counts(dropna=False).reset_index()
                                 top_topics.columns = ['Primary topic', '# Outputs']
                                 no_topics = top_topics['Primary topic'].nunique()
-                                st.write(f'{no_topics} primary topics')
+                                st.write(f'{no_topics} primary topics found')
                                 top_topics = top_topics.dropna()
                                 table_view = st.toggle('Display as a table')
                                 if table_view:
@@ -437,6 +437,8 @@ else:
                                 else:
                                     sdg_df = merged_df.explode('sustainable_development_goals').reset_index(drop=True)
                                 sdg_df = pd.json_normalize(sdg_df['sustainable_development_goals']).reset_index(drop=True)
+                                no_sdgs = sdg_df['sustainable_development_goals'].nunique()
+                                st.write(f'{no_sdgs} SDGs found')
                                 if sdg_df.empty:
                                     st.warning('No SDG found')
                                 else:
