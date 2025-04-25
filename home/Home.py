@@ -492,10 +492,11 @@ else:
                                 if table_view:
                                     st.dataframe(funders_df, hide_index=True,  use_container_width=False)
                                 else:
+                                    funders_df = funders_df.head(10)
                                     fig = px.bar(funders_df.sort_values("Count", ascending=True),
                                                 x="Count", y="Funder name",
                                                 orientation='h',
-                                                title="Number of Funders",
+                                                title="Top 10 Number of Funders",
                                                 labels={"Count": "Number of Funders", "Funder name": "Funder name"},
                                                 color_discrete_sequence=["#636EFA"])
                                     fig.update_layout(
