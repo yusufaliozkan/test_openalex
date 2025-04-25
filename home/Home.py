@@ -429,10 +429,7 @@ else:
                                                 title="Outputs by Primary Topic (Top 10)",
                                                 labels={"# Outputs": "Number of Outputs", "Primary topic": "Topic"},
                                                 color_discrete_sequence=["#636EFA"])
-                                    fig = px.sunburst(top_topics,
-                                                    path=["Primary topic"],
-                                                    values="# Outputs",
-                                                    title="Outputs by Primary Topic (Top 10)")
+
                                     col1.plotly_chart(fig)
                             with col2:
                                 st.write('**Sustainable Development Goals (SDGs)**')
