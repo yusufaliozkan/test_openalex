@@ -488,7 +488,7 @@ else:
                                 funders_df.columns = ["Funder name", "Count"]
                                 no_funders = funders_df['Funder name'].nunique()
                                 st.write(f'{no_funders} funders found associated with {num_outputs_associated_with_funders} output(s)')                   
-                                table_view = st.toggle('Display as a table', key='funder')
+                                table_view = st.toggle('Display all funders as a table', key='funder')
                                 if table_view:
                                     st.dataframe(funders_df, hide_index=True,  use_container_width=False)
                                 else:
