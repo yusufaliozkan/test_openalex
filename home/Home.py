@@ -466,7 +466,9 @@ else:
                                 outputs_associated_with_funders
                             else:
                                 funders_df = merged_df.explode('grants').reset_index(drop=True)
-                                outputs_associated_with_funders = merged_df[merged_df['grants'].notna()]
+                                outputs_associated_with_funders = merged_df[
+                                    merged_df['grants'].notna() & merged_df['grants'].astype(bool)
+                                ]
                                 outputs_associated_with_funders
                             funders_df = pd.json_normalize(funders_df['grants']).reset_index(drop=True)
                             if funders_df.empty:
