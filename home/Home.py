@@ -415,10 +415,10 @@ else:
                                 top_topics.columns = ['Primary topic', '# Outputs']
                                 no_topics = top_topics['Primary topic'].nunique()
                                 top_topics = top_topics.dropna()
-                                col1, col2 = st.columns(2)
-                                with col1:
+                                coltopic1, coltopic2 = st.columns(2)
+                                with coltopic1:
                                     st.write(f'{no_topics} primary topics found')
-                                with col2:
+                                with coltopic2:
                                     table_view = st.toggle('Display as a table')
                                 if table_view:
                                     col1.dataframe(top_topics, hide_index=True,  use_container_width=False)
