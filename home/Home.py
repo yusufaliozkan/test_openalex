@@ -413,6 +413,8 @@ else:
                                 else:
                                     top_topics = merged_df['primary_topic.field.display_name'].value_counts(dropna=False).reset_index()
                                 top_topics.columns = ['Primary topic', '# Outputs']
+                                no_topics = top_topics['Primary topic'].nunique()
+                                no_topics
                                 top_topics = top_topics.dropna()
                                 table_view = st.toggle('Display as a table')
                                 if table_view:
