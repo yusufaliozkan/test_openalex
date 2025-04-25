@@ -437,13 +437,13 @@ else:
                                 else:
                                     sdg_df = merged_df.explode('sustainable_development_goals').reset_index(drop=True)
                                 sdg_df = pd.json_normalize(sdg_df['sustainable_development_goals']).reset_index(drop=True)
-                                no_sdgs = sdg_df['sustainable_development_goals'].nunique()
-                                st.write(f'{no_sdgs} SDGs found')
                                 if sdg_df.empty:
                                     st.warning('No SDG found')
                                 else:
                                     sdg_df = sdg_df["display_name"].value_counts().reset_index()
                                     sdg_df.columns = ["SDG name", "# Outputs"]
+                                    no_sdgs = sdg_df['SDG name'].nunique()
+                                    st.write(f'{no_sdgs} SDGs found')
                                     table_view = st.toggle('Display as a table', key='sdg')
                                     if table_view:
                                         col2.dataframe(sdg_df, hide_index=True,  use_container_width=False)
