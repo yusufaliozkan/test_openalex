@@ -466,6 +466,7 @@ else:
                                 outputs_associated_with_funders
                             else:
                                 funders_df = merged_df.explode('grants').reset_index(drop=True)
+                                merged_df
                                 outputs_associated_with_funders = merged_df[
                                     merged_df['grants'].notna() & merged_df['grants'].astype(bool)
                                 ]
