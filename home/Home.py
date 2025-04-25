@@ -434,8 +434,16 @@ else:
                                 st.write('**Sustainable Development Goals (SDGs)**')
                                 if selected_statuses:
                                     sdg_df = filtered_raw_df.explode('sustainable_development_goals').reset_index(drop=True)
+                                    outputs_associated_with_sdgs = filtered_raw_df[
+                                        filtered_raw_df['grants'].notna() & filtered_raw_df['grants'].astype(bool)
+                                    ]
+                                    num_outputs_associated_with_sdgs = len(outputs_associated_with_sdgs)
                                 else:
                                     sdg_df = merged_df.explode('sustainable_development_goals').reset_index(drop=True)
+                                    outputs_associated_with_sdgs = sdg_df[
+                                        sdg_df['grants'].notna() & sdg_df['grants'].astype(bool)
+                                    ]
+                                    num_outputs_associated_with_sdgs = len(outputs_associated_with_sdgs)
                                 sdg_df = pd.json_normalize(sdg_df['sustainable_development_goals']).reset_index(drop=True)
                                 if sdg_df.empty:
                                     st.warning('No SDG found')
@@ -443,7 +451,7 @@ else:
                                     sdg_df = sdg_df["display_name"].value_counts().reset_index()
                                     sdg_df.columns = ["SDG name", "# Outputs"]
                                     no_sdgs = sdg_df['SDG name'].nunique()
-                                    st.write(f'{no_sdgs} SDGs found')
+                                    st.write(f'{no_sdgs} SDGs found associated with {num_outputs_associated_with_sdgs} outputs')
                                     table_view = st.toggle('Display as a table', key='sdg')
                                     if table_view:
                                         col2.dataframe(sdg_df, hide_index=True,  use_container_width=False)
