@@ -455,33 +455,31 @@ else:
 
                         st.subheader("Funders", anchor=False)
                         with st.expander('Results', expanded= True):
-                            col1, col2 = st.columns(2)
-                            with col1:
-                                st.write('**Funders**')
-                                if selected_statuses:
-                                    funders_df = filtered_raw_df.explode('grants').reset_index(drop=True)
+                            st.write('**Funders**')
+                            if selected_statuses:
+                                funders_df = filtered_raw_df.explode('grants').reset_index(drop=True)
+                            else:
+                                funders_df = merged_df.explode('grants').reset_index(drop=True)
+                            funders_df = pd.json_normalize(funders_df['grants']).reset_index(drop=True)
+                            if funders_df.empty:
+                                st.warning('No funder found')
+                            else:
+                                funders_df = funders_df["funder_display_name"].value_counts().reset_index()
+                                funders_df.columns = ["Funder name", "Count"]
+                                
+                                table_view = st.toggle('Display as a table', key='funder')
+                                if table_view:
+                                    st.dataframe(funders_df, hide_index=True,  use_container_width=False)
                                 else:
-                                    funders_df = merged_df.explode('grants').reset_index(drop=True)
-                                funders_df = pd.json_normalize(funders_df['grants']).reset_index(drop=True)
-                                if funders_df.empty:
-                                    st.warning('No funder found')
-                                else:
-                                    funders_df = funders_df["funder_display_name"].value_counts().reset_index()
-                                    funders_df.columns = ["Funder name", "Count"]
-                                    
-                                    table_view = st.toggle('Display as a table', key='funder')
-                                    if table_view:
-                                        col2.dataframe(funders_df, hide_index=True,  use_container_width=False)
-                                    else:
-                                        fig = px.bar(funders_df.sort_values("Count", ascending=True),
-                                                    x="Count", y="Funder name",
-                                                    orientation='h',
-                                                    title="Number of Funders",
-                                                    labels={"Count": "Number of Funders", "Funder name": "Funder name"},
-                                                    color_discrete_sequence=["#636EFA"])
+                                    fig = px.bar(funders_df.sort_values("Count", ascending=True),
+                                                x="Count", y="Funder name",
+                                                orientation='h',
+                                                title="Number of Funders",
+                                                labels={"Count": "Number of Funders", "Funder name": "Funder name"},
+                                                color_discrete_sequence=["#636EFA"])
 
-                                        col2.plotly_chart(fig, use_container_width=True)
-                                    
+                                    st.plotly_chart(fig, use_container_width=True)
+                                
                         st.subheader('Metrics', anchor=False)
                         with st.expander('Results', expanded=True):
                             if selected_statuses:
