@@ -479,7 +479,7 @@ else:
                                                 color_discrete_sequence=["#636EFA"])
                                     fig.update_layout(
                                         yaxis=dict(
-                                            tickfont=dict(size=14)  # Adjust size as needed
+                                            tickfont=dict(size=16)  # Adjust size as needed
                                         )
                                     )
                                     st.plotly_chart(fig, use_container_width=True)
