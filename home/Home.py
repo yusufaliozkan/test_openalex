@@ -479,6 +479,16 @@ else:
                                         values='Count',
                                         title="Funders Treemap",
                                     )
+                                    
+                                    # Make labels show both name and count
+                                    fig.data[0].texttemplate = "%{label}<br>%{value}"
+
+                                    # Make text bigger
+                                    fig.update_traces(
+                                        textfont_size=20,  # adjust this number if you want even bigger
+                                        textinfo="label+value"
+                                    )
+                                    
                                     st.plotly_chart(fig, use_container_width=True)
                                 
                         st.subheader('Metrics', anchor=False)
