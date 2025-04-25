@@ -460,42 +460,23 @@ else:
                                 funders_df = filtered_raw_df.explode('grants').reset_index(drop=True)
                             else:
                                 funders_df = merged_df.explode('grants').reset_index(drop=True)
-
                             funders_df = pd.json_normalize(funders_df['grants']).reset_index(drop=True)
-
                             if funders_df.empty:
                                 st.warning('No funder found')
                             else:
                                 funders_df = funders_df["funder_display_name"].value_counts().reset_index()
                                 funders_df.columns = ["Funder name", "Count"]
-
+                                
                                 table_view = st.toggle('Display as a table', key='funder')
                                 if table_view:
-                                    st.dataframe(funders_df, hide_index=True, use_container_width=False)
+                                    st.dataframe(funders_df, hide_index=True,  use_container_width=False)
                                 else:
-                                    fig = px.bar(
-                                        funders_df.sort_values("Count", ascending=True),
-                                        x="Count",
-                                        y="Funder name",
-                                        orientation='h',
-                                        title="Number of Funders",
-                                        labels={"Count": "Number of Funders", "Funder name": "Funder name"},
-                                    )
-
-                                    # Update the bar style and fonts
-                                    fig.update_traces(
-                                        texttemplate='%{x}',  # show the count as text on the bars
-                                        textposition='outside',  # place the text outside bars
-                                    )
-
-                                    fig.update_layout(
-                                        xaxis_title="Number of Funders",
-                                        yaxis_title="Funder Name",
-                                        yaxis=dict(tickfont=dict(size=14)),
-                                        xaxis=dict(tickfont=dict(size=14)),
-                                        uniformtext_minsize=12,
-                                        uniformtext_mode='hide'
-                                    )
+                                    fig = px.bar(funders_df.sort_values("Count", ascending=True),
+                                                x="Count", y="Funder name",
+                                                orientation='h',
+                                                title="Number of Funders",
+                                                labels={"Count": "Number of Funders", "Funder name": "Funder name"},
+                                                color_discrete_sequence=["#636EFA"])
 
                                     st.plotly_chart(fig, use_container_width=True)
                                 
