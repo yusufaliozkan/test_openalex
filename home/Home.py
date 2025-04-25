@@ -467,7 +467,7 @@ else:
                                 funders_df = funders_df["funder_display_name"].value_counts().reset_index()
                                 funders_df.columns = ["Funder name", "Count"]
                                 no_funders = funders_df['Funder name'].nunique()
-                                no_funders                   
+                                st.write(f'{no_funders} funders found')                   
                                 table_view = st.toggle('Display as a table', key='funder')
                                 if table_view:
                                     st.dataframe(funders_df, hide_index=True,  use_container_width=False)
