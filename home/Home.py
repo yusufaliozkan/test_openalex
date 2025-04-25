@@ -477,7 +477,11 @@ else:
                                                 title="Number of Funders",
                                                 labels={"Count": "Number of Funders", "Funder name": "Funder name"},
                                                 color_discrete_sequence=["#636EFA"])
-
+                                    fig.update_layout(
+                                        yaxis=dict(
+                                            tickfont=dict(size=14)  # Adjust size as needed
+                                        )
+                                    )
                                     st.plotly_chart(fig, use_container_width=True)
                                 
                         st.subheader('Metrics', anchor=False)
