@@ -468,7 +468,7 @@ else:
                             else:
                                 funders_df = funders_df["funder_display_name"].value_counts().reset_index()
                                 funders_df.columns = ["Funder name", "Count"]
-                                
+
                                 table_view = st.toggle('Display as a table', key='funder')
                                 if table_view:
                                     st.dataframe(funders_df, hide_index=True, use_container_width=False)
@@ -477,18 +477,23 @@ else:
                                         funders_df,
                                         path=['Funder name'],
                                         values='Count',
-                                        title="Funders Treemap",
+                                        title="All Funders Treemap",
                                     )
-                                    
-                                    # Make labels show both name and count
+
+                                    # Always show Funder Name + Count inside the box
                                     fig.data[0].texttemplate = "%{label}<br>%{value}"
 
-                                    # Make text bigger
+                                    # Make the text larger
                                     fig.update_traces(
-                                        textfont_size=20,  # adjust this number if you want even bigger
-                                        textinfo="label+value"
+                                        textfont_size=20,   # bigger text size
+                                        textinfo="label+value"  # label + value visible
                                     )
-                                    
+
+                                    # Optional: control the minimum text size threshold (small boxes won't have unreadable text)
+                                    fig.update_layout(
+                                        uniformtext=dict(minsize=12, mode='hide')
+                                    )
+
                                     st.plotly_chart(fig, use_container_width=True)
                                 
                         st.subheader('Metrics', anchor=False)
