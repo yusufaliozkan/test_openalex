@@ -442,7 +442,7 @@ else:
                                 else:
                                     sdg_df = sdg_df["display_name"].value_counts().reset_index()
                                     sdg_df.columns = ["SDG name", "# Outputs"]
-                                    no_sdgs = sdg_df['SDG '].nunique()
+                                    no_sdgs = sdg_df['SDG name'].nunique()
                                     st.write(f'{no_sdgs} SDGs found')
                                     table_view = st.toggle('Display as a table', key='sdg')
                                     if table_view:
