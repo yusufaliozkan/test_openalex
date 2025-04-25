@@ -435,13 +435,13 @@ else:
                                 if selected_statuses:
                                     sdg_df = filtered_raw_df.explode('sustainable_development_goals').reset_index(drop=True)
                                     outputs_associated_with_sdgs = filtered_raw_df[
-                                        filtered_raw_df['grants'].notna() & filtered_raw_df['grants'].astype(bool)
+                                        filtered_raw_df['sustainable_development_goals'].notna() & filtered_raw_df['sustainable_development_goals'].astype(bool)
                                     ]
                                     num_outputs_associated_with_sdgs = len(outputs_associated_with_sdgs)
                                 else:
                                     sdg_df = merged_df.explode('sustainable_development_goals').reset_index(drop=True)
                                     outputs_associated_with_sdgs = sdg_df[
-                                        sdg_df['grants'].notna() & sdg_df['grants'].astype(bool)
+                                        sdg_df['sustainable_development_goals'].notna() & sdg_df['sustainable_development_goals'].astype(bool)
                                     ]
                                     num_outputs_associated_with_sdgs = len(outputs_associated_with_sdgs)
                                 sdg_df = pd.json_normalize(sdg_df['sustainable_development_goals']).reset_index(drop=True)
