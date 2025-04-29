@@ -311,11 +311,11 @@ else:
                                 filtered_df.index +=1
                                 filtered_df = filtered_df[['doi', 'type_crossref','primary_location.source.display_name', 'primary_location.source.host_organization_name', 'publication_year', 'publication_date', 'open_access.is_oa','open_access.oa_status', 'open_access.oa_url', 'primary_location.license']]
                                 filtered_df.columns = ['DOI', 'Type','Journal', 'Publisher','Publication year', 'Publication date','Is OA?', 'OA Status', 'OA URL', 'Licence']
-                                filtered_df
                                 st.dataframe(
                                     filtered_df,
                                     column_config={
-                                        'DOI':st.column_config.LinkColumn('DOI')
+                                        'DOI':st.column_config.LinkColumn('DOI'),
+                                        'OA URL':st.column_config.LinkColumn('OA URL')
                                     }
                                     )
 
