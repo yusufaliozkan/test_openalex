@@ -524,8 +524,8 @@ else:
                                 ]
                                 num_outputs_with_datasets = len(outputs_with_datasets)
                             datasets_df
-                            funders_df = pd.json_normalize(funders_df['datasets']).reset_index(drop=True)
-                            if funders_df.empty:
+                            datasets_df = pd.json_normalize(funders_df['datasets']).reset_index(drop=True)
+                            if datasets_df.empty:
                                 st.warning('No funder found')
                             else:
                                 funders_df = funders_df["funder_display_name"].value_counts().reset_index()
