@@ -312,6 +312,12 @@ else:
                                 filtered_df = filtered_df[['doi', 'type_crossref','primary_location.source.display_name', 'primary_location.source.host_organization_name', 'publication_year', 'publication_date', 'open_access.is_oa','open_access.oa_status', 'open_access.oa_url', 'primary_location.license']]
                                 filtered_df.columns = ['DOI', 'Type','Journal', 'Publisher','Publication year', 'Publication date','Is OA?', 'OA Status', 'OA URL', 'Licence']
                                 filtered_df
+                                st.datafrmae(
+                                    filtered_df,
+                                    column_config={
+                                        'DOI':st.column_config.LinkColumn('DOI')
+                                    }
+                                    )
 
                         st.subheader("Journals and Publishers", anchor=False)
                         with st.expander('Results', expanded= True):
