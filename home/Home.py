@@ -166,7 +166,7 @@ else:
                         st.warning("No DOIs found in the OpenAlex database.")
                     else:
                         num_results = merged_df['id'].notnull().sum()
-                        if num_results=!0:
+                        if num_results!=0:
                             duplicate_count = duplicates_df['doi'].nunique()
                             st.success(f"{num_results} result(s) found with {duplicate_count} duplicate(s).")
                         else:
