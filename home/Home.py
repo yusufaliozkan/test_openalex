@@ -523,10 +523,10 @@ else:
                                     merged_df['datasets'].notna() & merged_df['datasets'].astype(bool)
                                 ]
                                 num_outputs_with_datasets = len(outputs_with_datasets)
-                            datasets_df
                             datasets_df = pd.json_normalize(datasets_df['datasets']).reset_index(drop=True)
+                            datasets_df
                             if datasets_df.empty:
-                                st.warning('No funder found')
+                                st.warning('No outputs found with a dataset')
                             else:
                                 funders_df = funders_df["funder_display_name"].value_counts().reset_index()
                                 funders_df.columns = ["Funder name", "Count"]
