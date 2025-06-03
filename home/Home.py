@@ -347,6 +347,7 @@ else:
                                 df_unpaywall = df_unpaywall.rename(columns={'doi':'DOI'})
 
                                 oa_status_summary = df_unpaywall['OA Status (Unpaywall)'].value_counts(dropna=False).reset_index()
+                                oa_summary.columns = ['Is OA?', '# Outputs']
                                 oa_status_summary
                                 st.dataframe(df_unpaywall, hide_index=True)
                                 
