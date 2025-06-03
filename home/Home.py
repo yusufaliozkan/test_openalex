@@ -149,7 +149,6 @@ else:
                 if not results_df.empty and 'doi' in results_df.columns:
                     results_df['doi_submitted'] = results_df['doi'].str.replace('https://doi.org/', '', regex=False)
                     results_df['doi_submitted'] = results_df['doi_submitted'].str.strip().str.lower()
-                    results_df
 
                     # Merge with original DOIs
                     merged_df = df_dois.merge(results_df, on='doi_submitted', how='left')
@@ -261,6 +260,8 @@ else:
                                 except:
                                     return pd.Series({"oa_status": "error", "publisher": "error"})
                             df_unpaywall = filtered_df.copy()
+                            df_unpaywall = df_unpaywall[['doi']]
+                            df_unpaywall
                             df_unpaywall[["oa_status", "publisher"]]  = df_unpaywall['doi'].astype(str).apply(get_oa_info)
                             df_unpaywall
 
