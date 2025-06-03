@@ -340,7 +340,7 @@ else:
                             df_unpaywall = df_unpaywall[['doi']]
                             df_unpaywall[["oa_status", "publisher"]]  = df_unpaywall['doi'].astype(str).apply(get_oa_info)
                             df_unpaywall = df_unpaywall.rename(columns={'oa_status':'OA Status (Unpaywall)'})
-                            df_unpaywall
+                            st.dataframe(df_unpaywall, index=False)
                         st.subheader("Journals and Publishers", anchor=False)
                         with st.expander('Results', expanded= True):
                             col1, col2 = st.columns(2)
