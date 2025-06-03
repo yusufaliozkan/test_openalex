@@ -378,7 +378,7 @@ else:
                                     else:
                                         oa_status_summary_unpaywall
                                         fig = px.pie(oa_status_summary_unpaywall,
-                                                    names="OA Status (Unpaywall)",
+                                                    names="OA status",
                                                     values="# Outputs",
                                                     title="Open Access Status (Unpaywall)",
                                                     color="OA status",
