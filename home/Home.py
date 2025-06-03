@@ -367,7 +367,7 @@ else:
                                                     names="Is OA?",
                                                     values="# Outputs",
                                                     title="Open Access Status (Unpaywall)",
-                                                    color="OA status",
+                                                    color="Is OA?",
                                                     color_discrete_map=custom_colors)
 
                                         st.plotly_chart(fig, use_container_width=True)
@@ -381,7 +381,7 @@ else:
                                                     names="Is OA?",
                                                     values="# Outputs",
                                                     title="Open Access Status (Unpaywall)",
-                                                    color="OA status",
+                                                    color="Is OA?",
                                                     color_discrete_map=custom_colors)
 
                                         st.plotly_chart(fig, use_container_width=True)
