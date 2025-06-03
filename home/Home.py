@@ -350,7 +350,9 @@ else:
                                 row_count = len(df_unpaywall)
                                 if row_count == 0:
                                     st.info('Unpaywall and OpenAlex shows the same OA status for all DOI(s)')
-                                st.dataframe(df_unpaywall, hide_index=True)
+                                else:
+                                    st.info('Only display DOI(s) showing different OA status results in Unpaywall and OpenAlex')
+                                    st.dataframe(df_unpaywall, hide_index=True)
 
                         st.subheader("Journals and Publishers", anchor=False)
                         with st.expander('Results', expanded= True):
