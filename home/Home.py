@@ -338,6 +338,7 @@ else:
                                     return pd.Series({"oa_status": "error", "publisher": "error"})
                             
                             df_unpaywall = filtered_df.copy()
+                            df_unpaywall
                             df_unpaywall = df_unpaywall[['doi']]
                             df_unpaywall[["oa_status", "publisher"]]  = df_unpaywall['doi'].astype(str).apply(get_oa_info)
                             df_unpaywall
