@@ -320,7 +320,7 @@ else:
                                     }
                                     )
 
-                            display_unpaywall_option = st.checkbox('Check DOIs on Unpaywall')
+                            display_unpaywall_option = st.checkbox('Compare results with Unpaywall')
 
                             if display_unpaywall_option:
                                 def get_oa_info(doi):
@@ -346,6 +346,7 @@ else:
                                 df_unpaywall = df_unpaywall.rename(columns={'oa_status':'OA Status (Unpaywall)'})
                                 df_unpaywall = df_unpaywall.rename(columns={'doi':'DOI'})
                                 df_unpaywall = pd.merge(df_unpaywall[['DOI', 'OA Status (Unpaywall)']], df_openalex_compare[['DOI', 'OA Status (OpenAlex)']], on='DOI', how='inner')
+                                df_unpaywall = df_unpaywall[df_unpaywall['OA Status (Unpaywall)'] != df_unpaywall['OA Status (OpenAlex)']]
                                 st.dataframe(df_unpaywall, hide_index=True)
 
                         st.subheader("Journals and Publishers", anchor=False)
