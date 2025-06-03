@@ -348,7 +348,8 @@ else:
                                 df_unpaywall = pd.merge(df_unpaywall[['DOI', 'OA Status (Unpaywall)']], df_openalex_compare[['DOI', 'OA Status (OpenAlex)']], on='DOI', how='inner')
                                 df_unpaywall = df_unpaywall[df_unpaywall['OA Status (Unpaywall)'] != df_unpaywall['OA Status (OpenAlex)']]
                                 row_count = len(df_unpaywall)
-                                row_count
+                                if row_count == 0:
+                                    st.info('Unpaywall and OpenAlex shows the same OA status for all DOI(s)')
                                 st.dataframe(df_unpaywall, hide_index=True)
 
                         st.subheader("Journals and Publishers", anchor=False)
