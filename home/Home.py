@@ -346,9 +346,36 @@ else:
                                 df_unpaywall = df_unpaywall.rename(columns={'oa_status':'OA Status (Unpaywall)'})
                                 df_unpaywall = df_unpaywall.rename(columns={'doi':'DOI'})
 
-                                oa_status_summary = df_unpaywall['OA Status (Unpaywall)'].value_counts(dropna=False).reset_index()
-                                oa_summary.columns = ['Is OA?', '# Outputs']
-                                oa_status_summary
+                                oa_status_summary_unpaywall = df_unpaywall['OA Status (Unpaywall)'].value_counts(dropna=False).reset_index()
+                                oa_status_summary_unpaywall.columns = ['Is OA?', '# Outputs']
+                                oa_status_summary_unpaywall
+
+                                table_view = st.toggle('Display as a table', key='OAstatus_unpaywall_1')
+                                if table_view:
+                                    st.dataframe(oa_status_summary_unpaywall, hide_index =True,  use_container_width=False)
+                                else:
+                                    fig = px.pie(oa_status_summary_unpaywall,
+                                                names="OA status",
+                                                values="# Outputs",
+                                                title="Open Access Status",
+                                                color="OA status",
+                                                color_discrete_map=custom_colors)
+
+                                    st.plotly_chart(fig, use_container_width=True)
+                            else:
+                                table_view = st.toggle('Display as a table', key='OAstatus_unpaywall_2')
+                                if table_view:
+                                    st.dataframe(oa_status_summary_unpaywall, hide_index =True,  use_container_width=False)
+                                else:
+                                    fig = px.pie(oa_status_summary_unpaywall,
+                                                names="OA status",
+                                                values="# Outputs",
+                                                title="Open Access Status (Unpaywall)",
+                                                color="OA status",
+                                                color_discrete_map=custom_colors)
+
+                                    st.plotly_chart(fig, use_container_width=True)
+
                                 st.dataframe(df_unpaywall, hide_index=True)
                                 
                                 @st.fragment
