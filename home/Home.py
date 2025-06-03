@@ -322,30 +322,32 @@ else:
 
                             display_unpaywall_option = st.checkbox('Check DOIs on Unpaywall')
 
-                            def get_oa_info(doi):
-                                url = f"https://api.unpaywall.org/v2/{doi}?email=email@ic.ac.uk"
-                                try:
-                                    response = requests.get(url)
-                                    if response.status_code == 200:
-                                        data = response.json()
-                                        return pd.Series({
-                                            "oa_status": data.get("oa_status", "not_found"),
-                                            "publisher": data.get("publisher", "not_found")
-                                        })
-                                    else:
+                            if display_unpaywall_option
+
+                                def get_oa_info(doi):
+                                    url = f"https://api.unpaywall.org/v2/{doi}?email=email@ic.ac.uk"
+                                    try:
+                                        response = requests.get(url)
+                                        if response.status_code == 200:
+                                            data = response.json()
+                                            return pd.Series({
+                                                "oa_status": data.get("oa_status", "not_found"),
+                                                "publisher": data.get("publisher", "not_found")
+                                            })
+                                        else:
+                                            return pd.Series({"oa_status": "error", "publisher": "error"})
+                                    except:
                                         return pd.Series({"oa_status": "error", "publisher": "error"})
-                                except:
-                                    return pd.Series({"oa_status": "error", "publisher": "error"})
-                            df_openalex_compare = filtered_df.copy()
-                            df_openalex_compare = df_openalex_compare[['DOI', 'OA Status']]
-                            df_openalex_compare = df_openalex_compare.rename(columns={'OA Status':'OA Status (OpenAlex)'})
-                            
-                            df_unpaywall = df_unpaywall[['doi']]
-                            df_unpaywall[["oa_status", "publisher"]]  = df_unpaywall['doi'].astype(str).apply(get_oa_info)
-                            df_unpaywall = df_unpaywall.rename(columns={'oa_status':'OA Status (Unpaywall)'})
-                            df_unpaywall = df_unpaywall.rename(columns={'doi':'DOI'})
-                            df_unpaywall = pd.merge(df_unpaywall[['DOI', 'OA Status (Unpaywall)']], df_openalex_compare[['DOI', 'OA Status (OpenAlex)']], on='DOI', how='inner')
-                            st.dataframe(df_unpaywall, hide_index=True)
+                                df_openalex_compare = filtered_df.copy()
+                                df_openalex_compare = df_openalex_compare[['DOI', 'OA Status']]
+                                df_openalex_compare = df_openalex_compare.rename(columns={'OA Status':'OA Status (OpenAlex)'})
+
+                                df_unpaywall = df_unpaywall[['doi']]
+                                df_unpaywall[["oa_status", "publisher"]]  = df_unpaywall['doi'].astype(str).apply(get_oa_info)
+                                df_unpaywall = df_unpaywall.rename(columns={'oa_status':'OA Status (Unpaywall)'})
+                                df_unpaywall = df_unpaywall.rename(columns={'doi':'DOI'})
+                                df_unpaywall = pd.merge(df_unpaywall[['DOI', 'OA Status (Unpaywall)']], df_openalex_compare[['DOI', 'OA Status (OpenAlex)']], on='DOI', how='inner')
+                                st.dataframe(df_unpaywall, hide_index=True)
 
                         st.subheader("Journals and Publishers", anchor=False)
                         with st.expander('Results', expanded= True):
