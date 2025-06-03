@@ -322,8 +322,7 @@ else:
 
                             display_unpaywall_option = st.checkbox('Check DOIs on Unpaywall')
 
-                            if display_unpaywall_option
-
+                            if display_unpaywall_option:
                                 def get_oa_info(doi):
                                     url = f"https://api.unpaywall.org/v2/{doi}?email=email@ic.ac.uk"
                                     try:
