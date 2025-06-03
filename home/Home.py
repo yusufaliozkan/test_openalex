@@ -244,7 +244,7 @@ else:
                                 
                             else:
                                 filtered_df = merged_df.copy()
-
+                            filtered_df
                             def get_oa_info(doi):
                                 url = f"https://api.unpaywall.org/v2/{doi}"#?email=yozkan@ic.ac.uk"
                                 try:
