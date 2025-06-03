@@ -345,6 +345,9 @@ else:
                                 df_unpaywall[["oa_status", "publisher"]]  = df_unpaywall['doi'].astype(str).apply(get_oa_info)
                                 df_unpaywall = df_unpaywall.rename(columns={'oa_status':'OA Status (Unpaywall)'})
                                 df_unpaywall = df_unpaywall.rename(columns={'doi':'DOI'})
+
+                                oa_status_summary = oa_status_summary = filtered_df['OA Status (Unpaywall)'].value_counts(dropna=False).reset_index()['OA Status (Unpaywall)'].value_counts(dropna=False).reset_index()
+                                oa_status_summary
                                 st.dataframe(df_unpaywall, hide_index=True)
                                 
                                 @st.fragment
