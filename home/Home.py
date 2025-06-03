@@ -346,51 +346,52 @@ else:
                                 df_unpaywall = df_unpaywall.rename(columns={'oa_status':'OA Status (Unpaywall)'})
                                 df_unpaywall = df_unpaywall.rename(columns={'doi':'DOI'})
 
-                                col1, col2 = st.columns([1,4])
-                                with col1:
-                                    oa_status_summary_unpaywall = df_unpaywall['OA Status (Unpaywall)'].value_counts(dropna=False).reset_index()
-                                    oa_status_summary_unpaywall.columns = ['Is OA?', '# Outputs']
-                                    oa_status_summary_unpaywall = oa_status_summary_unpaywall[oa_status_summary_unpaywall['Is OA?']!='error']
-
-                                    custom_colors = {
-                                        "closed": "#d62728",   # soft red
-                                        "green": "#2ca02c",    # muted green
-                                        "gold": "#e6b800",     # warm gold
-                                        "hybrid": "#1f77b4",   # calm blue
-                                        "bronze": "#b87333"    # bronze tone
-                                    }
-                                    table_view = st.toggle('Display as a table', key='OAstatus_unpaywall')
-                                    if table_view:
-                                        st.dataframe(oa_status_summary_unpaywall, hide_index =True,  use_container_width=False)
-                                    else:
-                                        fig = px.pie(oa_status_summary_unpaywall,
-                                                    names="Is OA?",
-                                                    values="# Outputs",
-                                                    title="Open Access Status (Unpaywall)",
-                                                    color="Is OA?",
-                                                    color_discrete_map=custom_colors)
-
-                                        st.plotly_chart(fig, use_container_width=True)
-                                    # else:
-                                    #     table_view = st.toggle('Display as a table', key='OAstatus_unpaywall_2')
-                                    #     if table_view:
-                                    #         st.dataframe(oa_status_summary_unpaywall, hide_index =True,  use_container_width=False)
-                                    #     else:
-                                    #         oa_status_summary_unpaywall
-                                    #         fig = px.pie(oa_status_summary_unpaywall,
-                                    #                     names="Is OA?",
-                                    #                     values="# Outputs",
-                                    #                     title="Open Access Status (Unpaywall)",
-                                    #                     color="Is OA?",
-                                    #                     color_discrete_map=custom_colors)
-
-                                            # st.plotly_chart(fig, use_container_width=True)
-
-                                with col2:
-                                    st.dataframe(df_unpaywall, hide_index=True)
-                                
                                 @st.fragment
                                 def results_unpaywall_compare(df_unpaywall, df_openalex_compare):
+                                    col1, col2 = st.columns([1,4])
+                                    with col1:
+                                        oa_status_summary_unpaywall = df_unpaywall['OA Status (Unpaywall)'].value_counts(dropna=False).reset_index()
+                                        oa_status_summary_unpaywall.columns = ['Is OA?', '# Outputs']
+                                        oa_status_summary_unpaywall = oa_status_summary_unpaywall[oa_status_summary_unpaywall['Is OA?']!='error']
+
+                                        custom_colors = {
+                                            "closed": "#d62728",   # soft red
+                                            "green": "#2ca02c",    # muted green
+                                            "gold": "#e6b800",     # warm gold
+                                            "hybrid": "#1f77b4",   # calm blue
+                                            "bronze": "#b87333"    # bronze tone
+                                        }
+                                        table_view = st.toggle('Display as a table', key='OAstatus_unpaywall')
+                                        if table_view:
+                                            st.dataframe(oa_status_summary_unpaywall, hide_index =True,  use_container_width=False)
+                                        else:
+                                            fig = px.pie(oa_status_summary_unpaywall,
+                                                        names="Is OA?",
+                                                        values="# Outputs",
+                                                        title="Open Access Status (Unpaywall)",
+                                                        color="Is OA?",
+                                                        color_discrete_map=custom_colors)
+
+                                            st.plotly_chart(fig, use_container_width=True)
+                                        # else:
+                                        #     table_view = st.toggle('Display as a table', key='OAstatus_unpaywall_2')
+                                        #     if table_view:
+                                        #         st.dataframe(oa_status_summary_unpaywall, hide_index =True,  use_container_width=False)
+                                        #     else:
+                                        #         oa_status_summary_unpaywall
+                                        #         fig = px.pie(oa_status_summary_unpaywall,
+                                        #                     names="Is OA?",
+                                        #                     values="# Outputs",
+                                        #                     title="Open Access Status (Unpaywall)",
+                                        #                     color="Is OA?",
+                                        #                     color_discrete_map=custom_colors)
+
+                                                # st.plotly_chart(fig, use_container_width=True)
+
+                                    with col2:
+                                        st.dataframe(df_unpaywall, hide_index=True)
+                                
+
                                     compare = st.toggle('Compare OpenAlex results with Unpaywall')
                                     if compare:
                                         df_unpaywall = pd.merge(df_unpaywall[['DOI', 'OA Status (Unpaywall)']], df_openalex_compare[['DOI', 'OA Status (OpenAlex)']], on='DOI', how='inner')
