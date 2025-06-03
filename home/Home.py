@@ -351,31 +351,39 @@ else:
                                 oa_status_summary_unpaywall = oa_status_summary_unpaywall[oa_status_summary_unpaywall['Is OA?']!='error']
                                 oa_status_summary_unpaywall
 
-                                table_view = st.toggle('Display as a table', key='OAstatus_unpaywall_1')
-                                if table_view:
-                                    st.dataframe(oa_status_summary_unpaywall, hide_index =True,  use_container_width=False)
-                                else:
-                                    fig = px.pie(oa_status_summary_unpaywall,
-                                                names="OA status",
-                                                values="# Outputs",
-                                                title="Open Access Status (Unpaywall)",
-                                                color="OA status",
-                                                color_discrete_map=custom_colors)
+                                custom_colors = {
+                                    "closed": "#d62728",   # soft red
+                                    "green": "#2ca02c",    # muted green
+                                    "gold": "#e6b800",     # warm gold
+                                    "hybrid": "#1f77b4",   # calm blue
+                                    "bronze": "#b87333"    # bronze tone
+                                }
+                                if selected_statuses:
+                                    table_view = st.toggle('Display as a table', key='OAstatus_unpaywall')
+                                    if table_view:
+                                        st.dataframe(oa_status_summary_unpaywall, hide_index =True,  use_container_width=False)
+                                    else:
+                                        fig = px.pie(oa_status_summary_unpaywall,
+                                                    names="OA status",
+                                                    values="# Outputs",
+                                                    title="Open Access Status",
+                                                    color="OA status",
+                                                    color_discrete_map=custom_colors)
 
-                                    st.plotly_chart(fig, use_container_width=True)
-                            else:
-                                table_view = st.toggle('Display as a table', key='OAstatus_unpaywall_2')
-                                if table_view:
-                                    st.dataframe(oa_status_summary_unpaywall, hide_index =True,  use_container_width=False)
+                                        st.plotly_chart(fig, use_container_width=True)
                                 else:
-                                    fig = px.pie(oa_status_summary_unpaywall,
-                                                names="OA status",
-                                                values="# Outputs",
-                                                title="Open Access Status (Unpaywall)",
-                                                color="OA status",
-                                                color_discrete_map=custom_colors)
+                                    table_view = st.toggle('Display as a table', key='OAstatus_unpaywall_2')
+                                    if table_view:
+                                        st.dataframe(oa_status_summary_unpaywall, hide_index =True,  use_container_width=False)
+                                    else:
+                                        fig = px.pie(oa_status_summary_unpaywall,
+                                                    names="OA status",
+                                                    values="# Outputs",
+                                                    title="Open Access Status",
+                                                    color="OA status",
+                                                    color_discrete_map=custom_colors)
 
-                                    st.plotly_chart(fig, use_container_width=True)
+                                        st.plotly_chart(fig, use_container_width=True)
 
                                 st.dataframe(df_unpaywall, hide_index=True)
                                 
