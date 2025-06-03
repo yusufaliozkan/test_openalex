@@ -244,6 +244,8 @@ else:
                                 
                             else:
                                 filtered_df = merged_df.copy()
+                            
+                            display_unpaywall_option = st.checkbox('Check DOIs on Unpaywall')
 
                             def get_oa_info(doi):
                                 url = f"https://api.unpaywall.org/v2/{doi}?email=email@ic.ac.uk"
@@ -261,7 +263,6 @@ else:
                                     return pd.Series({"oa_status": "error", "publisher": "error"})
                             df_unpaywall = filtered_df.copy()
                             df_unpaywall = df_unpaywall[['doi']]
-                            df_unpaywall
                             df_unpaywall[["oa_status", "publisher"]]  = df_unpaywall['doi'].astype(str).apply(get_oa_info)
                             df_unpaywall
 
