@@ -336,11 +336,14 @@ else:
                                         return pd.Series({"oa_status": "error", "publisher": "error"})
                                 except:
                                     return pd.Series({"oa_status": "error", "publisher": "error"})
-                                                        
+                            df_openalex_compare = filtered_df.copy()
+                            df_openalex_compare 
                             df_unpaywall = df_unpaywall[['doi']]
                             df_unpaywall[["oa_status", "publisher"]]  = df_unpaywall['doi'].astype(str).apply(get_oa_info)
                             df_unpaywall = df_unpaywall.rename(columns={'oa_status':'OA Status (Unpaywall)'})
+
                             st.dataframe(df_unpaywall, hide_index=False)
+
                         st.subheader("Journals and Publishers", anchor=False)
                         with st.expander('Results', expanded= True):
                             col1, col2 = st.columns(2)
