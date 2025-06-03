@@ -341,9 +341,9 @@ else:
                             df_openalex_compare = df_openalex_compare.rename(columns={'OA Status':'OA Status (OpenAlex)'})
                             df_openalex_compare
                             df_unpaywall = df_unpaywall[['doi']]
-                            df_unpaywall[["oa_status"]]  = df_unpaywall['doi'].astype(str).apply(get_oa_info)
+                            df_unpaywall[["oa_status", "publisher"]]  = df_unpaywall['doi'].astype(str).apply(get_oa_info)
+                            df_unpaywall = df_unpaywall[['doi', 'oa_status']]
                             df_unpaywall = df_unpaywall.rename(columns={'oa_status':'OA Status (Unpaywall)'})
-                            df_unpaywall = df_unpaywall.rename(columns={'doi':'DOI'})
 
                             st.dataframe(df_unpaywall, hide_index=False)
 
