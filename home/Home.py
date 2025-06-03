@@ -246,7 +246,7 @@ else:
                                 filtered_df = merged_df.copy()
 
                             def get_oa_info(doi):
-                                url = f"https://api.unpaywall.org/v2/{doi}?email=yozkan@ic.ac.uk"
+                                url = f"https://api.unpaywall.org/v2/{doi}?email=email@ic.ac.uk"
                                 try:
                                     response = requests.get(url)
                                     if response.status_code == 200:
