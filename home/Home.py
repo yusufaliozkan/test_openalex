@@ -348,7 +348,7 @@ else:
 
                                 oa_status_summary_unpaywall = df_unpaywall['OA Status (Unpaywall)'].value_counts(dropna=False).reset_index()
                                 oa_status_summary_unpaywall.columns = ['Is OA?', '# Outputs']
-                                oa_status_summary_unpaywall
+                                oa_status_summary_unpaywall = oa_status_summary_unpaywall[['Is OA?']!='error']
 
                                 table_view = st.toggle('Display as a table', key='OAstatus_unpaywall_1')
                                 if table_view:
@@ -357,7 +357,7 @@ else:
                                     fig = px.pie(oa_status_summary_unpaywall,
                                                 names="OA status",
                                                 values="# Outputs",
-                                                title="Open Access Status",
+                                                title="Open Access Status (Unpaywall)",
                                                 color="OA status",
                                                 color_discrete_map=custom_colors)
 
