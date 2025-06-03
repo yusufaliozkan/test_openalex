@@ -245,6 +245,24 @@ else:
                             else:
                                 filtered_df = merged_df.copy()
 
+                            def get_oa_info(doi):
+                                url = f"https://api.unpaywall.org/v2/{doi}"#?email=yozkan@ic.ac.uk"
+                                try:
+                                    response = requests.get(url)
+                                    if response.status_code == 200:
+                                        data = response.json()
+                                        return pd.Series({
+                                            "oa_status": data.get("oa_status", "not_found"),
+                                            "publisher": data.get("publisher", "not_found")
+                                        })
+                                    else:
+                                        return pd.Series({"oa_status": "error", "publisher": "error"})
+                                except:
+                                    return pd.Series({"oa_status": "error", "publisher": "error"})
+                            df_unpaywall = filtered_df.copy()
+                            df_unpaywall[["oa_status", "publisher"]]  = df_unpaywall['doi'].astype(str).apply(get_oa_info)
+                            df_unpaywall
+
                             # Display it in Streamlit
                             
                             col1, col2 = st.columns([1,4])
