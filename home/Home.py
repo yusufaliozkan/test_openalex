@@ -364,9 +364,9 @@ else:
                                         st.dataframe(oa_status_summary_unpaywall, hide_index =True,  use_container_width=False)
                                     else:
                                         fig = px.pie(oa_status_summary_unpaywall,
-                                                    names="OA Status (Unpaywall)",
+                                                    names="Is OA?",
                                                     values="# Outputs",
-                                                    title="Open Access Status",
+                                                    title="Open Access Status (Unpaywall)",
                                                     color="OA status",
                                                     color_discrete_map=custom_colors)
 
@@ -378,7 +378,7 @@ else:
                                     else:
                                         oa_status_summary_unpaywall
                                         fig = px.pie(oa_status_summary_unpaywall,
-                                                    names="OA status",
+                                                    names="Is OA?",
                                                     values="# Outputs",
                                                     title="Open Access Status (Unpaywall)",
                                                     color="OA status",
