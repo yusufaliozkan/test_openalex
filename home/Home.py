@@ -349,6 +349,7 @@ else:
                                 oa_status_summary_unpaywall = df_unpaywall['OA Status (Unpaywall)'].value_counts(dropna=False).reset_index()
                                 oa_status_summary_unpaywall.columns = ['Is OA?', '# Outputs']
                                 oa_status_summary_unpaywall = oa_status_summary_unpaywall[oa_status_summary_unpaywall['Is OA?']!='error']
+                                oa_status_summary_unpaywall
 
                                 table_view = st.toggle('Display as a table', key='OAstatus_unpaywall_1')
                                 if table_view:
