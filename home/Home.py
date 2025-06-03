@@ -346,18 +346,21 @@ else:
                                 df_unpaywall = df_unpaywall.rename(columns={'oa_status':'OA Status (Unpaywall)'})
                                 df_unpaywall = df_unpaywall.rename(columns={'doi':'DOI'})
                                 st.dataframe(df_unpaywall, hide_index=True)
-
-                                compare = st.toggle('Compare OpenAlex results with Unpaywall')
-                                if compare:
-                                    df_unpaywall = pd.merge(df_unpaywall[['DOI', 'OA Status (Unpaywall)']], df_openalex_compare[['DOI', 'OA Status (OpenAlex)']], on='DOI', how='inner')
-                                    
-                                    df_unpaywall = df_unpaywall[df_unpaywall['OA Status (Unpaywall)'] != df_unpaywall['OA Status (OpenAlex)']]
-                                    row_count = len(df_unpaywall)
-                                    if row_count == 0:
-                                        st.info('Unpaywall and OpenAlex show the same OA status for all DOI(s)')
-                                    else:
-                                        st.info('Only display DOI(s) showing different OA status results in Unpaywall and OpenAlex')
-                                        st.dataframe(df_unpaywall, hide_index=True)
+                                
+                                @st.fragment
+                                def results_unpaywall_compare(df_unpaywall, df_openalex_compare):
+                                    compare = st.toggle('Compare OpenAlex results with Unpaywall')
+                                    if compare:
+                                        df_unpaywall = pd.merge(df_unpaywall[['DOI', 'OA Status (Unpaywall)']], df_openalex_compare[['DOI', 'OA Status (OpenAlex)']], on='DOI', how='inner')
+                                        
+                                        df_unpaywall = df_unpaywall[df_unpaywall['OA Status (Unpaywall)'] != df_unpaywall['OA Status (OpenAlex)']]
+                                        row_count = len(df_unpaywall)
+                                        if row_count == 0:
+                                            st.info('Unpaywall and OpenAlex show the same OA status for all DOI(s)')
+                                        else:
+                                            st.info('Only display DOI(s) showing different OA status results in Unpaywall and OpenAlex')
+                                            st.dataframe(df_unpaywall, hide_index=True)
+                                results_unpaywall_compare(df_unpaywall,df_openalex_compare)
 
                         st.subheader("Journals and Publishers", anchor=False)
                         with st.expander('Results', expanded= True):
