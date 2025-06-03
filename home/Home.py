@@ -385,7 +385,7 @@ else:
                                     #                     color="Is OA?",
                                     #                     color_discrete_map=custom_colors)
 
-                                            st.plotly_chart(fig, use_container_width=True)
+                                            # st.plotly_chart(fig, use_container_width=True)
 
                                 with col2:
                                     st.dataframe(df_unpaywall, hide_index=True)
