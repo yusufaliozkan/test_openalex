@@ -358,7 +358,7 @@ else:
                                         if row_count == 0:
                                             st.info('Unpaywall and OpenAlex show the same OA status for all DOI(s)')
                                         else:
-                                            st.info('Only display DOI(s) showing different OA status results in Unpaywall and OpenAlex')
+                                            st.info('Displays only DOIs with differing OA status results between Unpaywall and OpenAlex')
                                             st.dataframe(df_unpaywall, hide_index=True)
                                 results_unpaywall_compare(df_unpaywall,df_openalex_compare)
 
