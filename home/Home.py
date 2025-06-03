@@ -376,6 +376,7 @@ else:
                                     if table_view:
                                         st.dataframe(oa_status_summary_unpaywall, hide_index =True,  use_container_width=False)
                                     else:
+                                        oa_status_summary_unpaywall
                                         fig = px.pie(oa_status_summary_unpaywall,
                                                     names="OA Status (Unpaywall)",
                                                     values="# Outputs",
