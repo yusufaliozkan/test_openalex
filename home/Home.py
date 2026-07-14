@@ -10,6 +10,7 @@ from copyright import display_custom_license
 import numpy as np
 import plotly.express as px
 import time
+import concurrent.futures
 from sidebar_content import sidebar_content
 import pycountry
 import matplotlib.pyplot as plt
@@ -113,6 +114,36 @@ else:
                 def batch_dois(dois, batch_size=20):
                     for i in range(0, len(dois), batch_size):
                         yield dois[i:i + batch_size]
+
+                # --- DOI resolution check helpers ---
+                # Checks whether a DOI resolves via doi.org (independent of whether
+                # OpenAlex has indexed it). Uses a thread pool since checking
+                # hundreds of DOIs sequentially would be too slow.
+                def check_doi_resolves(doi, timeout=8):
+                    """Check whether a single DOI resolves via doi.org."""
+                    url = f"https://doi.org/{doi.strip()}"
+                    try:
+                        resp = requests.head(url, allow_redirects=True, timeout=timeout)
+                        if resp.status_code == 405:  # some servers reject HEAD requests
+                            resp = requests.get(url, allow_redirects=True, timeout=timeout)
+                        return {
+                            "doi": doi,
+                            "resolves": resp.status_code < 400,
+                            "status_code": resp.status_code,
+                        }
+                    except requests.RequestException:
+                        return {"doi": doi, "resolves": False, "status_code": None}
+
+                def check_dois_resolve(doi_list_to_check, max_workers=20):
+                    """Check DOI resolution status concurrently for a list of DOIs."""
+                    results_list = []
+                    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+                        futures = {
+                            executor.submit(check_doi_resolves, d): d for d in doi_list_to_check
+                        }
+                        for future in concurrent.futures.as_completed(futures):
+                            results_list.append(future.result())
+                    return pd.DataFrame(results_list)
                 
                 start_time = time.time()
                 # Store results
@@ -180,7 +211,7 @@ else:
 
                     # OA Summary
                     @st.fragment
-                    def results(merged_df, oa_summary, oa_status_summary, duplicates_df):
+                    def results(merged_df, oa_summary, oa_status_summary, duplicates_df, all_results_df):
                         if duplicates_df['doi'].nunique() != 0:
                             duplicate_count = duplicates_df['doi'].nunique()
                             show_duplicates = st.toggle(f'{duplicate_count} duplicate(s) found. Display and edit duplicates.')
@@ -216,7 +247,57 @@ else:
                         if merged_df.empty:
                             st.error('No item to display!')
                             st.stop()
-                        
+
+                        # --- NEW: DOI Resolution Check ---
+                        st.subheader("DOI Resolution Check", anchor=False)
+                        with st.expander('Results', expanded=True):
+                            doi_list_to_check = all_results_df['doi_submitted'].dropna().unique().tolist()
+                            with st.spinner(f'Checking whether {len(doi_list_to_check)} DOI(s) resolve...'):
+                                resolution_df = check_dois_resolve(doi_list_to_check)
+
+                            resolution_df['Resolves?'] = resolution_df['resolves'].map(
+                                {True: 'Resolves', False: 'Does not resolve'}
+                            )
+                            resolution_summary = resolution_df['Resolves?'].value_counts(dropna=False).reset_index()
+                            resolution_summary.columns = ['Resolution status', '# DOIs']
+
+                            num_resolved = int(resolution_df['resolves'].sum())
+                            num_total = len(resolution_df)
+                            num_unresolved = num_total - num_resolved
+                            st.write(
+                                f"**{num_resolved}** of **{num_total}** submitted DOI(s) resolve via doi.org. "
+                                f"**{num_unresolved}** did not resolve."
+                            )
+
+                            col1, col2 = st.columns([1, 4])
+                            with col1:
+                                resolution_colors = {
+                                    "Resolves": "#2ca02c",
+                                    "Does not resolve": "#d62728",
+                                }
+                                table_view = st.toggle('Display as a table', key='doi_resolution_view')
+                                if table_view:
+                                    st.dataframe(resolution_summary, hide_index=True, use_container_width=False)
+                                else:
+                                    fig = px.pie(
+                                        resolution_summary,
+                                        names="Resolution status",
+                                        values="# DOIs",
+                                        title="DOI Resolution Status",
+                                        color="Resolution status",
+                                        color_discrete_map=resolution_colors,
+                                    )
+                                    st.plotly_chart(fig, use_container_width=True)
+                            with col2:
+                                unresolved_df = resolution_df[~resolution_df['resolves']][['doi', 'status_code']]
+                                unresolved_df.columns = ['DOI', 'Status code']
+                                if unresolved_df.empty:
+                                    st.success('All submitted DOIs resolved successfully.')
+                                else:
+                                    st.warning(f'{len(unresolved_df)} DOI(s) did not resolve:')
+                                    st.dataframe(unresolved_df, hide_index=True, use_container_width=False)
+                        # --- END NEW SECTION ---
+
                         st.subheader("Open Access Status Summary", anchor=False)
                         with st.expander('Results',  expanded= True):
                             if len(oa_summary) >= 1:
@@ -688,7 +769,7 @@ else:
                                 labels={'Count': 'Number of Publications'},
                             )
                             st.plotly_chart(fig, use_container_width=True)
-                    results(merged_df, oa_summary, oa_status_summary, duplicates_df)
+                    results(merged_df, oa_summary, oa_status_summary, duplicates_df, all_results_df)
                     @st.fragment
                     def all_results(all_results_df):
                         display = st.toggle('Show all results')                        
