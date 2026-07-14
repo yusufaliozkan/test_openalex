@@ -250,7 +250,7 @@ else:
 
                         # --- NEW: DOI Resolution Check ---
                         st.subheader("DOI Resolution Check", anchor=False)
-                        with st.expander('Results', expanded=True):
+                        with st.expander('Results', expanded=False):
                             doi_list_to_check = all_results_df['doi_submitted'].dropna().unique().tolist()
                             with st.spinner(f'Checking whether {len(doi_list_to_check)} DOI(s) resolve...'):
                                 resolution_df = check_dois_resolve(doi_list_to_check)
