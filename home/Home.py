@@ -336,14 +336,11 @@ else:
                                         'open_access.oa_url', 'primary_location.license'
                                     ] if c in available_columns]
 
-                                    st.write('Select columns to display in the table')
-                                    with st.popover('Choose columns'):
-                                        selected_columns = st.multiselect(
-                                            'Available columns',
-                                            options=available_columns,
-                                            default=default_columns,
-                                            label_visibility='collapsed'
-                                        )
+                                    selected_columns = st.multiselect(
+                                        'Select columns to display in the table',
+                                        options=available_columns,
+                                        default=default_columns
+                                    )
 
                                     if selected_columns:
                                         display_table_df = filtered_raw_df[selected_columns].copy()
@@ -352,6 +349,10 @@ else:
 
                                     display_table_df = display_table_df.reset_index(drop=True)
                                     display_table_df.index += 1
+
+                                    with st.popover(f'{len(display_table_df.columns)} column(s) shown'):
+                                        for col_name in display_table_df.columns:
+                                            st.write(col_name)
 
                                     display_column_config = {}
                                     if 'doi' in display_table_df.columns:
@@ -365,6 +366,7 @@ else:
                                         )
 
                                 display_unpaywall_option = st.checkbox('Check DOI(s) on Unpaywall')
+
 
 
                                 if display_unpaywall_option:
@@ -663,20 +665,21 @@ else:
 
                             available_columns_all = all_results_df.columns.tolist()
 
-                            st.write('Select columns to display in the table')
-                            with st.popover('Choose columns'):
-                                selected_columns_all = st.multiselect(
-                                    'Available columns',
-                                    options=available_columns_all,
-                                    default=available_columns_all,
-                                    label_visibility='collapsed',
-                                    key='all_results_columns'
-                                )
+                            selected_columns_all = st.multiselect(
+                                'Select columns to display in the table',
+                                options=available_columns_all,
+                                default=available_columns_all,
+                                key='all_results_columns'
+                            )
 
                             if selected_columns_all:
                                 display_all_results_df = all_results_df[selected_columns_all]
                             else:
                                 display_all_results_df = all_results_df
+
+                            with st.popover(f'{len(display_all_results_df.columns)} column(s) shown'):
+                                for col_name in display_all_results_df.columns:
+                                    st.write(col_name)
 
                             st.dataframe(display_all_results_df)
                     all_results(all_results_df)
