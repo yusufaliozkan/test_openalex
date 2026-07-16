@@ -49,7 +49,7 @@ if radio == 'Insert DOIs':
     # Create a DataFrame
     df_dois = pd.DataFrame(doi_list, columns=["doi_submitted"])
 else:
-    st.write('Please upload and submit a .csv file of [DOIs](https://www.doi.org/) (commencing “10.") in separate rows. Maximum **700 DOIs permitted**!')
+    st.write('Please upload and submit a .csv file of [DOIs](https://www.doi.org/) (commencing "10.") in separate rows. Maximum **700 DOIs permitted**!')
     st.warning('The title of the column containing DOIs should be one of the followings: doi, DOI, dois, DOIs, Hyperlinked DOI. Otherwise the tool will not identify DOIs.')
     dois = st.file_uploader("Choose a CSV file", type="csv")
 
@@ -96,11 +96,45 @@ else:
             df_dois.index +=1
             st.dataframe(df_dois,  use_container_width=False)
 
+        # --- Report content selection ---
+        # This controls which sections appear in the report below. It does NOT
+        # change what data is fetched from OpenAlex - the full record for every
+        # matched DOI is always retrieved; this only filters what gets displayed.
+        st.markdown("**Report content**")
+        field_mode = st.radio(
+            'Choose what appears in your results report',
+            ['Continue with default fields', 'Select fields to display'],
+            help='This controls which sections show up in your report below.'
+        )
+
+        available_sections = {
+            'Open Access Status Summary': 'oa_summary',
+            'Journals and Publishers': 'journals_publishers',
+            'Affiliations': 'affiliations',
+            'Topics and SDGs': 'topics_sdgs',
+            'Funders': 'funders',
+            'Metrics': 'metrics',
+        }
+
+        if field_mode == 'Select fields to display':
+            chosen_labels = st.multiselect(
+                'Select sections to include in the report',
+                options=list(available_sections.keys()),
+                default=list(available_sections.keys())
+            )
+        else:
+            chosen_labels = list(available_sections.keys())
+
+        selected_sections = {available_sections[label] for label in chosen_labels}
+
         submit = st.button('Search DOIs', icon=":material/search:")
         
         if submit or st.session_state.get('status_expanded', False):
             if submit:
                 st.session_state['status_expanded'] = True
+                st.session_state['selected_sections'] = selected_sections
+            # Persist section choice across reruns triggered by widgets inside the fragment
+            selected_sections = st.session_state.get('selected_sections', selected_sections)
             with st.spinner("Searching DOIs in OpenAlex"):
             # with st.status("Searching DOIs in OpenAlex", expanded=st.session_state.get('status_expanded', True)) as status:
                 df_dois['doi_submitted'] = df_dois['doi_submitted'].str.replace('https://doi.org/', '', regex=False)
@@ -180,7 +214,7 @@ else:
 
                     # OA Summary
                     @st.fragment
-                    def results(merged_df, oa_summary, oa_status_summary, duplicates_df):
+                    def results(merged_df, oa_summary, oa_status_summary, duplicates_df, selected_sections):
                         if duplicates_df['doi'].nunique() != 0:
                             duplicate_count = duplicates_df['doi'].nunique()
                             show_duplicates = st.toggle(f'{duplicate_count} duplicate(s) found. Display and edit duplicates.')
@@ -200,74 +234,73 @@ else:
                                     merged_df = merged_df[~merged_df['id'].isin(selected_ids)]
                         if merged_df['id'].isnull().all():
                             st.warning("No DOIs found in the OpenAlex database.")
-                        else:
-                            num_results = merged_df['id'].notnull().sum()
-                            # if not duplicates_df.empty:
-                            #     duplicate_count = duplicates_df['doi'].nunique()
-                            #     st.success(f"{num_results} result(s) found with {duplicate_count} duplicate(s).")
-                            # else:
-                            #     st.success(f"{num_results} result(s) found.")
-                        oa_status_summary = merged_df['open_access.oa_status'].value_counts(dropna=False).reset_index()
-                        oa_status_summary.columns = ['OA status', '# Outputs']
-                        # merged_df['open_access.is_oa'] = merged_df['open_access.is_oa'].map({True: 'Open Access', False: 'Closed Access'})
-                        oa_summary = merged_df['open_access.is_oa'].value_counts(dropna=False).reset_index()
-                        oa_summary.columns = ['Is OA?', '# Outputs']
 
                         if merged_df.empty:
                             st.error('No item to display!')
                             st.stop()
-                        
-                        st.subheader("Open Access Status Summary", anchor=False)
-                        with st.expander('Results',  expanded= True):
-                            if len(oa_summary) >= 1:
-                                items = [
-                                    f"**{row['# Outputs']}** *{row['Is OA?']}*"
-                                    for _, row in oa_summary.iterrows()
-                                ]
-                                st.write(f"{' and '.join(items)} papers found")
-                            elif len(oa_summary) == 1:
-                                st.write(f'''
-                                    **{oa_summary.iloc[0]['# Outputs']}** *{oa_summary.iloc[0]['Is OA?']}* papers found.
-                                ''')
 
-                            available_oa_statuses = oa_status_summary['OA status'].dropna().unique().tolist()
-                            selected_statuses = st.multiselect(
-                                'Filter by OA Status',
-                                options=available_oa_statuses,
-                                default=[] 
-                                # default=available_oa_statuses  # All selected by default
-                            )
-                            
-                            if selected_statuses:
-                                filtered_df = merged_df[merged_df['open_access.oa_status'].isin(selected_statuses)]
-                                filtered_raw_df = filtered_df.copy()
+                        # --- Data computed unconditionally so any section can be shown ---
+                        # regardless of which other sections are selected/deselected.
+                        oa_status_summary = merged_df['open_access.oa_status'].value_counts(dropna=False).reset_index()
+                        oa_status_summary.columns = ['OA status', '# Outputs']
+                        oa_summary = merged_df['open_access.is_oa'].value_counts(dropna=False).reset_index()
+                        oa_summary.columns = ['Is OA?', '# Outputs']
+
+                        # Defaults: no OA-status filter applied unless the user picks one
+                        # in the Open Access Status Summary section below.
+                        selected_statuses = []
+                        filtered_raw_df = merged_df.copy()
+                        df_unpaywall = merged_df.copy()
+
+                        if 'oa_summary' in selected_sections:
+                            st.subheader("Open Access Status Summary", anchor=False)
+                            with st.expander('Results',  expanded= True):
+                                if len(oa_summary) >= 1:
+                                    items = [
+                                        f"**{row['# Outputs']}** *{row['Is OA?']}*"
+                                        for _, row in oa_summary.iterrows()
+                                    ]
+                                    st.write(f"{' and '.join(items)} papers found")
+                                elif len(oa_summary) == 1:
+                                    st.write(f'''
+                                        **{oa_summary.iloc[0]['# Outputs']}** *{oa_summary.iloc[0]['Is OA?']}* papers found.
+                                    ''')
+
+                                available_oa_statuses = oa_status_summary['OA status'].dropna().unique().tolist()
+                                selected_statuses = st.multiselect(
+                                    'Filter by OA Status',
+                                    options=available_oa_statuses,
+                                    default=[] 
+                                    # default=available_oa_statuses  # All selected by default
+                                )
                                 
-                            else:
-                                filtered_df = merged_df.copy()
-                            df_unpaywall = filtered_df.copy()
-
-                            # Display it in Streamlit
-                            
-                            col1, col2 = st.columns([1,4])
-                            with col1:
-                                custom_colors = {
-                                    "closed": "#d62728",   # soft red
-                                    "green": "#2ca02c",    # muted green
-                                    "gold": "#e6b800",     # warm gold
-                                    "hybrid": "#1f77b4",   # calm blue
-                                    "bronze": "#b87333"    # bronze tone
-                                }
                                 if selected_statuses:
-                                    oa_status_summary = filtered_df['open_access.oa_status'].value_counts(dropna=False).reset_index()
-                                    oa_status_summary.columns = ['OA status', '# Outputs']
-                                    # merged_df['open_access.is_oa'] = merged_df['open_access.is_oa'].map({True: 'Open Access', False: 'Closed Access'})
-                                    oa_summary = merged_df['open_access.is_oa'].value_counts(dropna=False).reset_index()
-                                    oa_summary.columns = ['Is OA?', '# Outputs']
+                                    filtered_raw_df = merged_df[merged_df['open_access.oa_status'].isin(selected_statuses)]
+                                else:
+                                    filtered_raw_df = merged_df.copy()
+                                df_unpaywall = filtered_raw_df.copy()
+
+                                # Display it in Streamlit
+                                
+                                col1, col2 = st.columns([1,4])
+                                with col1:
+                                    custom_colors = {
+                                        "closed": "#d62728",   # soft red
+                                        "green": "#2ca02c",    # muted green
+                                        "gold": "#e6b800",     # warm gold
+                                        "hybrid": "#1f77b4",   # calm blue
+                                        "bronze": "#b87333"    # bronze tone
+                                    }
+                                    if selected_statuses:
+                                        oa_status_summary_display = filtered_raw_df['open_access.oa_status'].value_counts(dropna=False).reset_index()
+                                        oa_status_summary_display.columns = ['OA status', '# Outputs']
+                                    else:
+                                        oa_status_summary_display = oa_status_summary
                                     table_view = st.toggle('Display as a table', key='OAstatus1')
                                     if table_view:
-                                        st.dataframe(oa_status_summary, hide_index =True,  use_container_width=False)
+                                        st.dataframe(oa_status_summary_display, hide_index =True,  use_container_width=False)
                                     else:
-                                        fig = px.pie(oa_status_summary,
+                                        fig = px.pie(oa_status_summary_display,
                                                     names="OA status",
                                                     values="# Outputs",
                                                     title="Open Access Status",
@@ -275,419 +308,310 @@ else:
                                                     color_discrete_map=custom_colors)
 
                                         st.plotly_chart(fig, use_container_width=True)
-                                else:
-                                    table_view = st.toggle('Display as a table', key='OAstatus2')
-                                    if table_view:
-                                        st.dataframe(oa_status_summary, hide_index =True,  use_container_width=False)
-                                    else:
-                                        fig = px.pie(oa_status_summary,
-                                                    names="OA status",
-                                                    values="# Outputs",
-                                                    title="Open Access Status",
-                                                    color="OA status",
-                                                    color_discrete_map=custom_colors)
-
-                                        st.plotly_chart(fig, use_container_width=True)
-                            with col2:
-                                
-                                def safe_get_nested(row, path):
-                                    current = row
-                                    for key in path:
-                                        if isinstance(current, dict):
-                                            current = current.get(key, None)
-                                        else:
-                                            return None
-                                    return current
-
-                                # filtered_df['primary_location.source.display_name'] = filtered_df.apply(
-                                #     lambda row: safe_get_nested(row.get('primary_location', {}), ['source', 'display_name']),
-                                #     axis=1
-                                # )
-
-                                # filtered_df['primary_location.source.host_organization_name'] = filtered_df.apply(
-                                #     lambda row: safe_get_nested(row.get('primary_location', {}), ['source', 'host_organization_name']),
-                                #     axis=1
-                                # )         
-                                filtered_df= filtered_df.reset_index(drop=True)
-                                filtered_df.index +=1
-                                filtered_df = filtered_df[['doi', 'type','primary_location.source.display_name', 'primary_location.source.host_organization_name', 'publication_year', 'publication_date', 'open_access.is_oa','open_access.oa_status', 'open_access.oa_url', 'primary_location.license']]
-                                filtered_df.columns = ['DOI', 'Type','Journal', 'Publisher','Publication year', 'Publication date','Is OA?', 'OA Status', 'OA URL', 'Licence']
-                                st.dataframe(
-                                    filtered_df,
-                                    column_config={
-                                        'DOI':st.column_config.LinkColumn('DOI'),
-                                        'OA URL':st.column_config.LinkColumn('OA URL')
-                                    }
-                                    )
-
-                            display_unpaywall_option = st.checkbox('Check DOI(s) on Unpaywall')
-
-                            if display_unpaywall_option:
-                                def get_oa_info(doi):
-                                    url = f"https://api.unpaywall.org/v2/{doi}?email=email@ic.ac.uk"
-                                    try:
-                                        response = requests.get(url)
-                                        if response.status_code == 200:
-                                            data = response.json()
-                                            return pd.Series({
-                                                "oa_status": data.get("oa_status", "not_found"),
-                                                "publisher": data.get("publisher", "not_found")
-                                            })
-                                        else:
-                                            return pd.Series({"oa_status": "error", "publisher": "error"})
-                                    except:
-                                        return pd.Series({"oa_status": "error", "publisher": "error"})
-                                df_openalex_compare = filtered_df.copy()
-                                df_openalex_compare = df_openalex_compare[['DOI', 'OA Status']]
-                                df_openalex_compare = df_openalex_compare.rename(columns={'OA Status':'OA Status (OpenAlex)'})
-
-                                df_unpaywall = df_unpaywall[['doi']]
-                                df_unpaywall[["oa_status", "publisher"]]  = df_unpaywall['doi'].astype(str).apply(get_oa_info)
-                                df_unpaywall = df_unpaywall.rename(columns={'oa_status':'OA Status (Unpaywall)'})
-                                df_unpaywall = df_unpaywall.rename(columns={'doi':'DOI'})
-
-                                @st.fragment
-                                def results_unpaywall_compare(df_unpaywall, df_openalex_compare):
-                                    col1, col2 = st.columns([1,4])
-                                    with col1:
-                                        oa_status_summary_unpaywall = df_unpaywall['OA Status (Unpaywall)'].value_counts(dropna=False).reset_index()
-                                        oa_status_summary_unpaywall.columns = ['Is OA?', '# Outputs']
-                                        oa_status_summary_unpaywall = oa_status_summary_unpaywall[oa_status_summary_unpaywall['Is OA?']!='error']
-
-                                        custom_colors = {
-                                            "closed": "#d62728",   # soft red
-                                            "green": "#2ca02c",    # muted green
-                                            "gold": "#e6b800",     # warm gold
-                                            "hybrid": "#1f77b4",   # calm blue
-                                            "bronze": "#b87333"    # bronze tone
+                                with col2:
+                                    display_table_df = filtered_raw_df.copy()
+                                    display_table_df = display_table_df.reset_index(drop=True)
+                                    display_table_df.index += 1
+                                    display_table_df = display_table_df[['doi', 'type','primary_location.source.display_name', 'primary_location.source.host_organization_name', 'publication_year', 'publication_date', 'open_access.is_oa','open_access.oa_status', 'open_access.oa_url', 'primary_location.license']]
+                                    display_table_df.columns = ['DOI', 'Type','Journal', 'Publisher','Publication year', 'Publication date','Is OA?', 'OA Status', 'OA URL', 'Licence']
+                                    st.dataframe(
+                                        display_table_df,
+                                        column_config={
+                                            'DOI':st.column_config.LinkColumn('DOI'),
+                                            'OA URL':st.column_config.LinkColumn('OA URL')
                                         }
-                                        table_view = st.toggle('Display as a table', key='OAstatus_unpaywall')
-                                        if table_view:
-                                            st.dataframe(oa_status_summary_unpaywall, hide_index =True,  use_container_width=False)
-                                        else:
-                                            fig = px.pie(oa_status_summary_unpaywall,
-                                                        names="Is OA?",
-                                                        values="# Outputs",
-                                                        title="Open Access Status (Unpaywall)",
-                                                        color="Is OA?",
-                                                        color_discrete_map=custom_colors)
+                                        )
 
-                                            st.plotly_chart(fig, use_container_width=True)
-                                        # else:
-                                        #     table_view = st.toggle('Display as a table', key='OAstatus_unpaywall_2')
-                                        #     if table_view:
-                                        #         st.dataframe(oa_status_summary_unpaywall, hide_index =True,  use_container_width=False)
-                                        #     else:
-                                        #         oa_status_summary_unpaywall
-                                        #         fig = px.pie(oa_status_summary_unpaywall,
-                                        #                     names="Is OA?",
-                                        #                     values="# Outputs",
-                                        #                     title="Open Access Status (Unpaywall)",
-                                        #                     color="Is OA?",
-                                        #                     color_discrete_map=custom_colors)
+                                display_unpaywall_option = st.checkbox('Check DOI(s) on Unpaywall')
 
-                                                # st.plotly_chart(fig, use_container_width=True)
+                                if display_unpaywall_option:
+                                    def get_oa_info(doi):
+                                        url = f"https://api.unpaywall.org/v2/{doi}?email=email@ic.ac.uk"
+                                        try:
+                                            response = requests.get(url)
+                                            if response.status_code == 200:
+                                                data = response.json()
+                                                return pd.Series({
+                                                    "oa_status": data.get("oa_status", "not_found"),
+                                                    "publisher": data.get("publisher", "not_found")
+                                                })
+                                            else:
+                                                return pd.Series({"oa_status": "error", "publisher": "error"})
+                                        except:
+                                            return pd.Series({"oa_status": "error", "publisher": "error"})
+                                    df_openalex_compare = display_table_df.copy()
+                                    df_openalex_compare = df_openalex_compare[['DOI', 'OA Status']]
+                                    df_openalex_compare = df_openalex_compare.rename(columns={'OA Status':'OA Status (OpenAlex)'})
 
-                                    with col2:
-                                        st.dataframe(df_unpaywall, hide_index=True)
-                                
+                                    df_unpaywall_check = df_unpaywall[['doi']].copy()
+                                    df_unpaywall_check[["oa_status", "publisher"]]  = df_unpaywall_check['doi'].astype(str).apply(get_oa_info)
+                                    df_unpaywall_check = df_unpaywall_check.rename(columns={'oa_status':'OA Status (Unpaywall)'})
+                                    df_unpaywall_check = df_unpaywall_check.rename(columns={'doi':'DOI'})
 
-                                    compare = st.toggle('Compare OpenAlex results with Unpaywall')
-                                    if compare:
-                                        df_unpaywall = pd.merge(df_unpaywall[['DOI', 'OA Status (Unpaywall)']], df_openalex_compare[['DOI', 'OA Status (OpenAlex)']], on='DOI', how='inner')
-                                        
-                                        df_unpaywall = df_unpaywall[df_unpaywall['OA Status (Unpaywall)'] != df_unpaywall['OA Status (OpenAlex)']]
-                                        row_count = len(df_unpaywall)
-                                        if row_count == 0:
-                                            st.info('Unpaywall and OpenAlex show the same OA status for all DOI(s)')
-                                        else:
-                                            st.info('Displays only DOIs with differing OA status results between Unpaywall and OpenAlex')
-                                            st.dataframe(df_unpaywall, hide_index=True)
-                                results_unpaywall_compare(df_unpaywall,df_openalex_compare)
+                                    @st.fragment
+                                    def results_unpaywall_compare(df_unpaywall_check, df_openalex_compare):
+                                        col1, col2 = st.columns([1,4])
+                                        with col1:
+                                            oa_status_summary_unpaywall = df_unpaywall_check['OA Status (Unpaywall)'].value_counts(dropna=False).reset_index()
+                                            oa_status_summary_unpaywall.columns = ['Is OA?', '# Outputs']
+                                            oa_status_summary_unpaywall = oa_status_summary_unpaywall[oa_status_summary_unpaywall['Is OA?']!='error']
 
-                        st.subheader("Journals and Publishers", anchor=False)
-                        with st.expander('Results', expanded= True):
-                            col1, col2 = st.columns(2)
-                            with col1:
-                                # JOURNALS
-                                if selected_statuses:
+                                            custom_colors = {
+                                                "closed": "#d62728",   # soft red
+                                                "green": "#2ca02c",    # muted green
+                                                "gold": "#e6b800",     # warm gold
+                                                "hybrid": "#1f77b4",   # calm blue
+                                                "bronze": "#b87333"    # bronze tone
+                                            }
+                                            table_view = st.toggle('Display as a table', key='OAstatus_unpaywall')
+                                            if table_view:
+                                                st.dataframe(oa_status_summary_unpaywall, hide_index =True,  use_container_width=False)
+                                            else:
+                                                fig = px.pie(oa_status_summary_unpaywall,
+                                                            names="Is OA?",
+                                                            values="# Outputs",
+                                                            title="Open Access Status (Unpaywall)",
+                                                            color="Is OA?",
+                                                            color_discrete_map=custom_colors)
+
+                                                st.plotly_chart(fig, use_container_width=True)
+
+                                        with col2:
+                                            st.dataframe(df_unpaywall_check, hide_index=True)
+                                    
+
+                                        compare = st.toggle('Compare OpenAlex results with Unpaywall')
+                                        if compare:
+                                            df_compare = pd.merge(df_unpaywall_check[['DOI', 'OA Status (Unpaywall)']], df_openalex_compare[['DOI', 'OA Status (OpenAlex)']], on='DOI', how='inner')
+                                            
+                                            df_compare = df_compare[df_compare['OA Status (Unpaywall)'] != df_compare['OA Status (OpenAlex)']]
+                                            row_count = len(df_compare)
+                                            if row_count == 0:
+                                                st.info('Unpaywall and OpenAlex show the same OA status for all DOI(s)')
+                                            else:
+                                                st.info('Displays only DOIs with differing OA status results between Unpaywall and OpenAlex')
+                                                st.dataframe(df_compare, hide_index=True)
+                                    results_unpaywall_compare(df_unpaywall_check, df_openalex_compare)
+
+                        if 'journals_publishers' in selected_sections:
+                            st.subheader("Journals and Publishers", anchor=False)
+                            with st.expander('Results', expanded= True):
+                                col1, col2 = st.columns(2)
+                                with col1:
+                                    # JOURNALS
                                     top_journals = filtered_raw_df['primary_location.source.display_name'].value_counts(dropna=False).reset_index()
-                                else:
-                                    top_journals = merged_df['primary_location.source.display_name'].value_counts(dropna=False).reset_index()
-                                top_journals.columns = ['Journal name', '# Outputs']
-                                top_journals = top_journals.dropna()
-                                st.dataframe(top_journals, hide_index=True,  use_container_width=False)
+                                    top_journals.columns = ['Journal name', '# Outputs']
+                                    top_journals = top_journals.dropna()
+                                    st.dataframe(top_journals, hide_index=True,  use_container_width=False)
 
-                            with col2:
-                                # PUBLISHERS
-                                if selected_statuses:
+                                with col2:
+                                    # PUBLISHERS
                                     top_publishers = filtered_raw_df['primary_location.source.host_organization_name'].value_counts(dropna=False).reset_index()
-                                else:
-                                    top_publishers = merged_df['primary_location.source.host_organization_name'].value_counts(dropna=False).reset_index()
-                                top_publishers.columns = ['Publisher name', '# Outputs']
-                                top_publishers = top_publishers.dropna()
-                                st.dataframe(top_publishers, hide_index=True,  use_container_width=False)
+                                    top_publishers.columns = ['Publisher name', '# Outputs']
+                                    top_publishers = top_publishers.dropna()
+                                    st.dataframe(top_publishers, hide_index=True,  use_container_width=False)
 
-                        st.subheader("Affiliations", anchor=False)
-                        with st.expander('Results', expanded=True):
-                            col1, col2 = st.columns(2)
-                            with col1:
-                                # AUTHORS
-                                if selected_statuses:
+                        if 'affiliations' in selected_sections:
+                            st.subheader("Affiliations", anchor=False)
+                            with st.expander('Results', expanded=True):
+                                col1, col2 = st.columns(2)
+                                with col1:
+                                    # AUTHORS
                                     authors_df = filtered_raw_df.explode('authorships').reset_index(drop=True)
-                                else:
-                                    authors_df = merged_df.explode('authorships').reset_index(drop=True)
-                                
-                                authors_df = pd.json_normalize(authors_df['authorships']).reset_index(drop=True)
-                                authors_table = authors_df[[
-                                    'author.display_name',
-                                    'author.orcid',
-                                    'author_position',
-                                    'is_corresponding',
-                                    'raw_author_name'
-                                ]].drop_duplicates().reset_index(drop=True)
-                                
-                                # st.subheader("Authors", anchor=False)
-                                # st.dataframe(authors_table,  use_container_width=False)
+                                    
+                                    authors_df = pd.json_normalize(authors_df['authorships']).reset_index(drop=True)
+                                    authors_table = authors_df[[
+                                        'author.display_name',
+                                        'author.orcid',
+                                        'author_position',
+                                        'is_corresponding',
+                                        'raw_author_name'
+                                    ]].drop_duplicates().reset_index(drop=True)
 
-                                institutions_df = authors_df.explode('institutions').reset_index(drop=True)
-                                institution_details = pd.json_normalize(institutions_df['institutions']).reset_index(drop=True)
-                                institutions_df = pd.concat([
-                                    institutions_df.drop(columns=['institutions']).reset_index(drop=True),
-                                    institution_details
-                                ], axis=1)
+                                    institutions_df = authors_df.explode('institutions').reset_index(drop=True)
+                                    institution_details = pd.json_normalize(institutions_df['institutions']).reset_index(drop=True)
+                                    institutions_df = pd.concat([
+                                        institutions_df.drop(columns=['institutions']).reset_index(drop=True),
+                                        institution_details
+                                    ], axis=1)
 
-                                expected_cols = ['author.display_name', 'display_name', 'country_code', 'type']
-                                for col in expected_cols:
-                                    if col not in institutions_df.columns:
-                                        institutions_df[col] = "No info"
-                                existing_cols = [col for col in expected_cols if col in institutions_df.columns]
-                                institutions_table = institutions_df[existing_cols].drop_duplicates().reset_index(drop=True)
+                                    expected_cols = ['author.display_name', 'display_name', 'country_code', 'type']
+                                    for col in expected_cols:
+                                        if col not in institutions_df.columns:
+                                            institutions_df[col] = "No info"
+                                    existing_cols = [col for col in expected_cols if col in institutions_df.columns]
+                                    institutions_table = institutions_df[existing_cols].drop_duplicates().reset_index(drop=True)
 
+                                    institutions_table.columns = ['author', 'institution', 'country_code', 'type']
 
-                                institutions_table.columns = ['author', 'institution', 'country_code', 'type']
+                                    # Institution frequency table
+                                    institution_freq = institutions_table['institution'].value_counts(dropna=True).reset_index()
+                                    institution_freq.columns = ['Institution', '# Count']
+                                    st.subheader("Institutional Affiliations", anchor=False)
+                                    st.dataframe(institution_freq, hide_index=True,  use_container_width=False)
+                                with col2:
+                                    # Country frequency table
+                                    def code_to_name(code):
+                                        try:
+                                            return pycountry.countries.get(alpha_2=code).name
+                                        except:
+                                            return code  # fallback to code if not found
 
-                                # st.subheader("Author Institutions")
-                                # st.dataframe(institutions_table,  use_container_width=False)
+                                    # Compute frequency table
+                                    country_freq = institutions_table['country_code'].value_counts(dropna=True).reset_index()
+                                    country_freq.columns = ['Country Code', '# Count']
 
-                                # Institution frequency table
-                                institution_freq = institutions_table['institution'].value_counts(dropna=True).reset_index()
-                                institution_freq.columns = ['Institution', '# Count']
-                                st.subheader("Institutional Affiliations", anchor=False)
-                                st.dataframe(institution_freq, hide_index=True,  use_container_width=False)
-                            with col2:
-                                # Country frequency table
-                                def code_to_name(code):
-                                    try:
-                                        return pycountry.countries.get(alpha_2=code).name
-                                    except:
-                                        return code  # fallback to code if not found
+                                    # Map codes to full names
+                                    country_freq['Country'] = country_freq['Country Code'].apply(code_to_name)
+                                    country_freq = country_freq[['Country', '# Count']]  # Reorder columns
 
-                                # Compute frequency table
-                                country_freq = institutions_table['country_code'].value_counts(dropna=True).reset_index()
-                                country_freq.columns = ['Country Code', '# Count']
+                                    # Show in Streamlit
+                                    st.subheader("Country Affiliations", anchor=False)
+                                    st.dataframe(country_freq, hide_index=True, use_container_width=False)
 
-                                # Map codes to full names
-                                country_freq['Country'] = country_freq['Country Code'].apply(code_to_name)
-                                country_freq = country_freq[['Country', '# Count']]  # Reorder columns
-
-                                # Show in Streamlit
-                                st.subheader("Country Affiliations", anchor=False)
-                                st.dataframe(country_freq, hide_index=True, use_container_width=False)
-
-                        st.subheader("Topics and SDGs", anchor=False)
-                        with st.expander('Results', expanded= True):
-                            col1, col2 = st.columns(2)
-                            with col1:
-                                st.write('**Primary Topics**')
-                                if selected_statuses:
+                        if 'topics_sdgs' in selected_sections:
+                            st.subheader("Topics and SDGs", anchor=False)
+                            with st.expander('Results', expanded= True):
+                                col1, col2 = st.columns(2)
+                                with col1:
+                                    st.write('**Primary Topics**')
                                     top_topics = filtered_raw_df['primary_topic.field.display_name'].value_counts(dropna=False).reset_index()
-                                else:
-                                    top_topics = merged_df['primary_topic.field.display_name'].value_counts(dropna=False).reset_index()
-                                top_topics.columns = ['Primary topic', '# Outputs']
-                                no_topics = top_topics['Primary topic'].nunique()
-                                st.write(f'{no_topics} primary topics found')
-                                top_topics = top_topics.dropna()
-                                table_view = st.toggle('Display all topics as a table')
-                                if table_view:
-                                    col1.dataframe(top_topics, hide_index=True,  use_container_width=False)
-                                else:
-                                    top_topics = top_topics.sort_values(by="# Outputs", ascending=True)
-                                    top_topics = top_topics.head(10)
-                                    fig = px.bar(top_topics, 
-                                                x="# Outputs", 
-                                                y="Primary topic", 
-                                                orientation='h',
-                                                title="Outputs by Primary Topic (Top 10)",
-                                                labels={"# Outputs": "Number of Outputs", "Primary topic": "Topic"},
-                                                color_discrete_sequence=["#636EFA"])
+                                    top_topics.columns = ['Primary topic', '# Outputs']
+                                    no_topics = top_topics['Primary topic'].nunique()
+                                    st.write(f'{no_topics} primary topics found')
+                                    top_topics = top_topics.dropna()
+                                    table_view = st.toggle('Display all topics as a table')
+                                    if table_view:
+                                        col1.dataframe(top_topics, hide_index=True,  use_container_width=False)
+                                    else:
+                                        top_topics = top_topics.sort_values(by="# Outputs", ascending=True)
+                                        top_topics = top_topics.head(10)
+                                        fig = px.bar(top_topics, 
+                                                    x="# Outputs", 
+                                                    y="Primary topic", 
+                                                    orientation='h',
+                                                    title="Outputs by Primary Topic (Top 10)",
+                                                    labels={"# Outputs": "Number of Outputs", "Primary topic": "Topic"},
+                                                    color_discrete_sequence=["#636EFA"])
 
-                                    col1.plotly_chart(fig)
-                            with col2:
-                                st.write('**Sustainable Development Goals (SDGs)**')
-                                if selected_statuses:
+                                        col1.plotly_chart(fig)
+                                with col2:
+                                    st.write('**Sustainable Development Goals (SDGs)**')
                                     sdg_df = filtered_raw_df.explode('sustainable_development_goals').reset_index(drop=True)
-                                    outputs_associated_with_sdgs = filtered_raw_df[
-                                        filtered_raw_df['sustainable_development_goals'].notna() & filtered_raw_df['sustainable_development_goals'].astype(bool)
-                                    ]
-                                    num_outputs_associated_with_sdgs = len(outputs_associated_with_sdgs)
-                                else:
-                                    sdg_df = merged_df.explode('sustainable_development_goals').reset_index(drop=True)
                                     outputs_associated_with_sdgs = sdg_df[
                                         sdg_df['sustainable_development_goals'].notna() & sdg_df['sustainable_development_goals'].astype(bool)
                                     ]
                                     num_outputs_associated_with_sdgs = len(outputs_associated_with_sdgs)
-                                sdg_df = pd.json_normalize(sdg_df['sustainable_development_goals']).reset_index(drop=True)
-                                if sdg_df.empty:
-                                    st.warning('No SDG found')
-                                else:
-                                    sdg_df = sdg_df["display_name"].value_counts().reset_index()
-                                    sdg_df.columns = ["SDG name", "# Outputs"]
-                                    no_sdgs = sdg_df['SDG name'].nunique()
-                                    st.write(f'{no_sdgs} SDGs found associated with {num_outputs_associated_with_sdgs} outputs')
-                                    table_view = st.toggle('Display all SDG categories as a table', key='sdg')
-                                    if table_view:
-                                        col2.dataframe(sdg_df, hide_index=True,  use_container_width=False)
+                                    sdg_df = pd.json_normalize(sdg_df['sustainable_development_goals']).reset_index(drop=True)
+                                    if sdg_df.empty:
+                                        st.warning('No SDG found')
                                     else:
-                                        sdg_df = sdg_df.head(10)
-                                        fig = px.bar(sdg_df.sort_values("# Outputs", ascending=True),
-                                                    x="# Outputs", y="SDG name",
-                                                    orientation='h',
-                                                    title="Number of Outputs by SDG (Top 10)",
-                                                    labels={"# Outputs": "Number of Outputs", "SDG name": "Sustainable Development Goal"},
-                                                    color_discrete_sequence=["#636EFA"])
+                                        sdg_df = sdg_df["display_name"].value_counts().reset_index()
+                                        sdg_df.columns = ["SDG name", "# Outputs"]
+                                        no_sdgs = sdg_df['SDG name'].nunique()
+                                        st.write(f'{no_sdgs} SDGs found associated with {num_outputs_associated_with_sdgs} outputs')
+                                        table_view = st.toggle('Display all SDG categories as a table', key='sdg')
+                                        if table_view:
+                                            col2.dataframe(sdg_df, hide_index=True,  use_container_width=False)
+                                        else:
+                                            sdg_df = sdg_df.head(10)
+                                            fig = px.bar(sdg_df.sort_values("# Outputs", ascending=True),
+                                                        x="# Outputs", y="SDG name",
+                                                        orientation='h',
+                                                        title="Number of Outputs by SDG (Top 10)",
+                                                        labels={"# Outputs": "Number of Outputs", "SDG name": "Sustainable Development Goal"},
+                                                        color_discrete_sequence=["#636EFA"])
 
-                                        col2.plotly_chart(fig, use_container_width=True)
+                                            col2.plotly_chart(fig, use_container_width=True)
 
-                        st.subheader("Funders", anchor=False)
-                        with st.expander('Results', expanded=True):
-                            st.write('**Funders**')
-                            source_df = filtered_raw_df if selected_statuses else merged_df
-
-                            if 'grants' not in source_df.columns:
-                                st.warning('No funder found')
-                            else:
-                                funders_df = source_df.explode('grants').reset_index(drop=True)
-                                outputs_associated_with_funders = source_df[
-                                    source_df['grants'].notna() & source_df['grants'].astype(bool)
-                                ]
-                                num_outputs_associated_with_funders = len(outputs_associated_with_funders)
-                                funders_df = pd.json_normalize(funders_df['grants']).reset_index(drop=True)
-
-                                if funders_df.empty:
+                        if 'funders' in selected_sections:
+                            st.subheader("Funders", anchor=False)
+                            with st.expander('Results', expanded=True):
+                                st.write('**Funders**')
+                                if 'grants' not in filtered_raw_df.columns:
                                     st.warning('No funder found')
                                 else:
-                                    funders_df = funders_df["funder_display_name"].value_counts().reset_index()
-                                    funders_df.columns = ["Funder name", "Count"]
-                                    no_funders = funders_df['Funder name'].nunique()
-                                    st.write(f'{no_funders} funders found associated with {num_outputs_associated_with_funders} output(s)')
-                                    table_view = st.toggle('Display all funders as a table', key='funder')
-                                    if table_view:
-                                        st.dataframe(funders_df, hide_index=True, use_container_width=False)
+                                    funders_df = filtered_raw_df.explode('grants').reset_index(drop=True)
+                                    outputs_associated_with_funders = filtered_raw_df[
+                                        filtered_raw_df['grants'].notna() & filtered_raw_df['grants'].astype(bool)
+                                    ]
+                                    num_outputs_associated_with_funders = len(outputs_associated_with_funders)
+                                    funders_df = pd.json_normalize(funders_df['grants']).reset_index(drop=True)
+
+                                    if funders_df.empty:
+                                        st.warning('No funder found')
                                     else:
-                                        funders_df = funders_df.head(10)
-                                        fig = px.bar(funders_df.sort_values("Count", ascending=True),
-                                                    x="Count", y="Funder name",
-                                                    orientation='h',
-                                                    title="Top 10 Number of Funders",
-                                                    labels={"Count": "Number of Funders", "Funder name": "Funder name"},
-                                                    color_discrete_sequence=["#636EFA"])
-                                        fig.update_layout(
-                                            yaxis=dict(
-                                                tickfont=dict(size=14)
+                                        funders_df = funders_df["funder_display_name"].value_counts().reset_index()
+                                        funders_df.columns = ["Funder name", "Count"]
+                                        no_funders = funders_df['Funder name'].nunique()
+                                        st.write(f'{no_funders} funders found associated with {num_outputs_associated_with_funders} output(s)')
+                                        table_view = st.toggle('Display all funders as a table', key='funder')
+                                        if table_view:
+                                            st.dataframe(funders_df, hide_index=True, use_container_width=False)
+                                        else:
+                                            funders_df = funders_df.head(10)
+                                            fig = px.bar(funders_df.sort_values("Count", ascending=True),
+                                                        x="Count", y="Funder name",
+                                                        orientation='h',
+                                                        title="Top 10 Number of Funders",
+                                                        labels={"Count": "Number of Funders", "Funder name": "Funder name"},
+                                                        color_discrete_sequence=["#636EFA"])
+                                            fig.update_layout(
+                                                yaxis=dict(
+                                                    tickfont=dict(size=14)
+                                                )
                                             )
-                                        )
-                                        st.plotly_chart(fig, use_container_width=True)
+                                            st.plotly_chart(fig, use_container_width=True)
 
-                        # st.subheader("Datasets", anchor=False)
-                        # with st.expander('Results', expanded= True):
-                        #     st.write('**Datasets**')
-                        #     if selected_statuses:
-                        #         datasets_df = filtered_raw_df.explode('datasets').reset_index(drop=True)
-                        #         outputs_with_datasets = filtered_raw_df[
-                        #             filtered_raw_df['datasets'].notna() & filtered_raw_df['datasets'].astype(bool)
-                        #         ]
-                        #         num_outputs_with_datasets = len(outputs_with_datasets)
-                        #     else:
-                        #         datasets_df = merged_df.explode('datasets').reset_index(drop=True)
-                        #         outputs_with_datasets = merged_df[
-                        #             merged_df['datasets'].notna() & merged_df['datasets'].astype(bool)
-                        #         ]
-                        #         num_outputs_with_datasets = len(outputs_with_datasets)
-                        #     datasets_df = pd.json_normalize(datasets_df['datasets']).reset_index(drop=True)
-                        #     datasets_df
-                        #     if datasets_df.empty:
-                        #         st.warning('No outputs found with a dataset')
-                        #     else:
-                        #         funders_df = funders_df["funder_display_name"].value_counts().reset_index()
-                        #         funders_df.columns = ["Funder name", "Count"]
-                        #         no_funders = funders_df['Funder name'].nunique()
-                        #         st.write(f'{no_funders} funders found associated with {num_outputs_associated_with_funders} output(s)')                   
-                        #         table_view = st.toggle('Display all funders as a table', key='funder')
-                        #         if table_view:
-                        #             st.dataframe(funders_df, hide_index=True,  use_container_width=False)
-                        #         else:
-                        #             funders_df = funders_df.head(10)
-                        #             fig = px.bar(funders_df.sort_values("Count", ascending=True),
-                        #                         x="Count", y="Funder name",
-                        #                         orientation='h',
-                        #                         title="Top 10 Number of Funders",
-                        #                         labels={"Count": "Number of Funders", "Funder name": "Funder name"},
-                        #                         color_discrete_sequence=["#636EFA"])
-                        #             fig.update_layout(
-                        #                 yaxis=dict(
-                        #                     tickfont=dict(size=14)  # Adjust size as needed
-                        #                 )
-                        #             )
-                        #             st.plotly_chart(fig, use_container_width=True)
+                        if 'metrics' in selected_sections:
+                            st.subheader('Metrics', anchor=False)
+                            with st.expander('Results', expanded=True):
+                                metrics_df = filtered_raw_df.copy()
+                                metrics_df['author_count'] = metrics_df['authorships'].apply(lambda x: len(x) if isinstance(x, list) else 0)
+                                col1, col2, col3, col4 = st.columns(4)
+                                with col1:
+                                    num_papers = len(metrics_df)
+                                    st.metric(label='Number of publications', value=num_papers, border=True)
+                                with col2:
+                                    citation_count = metrics_df['cited_by_count'].sum()
+                                    st.metric(label='Citation count', value=citation_count, border=True)   
+                                with col3:
+                                    fwci_mean = metrics_df['fwci'].mean()
+                                    if pd.isna(fwci_mean):
+                                        st.metric(label='Field Weighted Citation Impact mean', value='N/A', border=True)
+                                    else:
+                                        st.metric(label='Field Weighted Citation Impact mean', value=round(fwci_mean, 2), border=True)
+                                with col4:
+                                    num_authors = metrics_df['author_count'].sum()
+                                    st.metric(label='Total number of Authors', value=f'{num_authors}', border=True)
 
-                        st.subheader('Metrics', anchor=False)
-                        with st.expander('Results', expanded=True):
-                            if selected_statuses:
-                                filtered_df = merged_df[merged_df['open_access.oa_status'].isin(selected_statuses)]
-                                filtered_raw_df = filtered_df.copy()
-                            else:
-                                filtered_raw_df = merged_df.copy()
+                                col1, col2, col3, col4 = st.columns(4)
+                                with col1:
+                                    if num_papers > 0:
+                                        st.metric(label='# Author per publication', value=round(num_authors/num_papers, 2), border=True)
+                                    else:
+                                        st.metric(label='# Author per publication', value='N/A', border=True)
+                                with col2:
+                                    if 'apc_paid.value_usd' in metrics_df.columns:
+                                        apc_paid_usd = metrics_df['apc_paid.value_usd'].sum()
+                                        st.metric(label='APC paid (USD)', value=f'${apc_paid_usd:,.2f}', border=True)
+                                    else:
+                                        st.metric(label='APC paid (USD)', value='Not available', border=True)        
 
-                            filtered_raw_df['author_count'] = filtered_raw_df['authorships'].apply(lambda x: len(x) if isinstance(x, list) else 0)
-                            col1, col2, col3, col4 = st.columns(4)
-                            with col1:
-                                num_papers = len(filtered_raw_df)
-                                st.metric(label='Number of publications', value=num_papers, border=True)
-                            with col2:
-                                citation_count = filtered_raw_df['cited_by_count'].sum()
-                                st.metric(label='Citation count', value=citation_count, border=True)   
-                            with col3:
-                                fwci = round(filtered_raw_df['fwci'].mean(), 2)
-                                st.metric(label='Field Weighted Citation Impact mean', value=fwci, border=True)
-                            with col4:
-                                num_authors = filtered_raw_df['author_count'].sum()
-                                st.metric(label='Total number of Authors', value=f'{num_authors}', border=True)
-
-                            col1, col2, col3, col4 = st.columns(4)
-                            with col1:
-                                st.metric(label='# Author per publication', value=(num_authors/num_papers).round(2), border=True)
-                            with col2:
-                                if 'apc_paid.value_usd' in filtered_raw_df.columns:
-                                    apc_paid_usd = filtered_raw_df['apc_paid.value_usd'].sum()
-                                    st.metric(label='APC paid (USD)', value=f'${apc_paid_usd:,.2f}', border=True)
-                                else:
-                                    st.metric(label='APC paid (USD)', value='Not available', border=True)        
-
-                            year_counts = filtered_raw_df['publication_year'].value_counts().reset_index()
-                            year_counts.columns = ['Publication Year', 'Count']
-                            year_counts = year_counts.sort_values('Publication Year')
- 
-                            # Create Plotly chart
-                            fig = px.bar(
-                                year_counts,
-                                x='Publication Year',
-                                y='Count',
-                                title='Number of Publications per Year',
-                                labels={'Count': 'Number of Publications'},
-                            )
-                            st.plotly_chart(fig, use_container_width=True)
-                    results(merged_df, oa_summary, oa_status_summary, duplicates_df)
+                                year_counts = metrics_df['publication_year'].value_counts().reset_index()
+                                year_counts.columns = ['Publication Year', 'Count']
+                                year_counts = year_counts.sort_values('Publication Year')
+     
+                                # Create Plotly chart
+                                fig = px.bar(
+                                    year_counts,
+                                    x='Publication Year',
+                                    y='Count',
+                                    title='Number of Publications per Year',
+                                    labels={'Count': 'Number of Publications'},
+                                )
+                                st.plotly_chart(fig, use_container_width=True)
+                    results(merged_df, oa_summary, oa_status_summary, duplicates_df, selected_sections)
                     @st.fragment
                     def all_results(all_results_df):
                         display = st.toggle('Show all results')                        
