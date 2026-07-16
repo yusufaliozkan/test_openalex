@@ -23,6 +23,40 @@ st.set_page_config(layout = "wide",
                     initial_sidebar_state="auto") 
 pd.set_option('display.max_colwidth', None)
 
+
+def stringify_nested_value(value):
+    """Turn a nested OpenAlex value (dict or list of dicts) into a readable string.
+
+    Fields like 'concepts', 'authorships', 'grants', and
+    'sustainable_development_goals' arrive as lists of dictionaries and are
+    never flattened by pd.json_normalize (it only flattens nested dicts, not
+    dicts inside lists). Passed straight to st.dataframe, each dict renders
+    in the browser as '[object Object]' since that's the default JS
+    string conversion for an object. This extracts a sensible display value
+    (display_name where available) instead.
+    """
+    if isinstance(value, list):
+        parts = []
+        for item in value:
+            if isinstance(item, dict):
+                parts.append(str(item.get('display_name', item)))
+            else:
+                parts.append(str(item))
+        return ", ".join(parts)
+    elif isinstance(value, dict):
+        return str(value.get('display_name', value))
+    else:
+        return value
+
+
+def make_display_friendly(df):
+    """Return a copy of df with any list/dict-valued columns stringified."""
+    df = df.copy()
+    for col in df.columns:
+        if df[col].apply(lambda x: isinstance(x, (list, dict))).any():
+            df[col] = df[col].apply(stringify_nested_value)
+    return df
+
 sidebar_content() 
 
 st.title('OpenAlex DOI Search Tool', anchor=False)
@@ -347,6 +381,7 @@ else:
                                     else:
                                         display_table_df = filtered_raw_df[default_columns].copy()
 
+                                    display_table_df = make_display_friendly(display_table_df)
                                     display_table_df = display_table_df.reset_index(drop=True)
                                     display_table_df.index += 1
 
@@ -676,6 +711,8 @@ else:
                                 display_all_results_df = all_results_df[selected_columns_all]
                             else:
                                 display_all_results_df = all_results_df
+
+                            display_all_results_df = make_display_friendly(display_all_results_df)
 
                             with st.popover(f'{len(display_all_results_df.columns)} column(s) shown'):
                                 for col_name in display_all_results_df.columns:
