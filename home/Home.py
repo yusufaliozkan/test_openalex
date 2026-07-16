@@ -248,56 +248,6 @@ else:
                             st.error('No item to display!')
                             st.stop()
 
-                        # --- NEW: DOI Resolution Check ---
-                        st.subheader("DOI Resolution Check", anchor=False)
-                        with st.expander('Results', expanded=False):
-                            doi_list_to_check = all_results_df['doi_submitted'].dropna().unique().tolist()
-                            with st.spinner(f'Checking whether {len(doi_list_to_check)} DOI(s) resolve...'):
-                                resolution_df = check_dois_resolve(doi_list_to_check)
-
-                            resolution_df['Resolves?'] = resolution_df['resolves'].map(
-                                {True: 'Resolves', False: 'Does not resolve'}
-                            )
-                            resolution_summary = resolution_df['Resolves?'].value_counts(dropna=False).reset_index()
-                            resolution_summary.columns = ['Resolution status', '# DOIs']
-
-                            num_resolved = int(resolution_df['resolves'].sum())
-                            num_total = len(resolution_df)
-                            num_unresolved = num_total - num_resolved
-                            st.write(
-                                f"**{num_resolved}** of **{num_total}** submitted DOI(s) resolve via doi.org. "
-                                f"**{num_unresolved}** did not resolve."
-                            )
-
-                            col1, col2 = st.columns([1, 4])
-                            with col1:
-                                resolution_colors = {
-                                    "Resolves": "#2ca02c",
-                                    "Does not resolve": "#d62728",
-                                }
-                                table_view = st.toggle('Display as a table', key='doi_resolution_view')
-                                if table_view:
-                                    st.dataframe(resolution_summary, hide_index=True, use_container_width=False)
-                                else:
-                                    fig = px.pie(
-                                        resolution_summary,
-                                        names="Resolution status",
-                                        values="# DOIs",
-                                        title="DOI Resolution Status",
-                                        color="Resolution status",
-                                        color_discrete_map=resolution_colors,
-                                    )
-                                    st.plotly_chart(fig, use_container_width=True)
-                            with col2:
-                                unresolved_df = resolution_df[~resolution_df['resolves']][['doi', 'status_code']]
-                                unresolved_df.columns = ['DOI', 'Status code']
-                                if unresolved_df.empty:
-                                    st.success('All submitted DOIs resolved successfully.')
-                                else:
-                                    st.warning(f'{len(unresolved_df)} DOI(s) did not resolve:')
-                                    st.dataframe(unresolved_df, hide_index=True, use_container_width=False)
-                        # --- END NEW SECTION ---
-
                         st.subheader("Open Access Status Summary", anchor=False)
                         with st.expander('Results',  expanded= True):
                             if len(oa_summary) >= 1:
