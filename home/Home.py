@@ -27,6 +27,23 @@ sidebar_content()
 
 st.title('OpenAlex DOI Search Tool', anchor=False)
 
+with st.expander('About this tool', expanded=False):
+    st.markdown('''
+This tool looks up a batch of DOIs against the [OpenAlex](https://openalex.org/) database and builds a report summarising the results. It's intended for tasks like checking the open access status of a set of outputs (e.g. for a REF submission, a department's publication list, or a funder report), or getting a quick overview of the journals, funders, topics, and author affiliations behind a group of papers.
+
+**How it works:** paste in DOIs or upload a CSV, and the tool retrieves the full OpenAlex record for each one. You can then choose which parts of the report to display - this only affects what's shown, not what's retrieved.
+
+**Fields and sections you can see in the report:**
+- **Open Access Status Summary** - OA status (open/closed, gold/green/hybrid/bronze), a filterable results table (DOI, type, journal, publisher, publication year/date, OA status, OA URL, licence), and an optional comparison against Unpaywall
+- **Journals and Publishers** - counts of outputs per journal and per publisher
+- **Affiliations** - author institutions and their countries
+- **Topics and SDGs** - primary research topics and any associated Sustainable Development Goals
+- **Funders** - funders associated with the outputs
+- **Metrics** - publication counts, citation counts, Field-Weighted Citation Impact (FWCI), author counts, APC costs (where available), and publications by year
+
+You can also choose exactly which columns appear in the results table, and download or review the full raw result set at the bottom of the report.
+''')
+
 df_dois = None
 
 radio = st.radio('Select an option', ['Insert DOIs', 'Upload a file with DOIs'])
@@ -120,7 +137,7 @@ else:
             chosen_labels = st.multiselect(
                 'Select sections to include in the report',
                 options=list(available_sections.keys()),
-                default=list(available_sections.keys())
+                default=[]
             )
         else:
             chosen_labels = list(available_sections.keys())
@@ -309,17 +326,39 @@ else:
 
                                         st.plotly_chart(fig, use_container_width=True)
                                 with col2:
-                                    display_table_df = filtered_raw_df.copy()
+                                    available_columns = filtered_raw_df.columns.tolist()
+                                    default_columns = [c for c in [
+                                        'doi', 'type',
+                                        'primary_location.source.display_name',
+                                        'primary_location.source.host_organization_name',
+                                        'publication_year', 'publication_date',
+                                        'open_access.is_oa', 'open_access.oa_status',
+                                        'open_access.oa_url', 'primary_location.license'
+                                    ] if c in available_columns]
+
+                                    selected_columns = st.multiselect(
+                                        'Select columns to display in the table',
+                                        options=available_columns,
+                                        default=default_columns
+                                    )
+
+                                    if selected_columns:
+                                        display_table_df = filtered_raw_df[selected_columns].copy()
+                                    else:
+                                        display_table_df = filtered_raw_df[default_columns].copy()
+
                                     display_table_df = display_table_df.reset_index(drop=True)
                                     display_table_df.index += 1
-                                    display_table_df = display_table_df[['doi', 'type','primary_location.source.display_name', 'primary_location.source.host_organization_name', 'publication_year', 'publication_date', 'open_access.is_oa','open_access.oa_status', 'open_access.oa_url', 'primary_location.license']]
-                                    display_table_df.columns = ['DOI', 'Type','Journal', 'Publisher','Publication year', 'Publication date','Is OA?', 'OA Status', 'OA URL', 'Licence']
+
+                                    display_column_config = {}
+                                    if 'doi' in display_table_df.columns:
+                                        display_column_config['doi'] = st.column_config.LinkColumn('DOI')
+                                    if 'open_access.oa_url' in display_table_df.columns:
+                                        display_column_config['open_access.oa_url'] = st.column_config.LinkColumn('OA URL')
+
                                     st.dataframe(
                                         display_table_df,
-                                        column_config={
-                                            'DOI':st.column_config.LinkColumn('DOI'),
-                                            'OA URL':st.column_config.LinkColumn('OA URL')
-                                        }
+                                        column_config=display_column_config
                                         )
 
                                 display_unpaywall_option = st.checkbox('Check DOI(s) on Unpaywall')
@@ -339,9 +378,8 @@ else:
                                                 return pd.Series({"oa_status": "error", "publisher": "error"})
                                         except:
                                             return pd.Series({"oa_status": "error", "publisher": "error"})
-                                    df_openalex_compare = display_table_df.copy()
-                                    df_openalex_compare = df_openalex_compare[['DOI', 'OA Status']]
-                                    df_openalex_compare = df_openalex_compare.rename(columns={'OA Status':'OA Status (OpenAlex)'})
+                                    df_openalex_compare = filtered_raw_df[['doi', 'open_access.oa_status']].copy()
+                                    df_openalex_compare.columns = ['DOI', 'OA Status (OpenAlex)']
 
                                     df_unpaywall_check = df_unpaywall[['doi']].copy()
                                     df_unpaywall_check[["oa_status", "publisher"]]  = df_unpaywall_check['doi'].astype(str).apply(get_oa_info)
