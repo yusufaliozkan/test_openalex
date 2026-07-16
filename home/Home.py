@@ -336,11 +336,14 @@ else:
                                         'open_access.oa_url', 'primary_location.license'
                                     ] if c in available_columns]
 
-                                    selected_columns = st.multiselect(
-                                        'Select columns to display in the table',
-                                        options=available_columns,
-                                        default=default_columns
-                                    )
+                                    st.write('Select columns to display in the table')
+                                    with st.popover('Choose columns'):
+                                        selected_columns = st.multiselect(
+                                            'Available columns',
+                                            options=available_columns,
+                                            default=default_columns,
+                                            label_visibility='collapsed'
+                                        )
 
                                     if selected_columns:
                                         display_table_df = filtered_raw_df[selected_columns].copy()
@@ -362,6 +365,7 @@ else:
                                         )
 
                                 display_unpaywall_option = st.checkbox('Check DOI(s) on Unpaywall')
+
 
                                 if display_unpaywall_option:
                                     def get_oa_info(doi):
@@ -656,7 +660,25 @@ else:
                         if display:
                             st.subheader('All results', anchor=False)
                             all_results_df = all_results_df.loc[:, ~all_results_df.columns.str.startswith('abstract_inverted_index.')]
-                            all_results_df
+
+                            available_columns_all = all_results_df.columns.tolist()
+
+                            st.write('Select columns to display in the table')
+                            with st.popover('Choose columns'):
+                                selected_columns_all = st.multiselect(
+                                    'Available columns',
+                                    options=available_columns_all,
+                                    default=available_columns_all,
+                                    label_visibility='collapsed',
+                                    key='all_results_columns'
+                                )
+
+                            if selected_columns_all:
+                                display_all_results_df = all_results_df[selected_columns_all]
+                            else:
+                                display_all_results_df = all_results_df
+
+                            st.dataframe(display_all_results_df)
                     all_results(all_results_df)
                     end_time = time.time()
                     processing_time = end_time - start_time
